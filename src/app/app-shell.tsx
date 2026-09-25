@@ -1,30 +1,58 @@
-import { CaretDown, Play, SignOut } from "@phosphor-icons/react"
+import {
+  BuildingsIcon,
+  CrosshairIcon,
+  FireIcon,
+  GearIcon,
+  LightningIcon,
+  ShieldIcon,
+  TargetIcon,
+} from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
-import { NavLink, Outlet, useNavigate, useSearchParams } from "react-router"
+import { Outlet, useLocation, useNavigate, useSearchParams } from "react-router"
 import { toast } from "sonner"
 
 import { api } from "@/api/client"
+import { AppSidebar } from "@/components/app-sidebar"
+import type { NavItem } from "@/components/nav-main"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 import { Button } from "@/features/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import { useLogout, useSession } from "@/features/session/session"
 import { labels } from "@/lib/labels"
-import { cn } from "cn"
-
-const links = [
-  { to: "/prospects", label: labels.prospects },
-  { to: "/runs", label: labels.runs },
-  { to: "/accounts", label: labels.accounts },
-  { to: "/accounts/discover", label: labels.discover },
-]
 
 export function AppShell() {
   const { me } = useSession()
   const [params, setParams] = useSearchParams()
+  const { pathname } = useLocation()
   const services = useQuery({ queryKey: ["services"], queryFn: api.services, staleTime: 30_000 })
   const serviceId = params.get("service") ?? services.data?.[0]?.id ?? "ia"
+  const prospects = useQuery({
+    queryKey: ["prospects", "sidebar", serviceId],
+    queryFn: () =>
+      api.prospects({
+        serviceId,
+        q: "",
+        country: "",
+        industry: "",
+        tier: "",
+        onlyNew: false,
+        minPriority: 0,
+      }),
+    staleTime: 30_000,
+  })
   const navigate = useNavigate()
   const logout = useLogout()
   const [analyzeOpen, setAnalyzeOpen] = useState(false)
+  const crumb = crumbFor(pathname)
 
   function setService(next: string) {
     const updated = new URLSearchParams(params)
@@ -32,117 +60,145 @@ export function AppShell() {
     setParams(updated)
   }
 
+  const withService = (path: string) => `${path}?service=${serviceId}`
+  const items: NavItem[] = [
+    {
+      title: labels.prospects,
+      url: "/prospects",
+      icon: <CrosshairIcon />,
+      items: [{ title: "Leaderboard", url: "/prospects" }],
+    },
+    {
+      title: labels.runs,
+      url: "/runs",
+      icon: <LightningIcon />,
+      items: [{ title: "Live", url: "/runs" }],
+    },
+    {
+      title: labels.accounts,
+      url: "/accounts",
+      icon: <BuildingsIcon />,
+      items: [
+        { title: "All companies", url: "/accounts" },
+        { title: labels.discover, url: "/accounts/discover" },
+      ],
+    },
+  ]
+  if (me?.role === "admin") {
+    items.push({
+      title: labels.settings,
+      url: "/settings/services",
+      icon: <GearIcon />,
+      items: [
+        { title: labels.services, url: "/settings/services" },
+        { title: labels.questions, url: `/settings/${serviceId}/questions` },
+        { title: labels.icp, url: `/settings/${serviceId}/icp` },
+        { title: labels.rules, url: `/settings/${serviceId}/rules` },
+        { title: labels.scoring, url: `/settings/${serviceId}/scoring` },
+      ],
+    })
+  }
+
+  const teams = (services.data ?? []).map((service) => ({
+    id: service.id,
+    name: service.name,
+    plan: service.preset === "cyber" ? "Security" : "Automation",
+    logo: service.preset === "cyber" ? <ShieldIcon /> : <TargetIcon />,
+  }))
+
+  const projects = (prospects.data ?? []).slice(0, 3).map((row) => ({
+    name: `${row.name} · ${row.priority}`,
+    url: withService(`/companies/${row.id}`),
+    icon: <FireIcon />,
+  }))
+
   return (
-    <div className="min-h-svh bg-background">
-      <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-background px-4 py-3">
-        <label className="flex items-center gap-2 text-sm font-medium">
-          <select
-            className="h-9 rounded-lg border border-input bg-background px-2"
-            value={serviceId}
-            onChange={(event) => setService(event.target.value)}
-          >
-            {(services.data ?? []).map((service) => (
-              <option key={service.id} value={service.id}>
-                {service.name}
-              </option>
-            ))}
-          </select>
-          <CaretDown className="size-4 text-muted-foreground" />
-        </label>
-        <nav className="flex flex-1 items-center gap-1">
-          {links.map((link) => (
-            <NavLink
-              key={link.to}
-              to={`${link.to}?service=${serviceId}`}
-              className={({ isActive }) =>
-                cn(
-                  "rounded-lg px-3 py-1.5 text-sm text-muted-foreground",
-                  isActive && "bg-muted text-foreground",
-                )
-              }
-            >
-              {link.label}
-            </NavLink>
-          ))}
-          {me?.role === "admin" ? (
-            <NavLink
-              to={`/settings/services?service=${serviceId}`}
-              className={({ isActive }) =>
-                cn(
-                  "rounded-lg px-3 py-1.5 text-sm text-muted-foreground",
-                  isActive && "bg-muted text-foreground",
-                )
-              }
-            >
-              {labels.settings}
-            </NavLink>
-          ) : null}
-        </nav>
-        <Button size="lg" onClick={() => setAnalyzeOpen(true)}>
-          <Play />
-          {labels.analyze}
-        </Button>
-        <UserMenu
-          email={me?.email ?? ""}
-          role={me?.role ?? "sales"}
+    <TooltipProvider>
+      <SidebarProvider>
+        <AppSidebar
+          items={items.map((item) => ({
+            ...item,
+            items: item.items?.map((sub) => ({ ...sub, url: withService(sub.url) })),
+          }))}
+          teams={teams}
+          activeServiceId={serviceId}
+          onServiceChange={setService}
+          projects={projects}
+          user={{ email: me?.email ?? "", role: me?.role ?? "sales" }}
           onSignOut={() => {
-            logout.mutate(undefined, {
-              onSuccess: () => navigate("/login"),
-            })
+            logout.mutate(undefined, { onSuccess: () => navigate("/login") })
           }}
         />
-      </header>
-      <main className="mx-auto w-full max-w-7xl p-6">
-        <Outlet context={{ serviceId }} />
-      </main>
-      {analyzeOpen ? (
-        <AnalyzeDialog
-          serviceId={serviceId}
-          onClose={() => setAnalyzeOpen(false)}
-          onStarted={(id) => {
-            setAnalyzeOpen(false)
-            toast.success("Analysis started")
-            void navigate(`/runs/${id}?service=${serviceId}`)
-          }}
-        />
-      ) : null}
-    </div>
+        <SidebarInset>
+          <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b bg-background px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="my-4 mr-2" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">{crumb.section}</BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{crumb.title}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+            <Button className="ml-auto" onClick={() => setAnalyzeOpen(true)}>
+              <LightningIcon data-icon="inline-start" />
+              {labels.analyze}
+            </Button>
+          </header>
+          <main className="flex flex-1 flex-col gap-6 p-4 md:p-6">
+            <Outlet />
+          </main>
+        </SidebarInset>
+        {analyzeOpen ? (
+          <AnalyzeDialog
+            serviceId={serviceId}
+            onClose={() => setAnalyzeOpen(false)}
+            onStarted={(id) => {
+              setAnalyzeOpen(false)
+              toast.success("Analysis started")
+              void navigate(withService(`/runs/${id}`))
+            }}
+          />
+        ) : null}
+      </SidebarProvider>
+    </TooltipProvider>
   )
 }
 
-function UserMenu({
-  email,
-  role,
-  onSignOut,
-}: {
-  email: string
-  role: string
-  onSignOut: () => void
-}) {
-  const [open, setOpen] = useState(false)
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        className="flex items-center gap-2 rounded-lg border border-border px-2 py-1 text-sm"
-        onClick={() => setOpen((value) => !value)}
-      >
-        <span className="flex size-7 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-          {email.slice(0, 1).toUpperCase()}
-        </span>
-        <span className="hidden sm:inline">{email}</span>
-      </button>
-      {open ? (
-        <div className="absolute right-0 mt-2 w-48 rounded-lg border border-border bg-popover p-2 text-sm shadow-sm">
-          <p className="px-2 py-1 text-muted-foreground">{role}</p>
-          <button type="button" className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 hover:bg-muted" onClick={onSignOut}>
-            <SignOut />
-            {labels.signOut}
-          </button>
-        </div>
-      ) : null}
-    </div>
-  )
+function crumbFor(pathname: string) {
+  if (pathname.startsWith("/companies/")) {
+    return { section: labels.prospects, title: "Company" }
+  }
+  if (pathname.startsWith("/runs")) {
+    return { section: labels.runs, title: pathname === "/runs" ? "Live" : "Run" }
+  }
+  if (pathname.startsWith("/accounts/discover")) {
+    return { section: labels.accounts, title: labels.discover }
+  }
+  if (pathname.startsWith("/accounts")) {
+    return { section: labels.accounts, title: "All companies" }
+  }
+  if (pathname.includes("/questions")) {
+    return { section: labels.settings, title: labels.questions }
+  }
+  if (pathname.includes("/icp")) {
+    return { section: labels.settings, title: labels.icp }
+  }
+  if (pathname.includes("/rules")) {
+    return { section: labels.settings, title: labels.rules }
+  }
+  if (pathname.includes("/scoring")) {
+    return { section: labels.settings, title: labels.scoring }
+  }
+  if (pathname.startsWith("/settings")) {
+    return { section: labels.settings, title: labels.services }
+  }
+  if (pathname === "/403") {
+    return { section: "Access", title: "403" }
+  }
+  return { section: labels.prospects, title: "Leaderboard" }
 }
 
 function AnalyzeDialog({
