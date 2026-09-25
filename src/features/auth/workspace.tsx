@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next"
 import { Navigate } from "react-router"
 
-import { LocaleSwitcher } from "@/components/locale-switcher"
+import { LocaleSwitcher } from "@/features/components/locale-switcher"
 import { useLocaleParam } from "@/lib/use-locale"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/features/components/ui/button"
 import { useAuth } from "@/features/auth/auth-context"
 import { SessionLoading } from "@/features/auth/session-loading"
 

@@ -1,33 +1,49 @@
-import { createBrowserRouter } from "react-router"
+import { Navigate, createBrowserRouter } from "react-router"
 
-import { LocaleLayout, LocaleRedirect } from "@/app/locale-layout"
-import { GuestOnly, RequireAuth } from "@/features/auth/guards"
-import { LoginPage } from "@/features/auth/login-page"
-import { RegisterPage } from "@/features/auth/register-page"
-import { AdminPage, HomePage, NotFoundPage } from "@/features/auth/workspace"
+import { AppShell } from "@/app/app-shell"
+import { AccountsPage, DiscoveryPage } from "@/features/accounts/accounts-pages"
+import { CompanyPage } from "@/features/company/company-page"
+import { ProspectsPage } from "@/features/prospects/prospects-page"
+import { RunDetailPage, RunsPage } from "@/features/runs/runs-pages"
+import { ForbiddenPage, LoginPage } from "@/features/session/login-page"
+import { RequireAdmin, RequireAuth } from "@/features/session/session"
+import {
+  IcpPage,
+  QuestionsPage,
+  RulesPage,
+  ScoringPage,
+  ServicesPage,
+} from "@/features/settings/settings-pages"
 
 export const router = createBrowserRouter([
-  { path: "/", element: <LocaleRedirect /> },
+  { path: "/login", element: <LoginPage /> },
   {
-    path: "/:lang",
-    element: <LocaleLayout />,
+    element: <RequireAuth />,
     children: [
       {
-        element: <GuestOnly />,
+        element: <AppShell />,
         children: [
-          { path: "login", element: <LoginPage /> },
-          { path: "register", element: <RegisterPage /> },
-        ],
-      },
-      {
-        element: <RequireAuth />,
-        children: [
-          { index: true, element: <HomePage /> },
-          { path: "admin", element: <AdminPage /> },
-          { path: "*", element: <NotFoundPage /> },
+          { index: true, element: <Navigate to="/prospects" replace /> },
+          { path: "prospects", element: <ProspectsPage /> },
+          { path: "companies/:id", element: <CompanyPage /> },
+          { path: "runs", element: <RunsPage /> },
+          { path: "runs/:id", element: <RunDetailPage /> },
+          { path: "accounts", element: <AccountsPage /> },
+          { path: "accounts/discover", element: <DiscoveryPage /> },
+          { path: "403", element: <ForbiddenPage /> },
+          {
+            element: <RequireAdmin />,
+            children: [
+              { path: "settings/services", element: <ServicesPage /> },
+              { path: "settings/:serviceId/questions", element: <QuestionsPage /> },
+              { path: "settings/:serviceId/icp", element: <IcpPage /> },
+              { path: "settings/:serviceId/rules", element: <RulesPage /> },
+              { path: "settings/:serviceId/scoring", element: <ScoringPage /> },
+            ],
+          },
         ],
       },
     ],
   },
-  { path: "*", element: <LocaleRedirect /> },
+  { path: "*", element: <Navigate to="/" replace /> },
 ])

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 
-import { Label } from "@/components/ui/label"
+import { Label } from "@/features/components/ui/label"
 
 export function Field({
   label,
