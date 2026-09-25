@@ -4,7 +4,7 @@
 > администратора (услуги, вопросы, ICP, правила, скоринг, аккаунты, автопоиск).
 > **Владельцы:** F1 — сторона продаж (shell, auth, Prospects, Company, Runs) · F2 — сторона администратора
 > (Settings, Accounts, Discovery, Quality)
-> **Потребляет:** REST и SSE `backend/backend` через клиент, сгенерированный из OpenAPI ([backend/backend/SPEC.md](https://github.com/MacLovins/backend/blob/main/backend/backend/SPEC.md) §1.4.1)
+> **Потребляет:** REST и SSE `core` через клиент, сгенерированный из OpenAPI ([core/SPEC.md](https://github.com/MacLovins/backend/blob/main/core/SPEC.md) §1.4.1)
 > **Связано:** [ARCHITECTURE.md](https://github.com/MacLovins/backend/blob/main/ARCHITECTURE.md) §3.1 (экраны конвейера), §4.5 (потоки), §4.12 (демо)
 > **Репозитории:** этот — `MacLovins/frontend`; бэкенд и общая архитектура — `MacLovins/backend`. Клонируйте оба рядом
 > (`LeadRadar/backend`, `LeadRadar/frontend`), тогда агенту доступен `@../backend/ARCHITECTURE.md`.
@@ -65,7 +65,7 @@
 ### 1.4 Входы и выходы
 
 - **Вход:** `openapi.json` (снимок из core, копия из репо backend) → `src/api/generated/*`. Эндпоинты и схемы —
-  [backend/backend/SPEC.md](https://github.com/MacLovins/backend/blob/main/backend/backend/SPEC.md) §1.4.1.
+  [core/SPEC.md](https://github.com/MacLovins/backend/blob/main/core/SPEC.md) §1.4.1.
 - **SSE:** `POST /api/v1/runs/{id}/events` (fetch + `eventsource-parser`), события `run.progress`, `company.stage`,
   `company.done`, `run.finished`. При переподключении передаём `Last-Event-ID`.
 - **Auth:** cookie `lr_session` (httpOnly) ставит бэкенд. Фронт токен не видит. Текущий пользователь — `GET /auth/me`.
