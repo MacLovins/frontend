@@ -4,15 +4,21 @@ import { RouterProvider } from "react-router"
 
 import { Providers } from "@/app/providers"
 import { router } from "@/app/router"
-import { ThemeProvider } from "@/features/components/theme-provider"
 import "./index.css"
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider>
+// `npm run dev:mock` serves the API from an in-browser mock; the import keeps it out of production bundles.
+async function startMocks() {
+  if (import.meta.env.VITE_MOCK !== "true") return
+  const { startMockWorker } = await import("@/testing/browser")
+  await startMockWorker()
+}
+
+void startMocks().then(() => {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
       <Providers>
         <RouterProvider router={router} />
       </Providers>
-    </ThemeProvider>
-  </StrictMode>,
-)
+    </StrictMode>,
+  )
+})

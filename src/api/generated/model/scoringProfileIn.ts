@@ -4,8 +4,8 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
-import type { ScoringProfileInParams } from './scoringProfileInParams';
+import type { ScoringParams } from './scoringParams';
 
 export interface ScoringProfileIn {
-  params: ScoringProfileInParams;
+  params: ScoringParams;
 }

@@ -4,7 +4,12 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { KeywordsStatus } from './keywordsStatus';
+import type { Polarity } from './polarity';
+import type { SignalCategory } from './signalCategory';
 import type { SignalQuestionOutKeywords } from './signalQuestionOutKeywords';
+import type { SourceType } from './sourceType';
+import type { Weight } from './weight';
 
 export interface SignalQuestionOut {
   id: string;
@@ -12,15 +17,15 @@ export interface SignalQuestionOut {
   service_id: string;
   key: string;
   text: string;
-  category: string;
-  polarity: string;
-  weight: string;
-  source_types: string[];
+  category: SignalCategory;
+  polarity: Polarity;
+  weight: Weight;
+  source_types: SourceType[];
   recency_days: number;
-  keywords?: SignalQuestionOutKeywords;
+  keywords: SignalQuestionOutKeywords;
   job_titles: string[];
   negative_terms: string[];
-  keywords_status: string;
+  keywords_status: KeywordsStatus;
   version: number;
   is_active: boolean;
   created_at: string;

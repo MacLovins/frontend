@@ -4,13 +4,16 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { SignalCategory } from './signalCategory';
+import type { SignalQuestionUpdatePolarity } from './signalQuestionUpdatePolarity';
+import type { SignalQuestionUpdateWeight } from './signalQuestionUpdateWeight';
 
 export interface SignalQuestionUpdate {
   text?: string | null;
-  category?: string | null;
-  polarity?: string | null;
-  weight?: string | null;
-  source_types?: string[] | null;
+  category?: SignalCategory | null;
+  polarity?: SignalQuestionUpdatePolarity;
+  weight?: SignalQuestionUpdateWeight;
+  source_types?: ('news' | 'website' | 'jobs' | 'report' | 'registry' | 'incident' | 'derived' | 'manual')[] | null;
   recency_days?: number | null;
   job_titles?: string[] | null;
   negative_terms?: string[] | null;

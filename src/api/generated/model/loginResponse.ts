@@ -4,8 +4,13 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { LoginResponseRole } from './loginResponseRole';
 import type { UserOut } from './userOut';
 
 export interface LoginResponse {
   user: UserOut;
+  access: string | null;
+  refresh: string | null;
+  role: LoginResponseRole;
+  token_type: string;
 }

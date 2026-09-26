@@ -1,85 +1,137 @@
-import { useState, type ReactNode } from "react"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { Link, useNavigate } from "react-router"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useQueryClient } from "@tanstack/react-query"
+import { useForm } from "react-hook-form"
+import { Link, Navigate, useLocation, useNavigate } from "react-router"
+import { z } from "zod"
 
-import { LocaleSwitcher } from "@/features/components/locale-switcher"
-import { useLocaleParam } from "@/lib/use-locale"
-import { Button } from "@/features/components/ui/button"
-import { Input } from "@/features/components/ui/input"
-import { ApiError } from "@/lib/api"
-import { useAuth } from "@/features/auth/auth-context"
-import { Field, FormError } from "@/features/auth/fields"
-import { homePath } from "@/features/auth/paths"
-import { loginSchema, type LoginValues } from "@/features/auth/schemas"
+import { meQueryKey } from "@/api/cache"
+import { useLogin } from "@/api/generated/auth/auth"
+import { ApiError, errorMessage } from "@/api/mutator"
+import { BrandMark } from "@/components/common/brand-mark"
+import { Button } from "@/components/ui/button"
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { useMe } from "@/hooks/use-session"
 
-export function LoginPage() {
-  const { t } = useTranslation()
-  const lang = useLocaleParam()
-  const navigate = useNavigate()
-  const { signIn } = useAuth()
-  const [reason, setReason] = useState<string | null>(null)
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "", remember_me: false },
-  })
+const schema = z.object({
+  email: z.email("Enter a valid email address"),
+  // The backend enforces no rule at login, so neither does the form.
+  password: z.string().min(1, "Enter your password"),
+})
 
-  async function onSubmit(values: LoginValues) {
-    setReason(null)
-    try {
-      const tokens = await signIn(values)
-      await navigate(homePath(lang, tokens.role))
-    } catch (error) {
-      setReason(error instanceof ApiError ? error.reason : "unknown")
-    }
+type Values = z.infer<typeof schema>
+
+function loginError(error: unknown) {
+  if (error instanceof ApiError && error.code === "invalid_credentials") {
+    return "Wrong email or password, or the account is deactivated."
   }
-
-  return (
-    <AuthScreen>
-      <header className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-medium">{t("auth.loginTitle")}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t("auth.loginSubtitle")}</p>
-        </div>
-        <LocaleSwitcher />
-      </header>
-      <form className="mt-8 flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <FormError reason={reason} />
-        <Field label={t("auth.email")} error={errors.email?.message}>
-          <Input type="email" autoComplete="email" {...register("email")} />
-        </Field>
-        <Field label={t("auth.password")} error={errors.password?.message}>
-          <Input type="password" autoComplete="current-password" {...register("password")} />
-        </Field>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" className="size-4 accent-primary" {...register("remember_me")} />
-          {t("auth.rememberMe")}
-        </label>
-        <Button type="submit" size="lg" disabled={isSubmitting}>
-          {isSubmitting ? t("auth.submitting") : t("auth.submitLogin")}
-        </Button>
-      </form>
-      <p className="mt-6 text-sm text-muted-foreground">
-        {t("auth.noAccount")}{" "}
-        <Link className="text-foreground underline underline-offset-4" to={`/${lang}/register`}>
-          {t("auth.registerLink")}
-        </Link>
-      </p>
-    </AuthScreen>
-  )
+  if (error instanceof ApiError && error.code === "rate_limited") {
+    return "Too many attempts. Wait a minute, then try again."
+  }
+  return errorMessage(error)
 }
 
-export function AuthScreen({ children }: { children: ReactNode }) {
+export function LoginPage() {
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const me = useMe()
+  const from = (location.state as { from?: string } | null)?.from ?? "/prospects"
+
+  const form = useForm<Values>({ resolver: zodResolver(schema), defaultValues: { email: "", password: "" } })
+  const login = useLogin({
+    mutation: {
+      meta: { errorToast: false },
+      onSuccess: (session) => {
+        queryClient.setQueryData(meQueryKey, session.user)
+        void navigate(from, { replace: true })
+      },
+    },
+  })
+
+  if (me.data) return <Navigate to={from} replace />
+
+  const submit = form.handleSubmit((values) => login.mutate({ data: values }))
+
   return (
-    <main className="flex min-h-svh items-center justify-center bg-muted/40 p-6">
-      <section className="w-full max-w-md rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm">
-        {children}
+    <div className="grid min-h-svh bg-canvas lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
+      <section className="hidden flex-col justify-between bg-black p-12 text-white lg:flex">
+        <div className="flex items-center gap-3">
+          <BrandMark size={40} />
+          <span className="text-[22px] font-bold tracking-[-0.01em]">LeadRadar</span>
+        </div>
+        <div className="flex max-w-[640px] flex-col gap-5">
+          <p className="m-0 text-[44px] leading-[1.05] font-extrabold tracking-[-0.03em]">
+            Turn public business signals into a ranked call list, where every reason comes with a quote you can check.
+          </p>
+          <p className="m-0 text-base leading-normal text-[#cccccc]">
+            LeadRadar reads news, company sites, reports and job boards for each service you sell, and shows the
+            evidence behind every score.
+          </p>
+        </div>
+        <Link to="/about" className="text-sm font-semibold text-white">
+          How LeadRadar works →
+        </Link>
       </section>
-    </main>
+
+      <main className="flex items-center justify-center p-6">
+        <form
+          noValidate
+          onSubmit={submit}
+          className="flex w-full max-w-[400px] flex-col gap-6 rounded-lg border border-border bg-card p-8"
+        >
+          <div className="flex items-center gap-2.5 lg:hidden">
+            <BrandMark />
+            <span className="text-base font-bold">LeadRadar</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <h1 className="m-0 text-2xl font-bold tracking-[-0.01em]">Sign in</h1>
+            <p className="m-0 text-sm text-muted-foreground">Use the account your admin created for you.</p>
+          </div>
+
+          <FieldGroup>
+            <Field data-invalid={!!form.formState.errors.email}>
+              <FieldLabel htmlFor="email">Work email</FieldLabel>
+              <Input
+                id="email"
+                type="email"
+                autoComplete="username"
+                autoFocus
+                aria-invalid={!!form.formState.errors.email}
+                {...form.register("email")}
+              />
+              <FieldError errors={[form.formState.errors.email]} />
+            </Field>
+            <Field data-invalid={!!form.formState.errors.password}>
+              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                aria-invalid={!!form.formState.errors.password}
+                {...form.register("password")}
+              />
+              <FieldError errors={[form.formState.errors.password]} />
+            </Field>
+          </FieldGroup>
+
+          {login.isError ? (
+            <p role="alert" className="m-0 rounded-md bg-negative-surface px-3 py-2.5 text-sm text-negative-strong">
+              {loginError(login.error)}
+            </p>
+          ) : null}
+
+          <Button type="submit" disabled={login.isPending}>
+            {login.isPending ? "Signing in…" : "Sign in"}
+          </Button>
+
+          {import.meta.env.VITE_MOCK === "true" ? (
+            <p className="m-0 text-xs leading-normal text-muted-foreground">
+              Demo mode. Admin: admin@leadradar.ai / admin12345! · Sales: sales@leadradar.ai / sales12345!
+            </p>
+          ) : null}
+        </form>
+      </main>
+    </div>
   )
 }

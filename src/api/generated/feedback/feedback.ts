@@ -24,14 +24,17 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  FeedbackIn,
+  ErrorResponse,
   FeedbackOut,
-  GetQualityApiV1QualityGetParams,
-  HTTPValidationError,
-  QualityMetricsOut
+  FeedbackWithdrawOut,
+  GetQualityParams,
+  LeadFeedbackIn,
+  QualityMetricsOut,
+  SignalFeedbackIn
 } from '../model';
 
 import { apiFetch } from '../../mutator';
+import type { ErrorType } from '../../mutator';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
@@ -53,26 +56,7 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type feedbackSignalApiV1SignalsIdFeedbackPostResponse201 = {
-  data: FeedbackOut
-  status: 201
-}
-
-export type feedbackSignalApiV1SignalsIdFeedbackPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type feedbackSignalApiV1SignalsIdFeedbackPostResponseSuccess = (feedbackSignalApiV1SignalsIdFeedbackPostResponse201) & {
-  headers: Headers;
-};
-export type feedbackSignalApiV1SignalsIdFeedbackPostResponseError = (feedbackSignalApiV1SignalsIdFeedbackPostResponse422) & {
-  headers: Headers;
-};
-
-export type feedbackSignalApiV1SignalsIdFeedbackPostResponse = (feedbackSignalApiV1SignalsIdFeedbackPostResponseSuccess | feedbackSignalApiV1SignalsIdFeedbackPostResponseError)
-
-export const getFeedbackSignalApiV1SignalsIdFeedbackPostUrl = (id: string,) => {
+export const getFeedbackSignalUrl = (id: string,) => {
 
 
 
@@ -83,8 +67,8 @@ export const getFeedbackSignalApiV1SignalsIdFeedbackPostUrl = (id: string,) => {
 /**
  * @summary Feedback Signal
  */
-export const feedbackSignalApiV1SignalsIdFeedbackPost = async (id: string,
-    feedbackIn: FeedbackIn, options?: Parameters<typeof apiFetch>[1]): Promise<feedbackSignalApiV1SignalsIdFeedbackPostResponse> => {
+export const feedbackSignal = async (id: string,
+    signalFeedbackIn: SignalFeedbackIn, options?: Parameters<typeof apiFetch>[1]): Promise<FeedbackOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -100,12 +84,12 @@ export const feedbackSignalApiV1SignalsIdFeedbackPost = async (id: string,
     }
     return headers;
   };
-return apiFetch<feedbackSignalApiV1SignalsIdFeedbackPostResponse>(getFeedbackSignalApiV1SignalsIdFeedbackPostUrl(id),
+return apiFetch<FeedbackOut>(getFeedbackSignalUrl(id),
   {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(feedbackIn)
+    body: JSON.stringify(signalFeedbackIn)
   }
 );}
 
@@ -113,13 +97,13 @@ return apiFetch<feedbackSignalApiV1SignalsIdFeedbackPostResponse>(getFeedbackSig
 
 
 
-export const getFeedbackSignalApiV1SignalsIdFeedbackPostMutationKey = () => ['feedbackSignalApiV1SignalsIdFeedbackPost'] as const;
+export const getFeedbackSignalMutationKey = () => ['feedbackSignal'] as const;
 
-export const getFeedbackSignalApiV1SignalsIdFeedbackPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof feedbackSignalApiV1SignalsIdFeedbackPost>>, TError,FeedbackSignalApiV1SignalsIdFeedbackPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof feedbackSignalApiV1SignalsIdFeedbackPost>>, TError,FeedbackSignalApiV1SignalsIdFeedbackPostMutationVariables, TContext> => {
+export const getFeedbackSignalMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof feedbackSignal>>, TError,FeedbackSignalMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof feedbackSignal>>, TError,FeedbackSignalMutationVariables, TContext> => {
 
-const mutationKey = getFeedbackSignalApiV1SignalsIdFeedbackPostMutationKey();
+const mutationKey = getFeedbackSignalMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -129,10 +113,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof feedbackSignalApiV1SignalsIdFeedbackPost>>, FeedbackSignalApiV1SignalsIdFeedbackPostMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof feedbackSignal>>, FeedbackSignalMutationVariables> = (props) => {
           const {id,data} = props ?? {};
 
-          return  feedbackSignalApiV1SignalsIdFeedbackPost(id,data,requestOptions)
+          return  feedbackSignal(id,data,requestOptions)
         }
 
 
@@ -142,44 +126,99 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type FeedbackSignalApiV1SignalsIdFeedbackPostMutationResult = NonNullable<Awaited<ReturnType<typeof feedbackSignalApiV1SignalsIdFeedbackPost>>>
-    export type FeedbackSignalApiV1SignalsIdFeedbackPostMutationBody = FeedbackIn
-    export type FeedbackSignalApiV1SignalsIdFeedbackPostMutationError = HTTPValidationError
-    export type FeedbackSignalApiV1SignalsIdFeedbackPostMutationVariables = {id: string;data: FeedbackIn}
+    export type FeedbackSignalMutationResult = NonNullable<Awaited<ReturnType<typeof feedbackSignal>>>
+    export type FeedbackSignalMutationBody = SignalFeedbackIn
+    export type FeedbackSignalMutationError = ErrorType<ErrorResponse>
+    export type FeedbackSignalMutationVariables = {id: string;data: SignalFeedbackIn}
 
     /**
  * @summary Feedback Signal
  */
-export const useFeedbackSignalApiV1SignalsIdFeedbackPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof feedbackSignalApiV1SignalsIdFeedbackPost>>, TError,FeedbackSignalApiV1SignalsIdFeedbackPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useFeedbackSignal = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof feedbackSignal>>, TError,FeedbackSignalMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof feedbackSignalApiV1SignalsIdFeedbackPost>>,
+        Awaited<ReturnType<typeof feedbackSignal>>,
         TError,
-        FeedbackSignalApiV1SignalsIdFeedbackPostMutationVariables,
+        FeedbackSignalMutationVariables,
         TContext
       > => {
-      return useMutation(getFeedbackSignalApiV1SignalsIdFeedbackPostMutationOptions(options), queryClient);
+      return useMutation(getFeedbackSignalMutationOptions(options), queryClient);
     }
-    export type feedbackLeadApiV1LeadsCompanyIdFeedbackPostResponse201 = {
-  data: FeedbackOut
-  status: 201
+    export const getWithdrawSignalFeedbackUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/signals/${id}/feedback`
 }
 
-export type feedbackLeadApiV1LeadsCompanyIdFeedbackPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
+/**
+ * Withdraw the current user's vote on the signal; the signal and the score follow the remaining votes.
+ * @summary Withdraw Signal Feedback
+ */
+export const withdrawSignalFeedback = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<FeedbackWithdrawOut> => {
 
-export type feedbackLeadApiV1LeadsCompanyIdFeedbackPostResponseSuccess = (feedbackLeadApiV1LeadsCompanyIdFeedbackPostResponse201) & {
-  headers: Headers;
-};
-export type feedbackLeadApiV1LeadsCompanyIdFeedbackPostResponseError = (feedbackLeadApiV1LeadsCompanyIdFeedbackPostResponse422) & {
-  headers: Headers;
-};
+  return apiFetch<FeedbackWithdrawOut>(getWithdrawSignalFeedbackUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
 
-export type feedbackLeadApiV1LeadsCompanyIdFeedbackPostResponse = (feedbackLeadApiV1LeadsCompanyIdFeedbackPostResponseSuccess | feedbackLeadApiV1LeadsCompanyIdFeedbackPostResponseError)
 
-export const getFeedbackLeadApiV1LeadsCompanyIdFeedbackPostUrl = (companyId: string,) => {
+  }
+);}
+
+
+
+
+
+export const getWithdrawSignalFeedbackMutationKey = () => ['withdrawSignalFeedback'] as const;
+
+export const getWithdrawSignalFeedbackMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof withdrawSignalFeedback>>, TError,WithdrawSignalFeedbackMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof withdrawSignalFeedback>>, TError,WithdrawSignalFeedbackMutationVariables, TContext> => {
+
+const mutationKey = getWithdrawSignalFeedbackMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof withdrawSignalFeedback>>, WithdrawSignalFeedbackMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  withdrawSignalFeedback(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WithdrawSignalFeedbackMutationResult = NonNullable<Awaited<ReturnType<typeof withdrawSignalFeedback>>>
+
+    export type WithdrawSignalFeedbackMutationError = ErrorType<ErrorResponse>
+    export type WithdrawSignalFeedbackMutationVariables = {id: string}
+
+    /**
+ * @summary Withdraw Signal Feedback
+ */
+export const useWithdrawSignalFeedback = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof withdrawSignalFeedback>>, TError,WithdrawSignalFeedbackMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof withdrawSignalFeedback>>,
+        TError,
+        WithdrawSignalFeedbackMutationVariables,
+        TContext
+      > => {
+      return useMutation(getWithdrawSignalFeedbackMutationOptions(options), queryClient);
+    }
+    export const getFeedbackLeadUrl = (companyId: string,) => {
 
 
 
@@ -190,8 +229,8 @@ export const getFeedbackLeadApiV1LeadsCompanyIdFeedbackPostUrl = (companyId: str
 /**
  * @summary Feedback Lead
  */
-export const feedbackLeadApiV1LeadsCompanyIdFeedbackPost = async (companyId: string,
-    feedbackIn: FeedbackIn, options?: Parameters<typeof apiFetch>[1]): Promise<feedbackLeadApiV1LeadsCompanyIdFeedbackPostResponse> => {
+export const feedbackLead = async (companyId: string,
+    leadFeedbackIn: LeadFeedbackIn, options?: Parameters<typeof apiFetch>[1]): Promise<FeedbackOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -207,12 +246,12 @@ export const feedbackLeadApiV1LeadsCompanyIdFeedbackPost = async (companyId: str
     }
     return headers;
   };
-return apiFetch<feedbackLeadApiV1LeadsCompanyIdFeedbackPostResponse>(getFeedbackLeadApiV1LeadsCompanyIdFeedbackPostUrl(companyId),
+return apiFetch<FeedbackOut>(getFeedbackLeadUrl(companyId),
   {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(feedbackIn)
+    body: JSON.stringify(leadFeedbackIn)
   }
 );}
 
@@ -220,13 +259,13 @@ return apiFetch<feedbackLeadApiV1LeadsCompanyIdFeedbackPostResponse>(getFeedback
 
 
 
-export const getFeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationKey = () => ['feedbackLeadApiV1LeadsCompanyIdFeedbackPost'] as const;
+export const getFeedbackLeadMutationKey = () => ['feedbackLead'] as const;
 
-export const getFeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof feedbackLeadApiV1LeadsCompanyIdFeedbackPost>>, TError,FeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof feedbackLeadApiV1LeadsCompanyIdFeedbackPost>>, TError,FeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationVariables, TContext> => {
+export const getFeedbackLeadMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof feedbackLead>>, TError,FeedbackLeadMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof feedbackLead>>, TError,FeedbackLeadMutationVariables, TContext> => {
 
-const mutationKey = getFeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationKey();
+const mutationKey = getFeedbackLeadMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -236,10 +275,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof feedbackLeadApiV1LeadsCompanyIdFeedbackPost>>, FeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof feedbackLead>>, FeedbackLeadMutationVariables> = (props) => {
           const {companyId,data} = props ?? {};
 
-          return  feedbackLeadApiV1LeadsCompanyIdFeedbackPost(companyId,data,requestOptions)
+          return  feedbackLead(companyId,data,requestOptions)
         }
 
 
@@ -249,44 +288,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type FeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationResult = NonNullable<Awaited<ReturnType<typeof feedbackLeadApiV1LeadsCompanyIdFeedbackPost>>>
-    export type FeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationBody = FeedbackIn
-    export type FeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationError = HTTPValidationError
-    export type FeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationVariables = {companyId: string;data: FeedbackIn}
+    export type FeedbackLeadMutationResult = NonNullable<Awaited<ReturnType<typeof feedbackLead>>>
+    export type FeedbackLeadMutationBody = LeadFeedbackIn
+    export type FeedbackLeadMutationError = ErrorType<ErrorResponse>
+    export type FeedbackLeadMutationVariables = {companyId: string;data: LeadFeedbackIn}
 
     /**
  * @summary Feedback Lead
  */
-export const useFeedbackLeadApiV1LeadsCompanyIdFeedbackPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof feedbackLeadApiV1LeadsCompanyIdFeedbackPost>>, TError,FeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useFeedbackLead = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof feedbackLead>>, TError,FeedbackLeadMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof feedbackLeadApiV1LeadsCompanyIdFeedbackPost>>,
+        Awaited<ReturnType<typeof feedbackLead>>,
         TError,
-        FeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationVariables,
+        FeedbackLeadMutationVariables,
         TContext
       > => {
-      return useMutation(getFeedbackLeadApiV1LeadsCompanyIdFeedbackPostMutationOptions(options), queryClient);
+      return useMutation(getFeedbackLeadMutationOptions(options), queryClient);
     }
-    export type getQualityApiV1QualityGetResponse200 = {
-  data: QualityMetricsOut
-  status: 200
-}
-
-export type getQualityApiV1QualityGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type getQualityApiV1QualityGetResponseSuccess = (getQualityApiV1QualityGetResponse200) & {
-  headers: Headers;
-};
-export type getQualityApiV1QualityGetResponseError = (getQualityApiV1QualityGetResponse422) & {
-  headers: Headers;
-};
-
-export type getQualityApiV1QualityGetResponse = (getQualityApiV1QualityGetResponseSuccess | getQualityApiV1QualityGetResponseError)
-
-export const getGetQualityApiV1QualityGetUrl = (params?: GetQualityApiV1QualityGetParams,) => {
+    export const getGetQualityUrl = (params?: GetQualityParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -304,9 +324,9 @@ export const getGetQualityApiV1QualityGetUrl = (params?: GetQualityApiV1QualityG
 /**
  * @summary Get Quality
  */
-export const getQualityApiV1QualityGet = async (params?: GetQualityApiV1QualityGetParams, options?: Parameters<typeof apiFetch>[1]): Promise<getQualityApiV1QualityGetResponse> => {
+export const getQuality = async (params?: GetQualityParams, options?: Parameters<typeof apiFetch>[1]): Promise<QualityMetricsOut> => {
 
-  return apiFetch<getQualityApiV1QualityGetResponse>(getGetQualityApiV1QualityGetUrl(params),
+  return apiFetch<QualityMetricsOut>(getGetQualityUrl(params),
   {
     ...options,
     method: 'GET'
@@ -319,69 +339,69 @@ export const getQualityApiV1QualityGet = async (params?: GetQualityApiV1QualityG
 
 
 
-export const getGetQualityApiV1QualityGetQueryKey = (params?: GetQualityApiV1QualityGetParams,) => {
+export const getGetQualityQueryKey = (params?: GetQualityParams,) => {
     return [
     `/api/v1/quality`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getGetQualityApiV1QualityGetQueryOptions = <TData = Awaited<ReturnType<typeof getQualityApiV1QualityGet>>, TError = HTTPValidationError>(params?: GetQualityApiV1QualityGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQualityApiV1QualityGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getGetQualityQueryOptions = <TData = Awaited<ReturnType<typeof getQuality>>, TError = ErrorType<ErrorResponse>>(params?: GetQualityParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQuality>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetQualityApiV1QualityGetQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetQualityQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getQualityApiV1QualityGet>>> = ({ signal }) => getQualityApiV1QualityGet(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getQuality>>> = ({ signal }) => getQuality(params, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getQualityApiV1QualityGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getQuality>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetQualityApiV1QualityGetQueryResult = NonNullable<Awaited<ReturnType<typeof getQualityApiV1QualityGet>>>
-export type GetQualityApiV1QualityGetQueryError = HTTPValidationError
+export type GetQualityQueryResult = NonNullable<Awaited<ReturnType<typeof getQuality>>>
+export type GetQualityQueryError = ErrorType<ErrorResponse>
 
 
-export function useGetQualityApiV1QualityGet<TData = Awaited<ReturnType<typeof getQualityApiV1QualityGet>>, TError = HTTPValidationError>(
- params: undefined |  GetQualityApiV1QualityGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQualityApiV1QualityGet>>, TError, TData>> & Pick<
+export function useGetQuality<TData = Awaited<ReturnType<typeof getQuality>>, TError = ErrorType<ErrorResponse>>(
+ params: undefined |  GetQualityParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQuality>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getQualityApiV1QualityGet>>,
+          Awaited<ReturnType<typeof getQuality>>,
           TError,
-          Awaited<ReturnType<typeof getQualityApiV1QualityGet>>
+          Awaited<ReturnType<typeof getQuality>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetQualityApiV1QualityGet<TData = Awaited<ReturnType<typeof getQualityApiV1QualityGet>>, TError = HTTPValidationError>(
- params?: GetQualityApiV1QualityGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQualityApiV1QualityGet>>, TError, TData>> & Pick<
+export function useGetQuality<TData = Awaited<ReturnType<typeof getQuality>>, TError = ErrorType<ErrorResponse>>(
+ params?: GetQualityParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQuality>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getQualityApiV1QualityGet>>,
+          Awaited<ReturnType<typeof getQuality>>,
           TError,
-          Awaited<ReturnType<typeof getQualityApiV1QualityGet>>
+          Awaited<ReturnType<typeof getQuality>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetQualityApiV1QualityGet<TData = Awaited<ReturnType<typeof getQualityApiV1QualityGet>>, TError = HTTPValidationError>(
- params?: GetQualityApiV1QualityGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQualityApiV1QualityGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetQuality<TData = Awaited<ReturnType<typeof getQuality>>, TError = ErrorType<ErrorResponse>>(
+ params?: GetQualityParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQuality>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Quality
  */
 
-export function useGetQualityApiV1QualityGet<TData = Awaited<ReturnType<typeof getQualityApiV1QualityGet>>, TError = HTTPValidationError>(
- params?: GetQualityApiV1QualityGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQualityApiV1QualityGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetQuality<TData = Awaited<ReturnType<typeof getQuality>>, TError = ErrorType<ErrorResponse>>(
+ params?: GetQualityParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQuality>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetQualityApiV1QualityGetQueryOptions(params,options)
+  const queryOptions = getGetQualityQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -5,17 +5,17 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { CompanyOut } from './companyOut';
-import type { LeadListItemTopReasonsItem } from './leadListItemTopReasonsItem';
+import type { Reason } from './reason';
 import type { ScoreSummary } from './scoreSummary';
 
 export interface LeadListItem {
   company: CompanyOut;
   service_id: string;
   score: ScoreSummary;
-  top_reasons?: LeadListItemTopReasonsItem[];
-  flags?: string[];
-  signals_count?: number;
-  new_signals_7d?: number;
-  last_signal_at?: string | null;
-  analyzed_at?: string | null;
+  top_reasons: Reason[];
+  flags: string[];
+  signals_count: number;
+  new_signals_7d: number;
+  last_signal_at: string | null;
+  analyzed_at: string | null;
 }

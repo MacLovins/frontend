@@ -8,5 +8,6 @@
 export interface CountryOut {
   code: string;
   name: string;
-  is_eu?: boolean;
+  is_eu: boolean;
+  languages: string[];
 }

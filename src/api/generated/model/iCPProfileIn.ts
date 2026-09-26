@@ -4,13 +4,13 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
-import type { ICPProfileInNiceToHave } from './iCPProfileInNiceToHave';
+import type { NiceToHave } from './niceToHave';
 
 export interface ICPProfileIn {
   countries?: string[];
   industries_any?: string[];
   employees_min?: number | null;
   employees_max?: number | null;
-  revenue_min_eur?: number | string | null;
-  nice_to_have?: ICPProfileInNiceToHave;
+  revenue_min_eur?: number | null;
+  nice_to_have?: NiceToHave | null;
 }

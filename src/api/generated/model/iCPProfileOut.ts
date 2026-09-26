@@ -4,7 +4,7 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
-import type { ICPProfileOutNiceToHave } from './iCPProfileOutNiceToHave';
+import type { NiceToHave } from './niceToHave';
 
 export interface ICPProfileOut {
   id: string;
@@ -13,8 +13,8 @@ export interface ICPProfileOut {
   industries_any: string[];
   employees_min: number | null;
   employees_max: number | null;
-  revenue_min_eur: string | null;
-  nice_to_have: ICPProfileOutNiceToHave;
+  revenue_min_eur: number | null;
+  nice_to_have: NiceToHave | null;
   version: number;
   created_at: string;
   updated_at: string;

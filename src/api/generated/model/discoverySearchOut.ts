@@ -5,8 +5,10 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { DiscoveredCompany } from './discoveredCompany';
+import type { DiscoveryQuery } from './discoveryQuery';
 
 export interface DiscoverySearchOut {
   items: DiscoveredCompany[];
   total: number;
+  query: DiscoveryQuery;
 }

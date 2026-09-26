@@ -21,6 +21,7 @@ import type {
 
 import type {
   CountryOut,
+  ErrorResponse,
   IndustryOut,
   LabelsOut,
   PresetOut,
@@ -28,6 +29,7 @@ import type {
 } from '../model';
 
 import { apiFetch } from '../../mutator';
+import type { ErrorType } from '../../mutator';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
@@ -49,19 +51,7 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type getIndustriesApiV1MetaIndustriesGetResponse200 = {
-  data: IndustryOut[]
-  status: 200
-}
-
-export type getIndustriesApiV1MetaIndustriesGetResponseSuccess = (getIndustriesApiV1MetaIndustriesGetResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getIndustriesApiV1MetaIndustriesGetResponse = (getIndustriesApiV1MetaIndustriesGetResponseSuccess)
-
-export const getGetIndustriesApiV1MetaIndustriesGetUrl = () => {
+export const getGetIndustriesUrl = () => {
 
 
 
@@ -70,11 +60,12 @@ export const getGetIndustriesApiV1MetaIndustriesGetUrl = () => {
 }
 
 /**
+ * Industry taxonomy of the parser (ids used in ICP, companies and discovery).
  * @summary Get Industries
  */
-export const getIndustriesApiV1MetaIndustriesGet = async ( options?: Parameters<typeof apiFetch>[1]): Promise<getIndustriesApiV1MetaIndustriesGetResponse> => {
+export const getIndustries = async ( options?: Parameters<typeof apiFetch>[1]): Promise<IndustryOut[]> => {
 
-  return apiFetch<getIndustriesApiV1MetaIndustriesGetResponse>(getGetIndustriesApiV1MetaIndustriesGetUrl(),
+  return apiFetch<IndustryOut[]>(getGetIndustriesUrl(),
   {
     ...options,
     method: 'GET'
@@ -87,69 +78,69 @@ export const getIndustriesApiV1MetaIndustriesGet = async ( options?: Parameters<
 
 
 
-export const getGetIndustriesApiV1MetaIndustriesGetQueryKey = () => {
+export const getGetIndustriesQueryKey = () => {
     return [
     `/api/v1/meta/industries`
     ] as const;
     }
 
 
-export const getGetIndustriesApiV1MetaIndustriesGetQueryOptions = <TData = Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getGetIndustriesQueryOptions = <TData = Awaited<ReturnType<typeof getIndustries>>, TError = ErrorType<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIndustries>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetIndustriesApiV1MetaIndustriesGetQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetIndustriesQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>> = ({ signal }) => getIndustriesApiV1MetaIndustriesGet({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getIndustries>>> = ({ signal }) => getIndustries({ signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getIndustries>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetIndustriesApiV1MetaIndustriesGetQueryResult = NonNullable<Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>>
-export type GetIndustriesApiV1MetaIndustriesGetQueryError = unknown
+export type GetIndustriesQueryResult = NonNullable<Awaited<ReturnType<typeof getIndustries>>>
+export type GetIndustriesQueryError = ErrorType<ErrorResponse>
 
 
-export function useGetIndustriesApiV1MetaIndustriesGet<TData = Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>, TError, TData>> & Pick<
+export function useGetIndustries<TData = Awaited<ReturnType<typeof getIndustries>>, TError = ErrorType<ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIndustries>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>,
+          Awaited<ReturnType<typeof getIndustries>>,
           TError,
-          Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>
+          Awaited<ReturnType<typeof getIndustries>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetIndustriesApiV1MetaIndustriesGet<TData = Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>, TError, TData>> & Pick<
+export function useGetIndustries<TData = Awaited<ReturnType<typeof getIndustries>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIndustries>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>,
+          Awaited<ReturnType<typeof getIndustries>>,
           TError,
-          Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>
+          Awaited<ReturnType<typeof getIndustries>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetIndustriesApiV1MetaIndustriesGet<TData = Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetIndustries<TData = Awaited<ReturnType<typeof getIndustries>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIndustries>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Industries
  */
 
-export function useGetIndustriesApiV1MetaIndustriesGet<TData = Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIndustriesApiV1MetaIndustriesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetIndustries<TData = Awaited<ReturnType<typeof getIndustries>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIndustries>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetIndustriesApiV1MetaIndustriesGetQueryOptions(options)
+  const queryOptions = getGetIndustriesQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -161,19 +152,7 @@ export function useGetIndustriesApiV1MetaIndustriesGet<TData = Awaited<ReturnTyp
 
 
 
-export type getCountriesApiV1MetaCountriesGetResponse200 = {
-  data: CountryOut[]
-  status: 200
-}
-
-export type getCountriesApiV1MetaCountriesGetResponseSuccess = (getCountriesApiV1MetaCountriesGetResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getCountriesApiV1MetaCountriesGetResponse = (getCountriesApiV1MetaCountriesGetResponseSuccess)
-
-export const getGetCountriesApiV1MetaCountriesGetUrl = () => {
+export const getGetCountriesUrl = () => {
 
 
 
@@ -184,9 +163,9 @@ export const getGetCountriesApiV1MetaCountriesGetUrl = () => {
 /**
  * @summary Get Countries
  */
-export const getCountriesApiV1MetaCountriesGet = async ( options?: Parameters<typeof apiFetch>[1]): Promise<getCountriesApiV1MetaCountriesGetResponse> => {
+export const getCountries = async ( options?: Parameters<typeof apiFetch>[1]): Promise<CountryOut[]> => {
 
-  return apiFetch<getCountriesApiV1MetaCountriesGetResponse>(getGetCountriesApiV1MetaCountriesGetUrl(),
+  return apiFetch<CountryOut[]>(getGetCountriesUrl(),
   {
     ...options,
     method: 'GET'
@@ -199,69 +178,69 @@ export const getCountriesApiV1MetaCountriesGet = async ( options?: Parameters<ty
 
 
 
-export const getGetCountriesApiV1MetaCountriesGetQueryKey = () => {
+export const getGetCountriesQueryKey = () => {
     return [
     `/api/v1/meta/countries`
     ] as const;
     }
 
 
-export const getGetCountriesApiV1MetaCountriesGetQueryOptions = <TData = Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getGetCountriesQueryOptions = <TData = Awaited<ReturnType<typeof getCountries>>, TError = ErrorType<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCountries>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetCountriesApiV1MetaCountriesGetQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetCountriesQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>> = ({ signal }) => getCountriesApiV1MetaCountriesGet({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCountries>>> = ({ signal }) => getCountries({ signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCountries>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetCountriesApiV1MetaCountriesGetQueryResult = NonNullable<Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>>
-export type GetCountriesApiV1MetaCountriesGetQueryError = unknown
+export type GetCountriesQueryResult = NonNullable<Awaited<ReturnType<typeof getCountries>>>
+export type GetCountriesQueryError = ErrorType<ErrorResponse>
 
 
-export function useGetCountriesApiV1MetaCountriesGet<TData = Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>, TError, TData>> & Pick<
+export function useGetCountries<TData = Awaited<ReturnType<typeof getCountries>>, TError = ErrorType<ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCountries>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>,
+          Awaited<ReturnType<typeof getCountries>>,
           TError,
-          Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>
+          Awaited<ReturnType<typeof getCountries>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCountriesApiV1MetaCountriesGet<TData = Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>, TError, TData>> & Pick<
+export function useGetCountries<TData = Awaited<ReturnType<typeof getCountries>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCountries>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>,
+          Awaited<ReturnType<typeof getCountries>>,
           TError,
-          Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>
+          Awaited<ReturnType<typeof getCountries>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCountriesApiV1MetaCountriesGet<TData = Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetCountries<TData = Awaited<ReturnType<typeof getCountries>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCountries>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Countries
  */
 
-export function useGetCountriesApiV1MetaCountriesGet<TData = Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCountriesApiV1MetaCountriesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetCountries<TData = Awaited<ReturnType<typeof getCountries>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCountries>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetCountriesApiV1MetaCountriesGetQueryOptions(options)
+  const queryOptions = getGetCountriesQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -273,19 +252,7 @@ export function useGetCountriesApiV1MetaCountriesGet<TData = Awaited<ReturnType<
 
 
 
-export type getPresetsApiV1MetaPresetsGetResponse200 = {
-  data: PresetOut[]
-  status: 200
-}
-
-export type getPresetsApiV1MetaPresetsGetResponseSuccess = (getPresetsApiV1MetaPresetsGetResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getPresetsApiV1MetaPresetsGetResponse = (getPresetsApiV1MetaPresetsGetResponseSuccess)
-
-export const getGetPresetsApiV1MetaPresetsGetUrl = () => {
+export const getGetPresetsUrl = () => {
 
 
 
@@ -296,9 +263,9 @@ export const getGetPresetsApiV1MetaPresetsGetUrl = () => {
 /**
  * @summary Get Presets
  */
-export const getPresetsApiV1MetaPresetsGet = async ( options?: Parameters<typeof apiFetch>[1]): Promise<getPresetsApiV1MetaPresetsGetResponse> => {
+export const getPresets = async ( options?: Parameters<typeof apiFetch>[1]): Promise<PresetOut[]> => {
 
-  return apiFetch<getPresetsApiV1MetaPresetsGetResponse>(getGetPresetsApiV1MetaPresetsGetUrl(),
+  return apiFetch<PresetOut[]>(getGetPresetsUrl(),
   {
     ...options,
     method: 'GET'
@@ -311,69 +278,69 @@ export const getPresetsApiV1MetaPresetsGet = async ( options?: Parameters<typeof
 
 
 
-export const getGetPresetsApiV1MetaPresetsGetQueryKey = () => {
+export const getGetPresetsQueryKey = () => {
     return [
     `/api/v1/meta/presets`
     ] as const;
     }
 
 
-export const getGetPresetsApiV1MetaPresetsGetQueryOptions = <TData = Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getGetPresetsQueryOptions = <TData = Awaited<ReturnType<typeof getPresets>>, TError = ErrorType<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPresets>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetPresetsApiV1MetaPresetsGetQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetPresetsQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>> = ({ signal }) => getPresetsApiV1MetaPresetsGet({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPresets>>> = ({ signal }) => getPresets({ signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPresets>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetPresetsApiV1MetaPresetsGetQueryResult = NonNullable<Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>>
-export type GetPresetsApiV1MetaPresetsGetQueryError = unknown
+export type GetPresetsQueryResult = NonNullable<Awaited<ReturnType<typeof getPresets>>>
+export type GetPresetsQueryError = ErrorType<ErrorResponse>
 
 
-export function useGetPresetsApiV1MetaPresetsGet<TData = Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>, TError, TData>> & Pick<
+export function useGetPresets<TData = Awaited<ReturnType<typeof getPresets>>, TError = ErrorType<ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPresets>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>,
+          Awaited<ReturnType<typeof getPresets>>,
           TError,
-          Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>
+          Awaited<ReturnType<typeof getPresets>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPresetsApiV1MetaPresetsGet<TData = Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>, TError, TData>> & Pick<
+export function useGetPresets<TData = Awaited<ReturnType<typeof getPresets>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPresets>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>,
+          Awaited<ReturnType<typeof getPresets>>,
           TError,
-          Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>
+          Awaited<ReturnType<typeof getPresets>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPresetsApiV1MetaPresetsGet<TData = Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetPresets<TData = Awaited<ReturnType<typeof getPresets>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPresets>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Presets
  */
 
-export function useGetPresetsApiV1MetaPresetsGet<TData = Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPresetsApiV1MetaPresetsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetPresets<TData = Awaited<ReturnType<typeof getPresets>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPresets>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetPresetsApiV1MetaPresetsGetQueryOptions(options)
+  const queryOptions = getGetPresetsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -385,19 +352,7 @@ export function useGetPresetsApiV1MetaPresetsGet<TData = Awaited<ReturnType<type
 
 
 
-export type getLabelsApiV1MetaLabelsGetResponse200 = {
-  data: LabelsOut
-  status: 200
-}
-
-export type getLabelsApiV1MetaLabelsGetResponseSuccess = (getLabelsApiV1MetaLabelsGetResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getLabelsApiV1MetaLabelsGetResponse = (getLabelsApiV1MetaLabelsGetResponseSuccess)
-
-export const getGetLabelsApiV1MetaLabelsGetUrl = () => {
+export const getGetLabelsUrl = () => {
 
 
 
@@ -406,11 +361,12 @@ export const getGetLabelsApiV1MetaLabelsGetUrl = () => {
 }
 
 /**
+ * UI labels: signal categories (ai presets) and canonical enums (ARCHITECTURE §4.7).
  * @summary Get Labels
  */
-export const getLabelsApiV1MetaLabelsGet = async ( options?: Parameters<typeof apiFetch>[1]): Promise<getLabelsApiV1MetaLabelsGetResponse> => {
+export const getLabels = async ( options?: Parameters<typeof apiFetch>[1]): Promise<LabelsOut> => {
 
-  return apiFetch<getLabelsApiV1MetaLabelsGetResponse>(getGetLabelsApiV1MetaLabelsGetUrl(),
+  return apiFetch<LabelsOut>(getGetLabelsUrl(),
   {
     ...options,
     method: 'GET'
@@ -423,69 +379,69 @@ export const getLabelsApiV1MetaLabelsGet = async ( options?: Parameters<typeof a
 
 
 
-export const getGetLabelsApiV1MetaLabelsGetQueryKey = () => {
+export const getGetLabelsQueryKey = () => {
     return [
     `/api/v1/meta/labels`
     ] as const;
     }
 
 
-export const getGetLabelsApiV1MetaLabelsGetQueryOptions = <TData = Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getGetLabelsQueryOptions = <TData = Awaited<ReturnType<typeof getLabels>>, TError = ErrorType<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabels>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetLabelsApiV1MetaLabelsGetQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetLabelsQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>> = ({ signal }) => getLabelsApiV1MetaLabelsGet({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLabels>>> = ({ signal }) => getLabels({ signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLabels>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetLabelsApiV1MetaLabelsGetQueryResult = NonNullable<Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>>
-export type GetLabelsApiV1MetaLabelsGetQueryError = unknown
+export type GetLabelsQueryResult = NonNullable<Awaited<ReturnType<typeof getLabels>>>
+export type GetLabelsQueryError = ErrorType<ErrorResponse>
 
 
-export function useGetLabelsApiV1MetaLabelsGet<TData = Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>, TError, TData>> & Pick<
+export function useGetLabels<TData = Awaited<ReturnType<typeof getLabels>>, TError = ErrorType<ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabels>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>,
+          Awaited<ReturnType<typeof getLabels>>,
           TError,
-          Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>
+          Awaited<ReturnType<typeof getLabels>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetLabelsApiV1MetaLabelsGet<TData = Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>, TError, TData>> & Pick<
+export function useGetLabels<TData = Awaited<ReturnType<typeof getLabels>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabels>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>,
+          Awaited<ReturnType<typeof getLabels>>,
           TError,
-          Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>
+          Awaited<ReturnType<typeof getLabels>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetLabelsApiV1MetaLabelsGet<TData = Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetLabels<TData = Awaited<ReturnType<typeof getLabels>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabels>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Labels
  */
 
-export function useGetLabelsApiV1MetaLabelsGet<TData = Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabelsApiV1MetaLabelsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetLabels<TData = Awaited<ReturnType<typeof getLabels>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabels>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetLabelsApiV1MetaLabelsGetQueryOptions(options)
+  const queryOptions = getGetLabelsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -497,19 +453,7 @@ export function useGetLabelsApiV1MetaLabelsGet<TData = Awaited<ReturnType<typeof
 
 
 
-export type getUsageApiV1MetaUsageGetResponse200 = {
-  data: UsageOut
-  status: 200
-}
-
-export type getUsageApiV1MetaUsageGetResponseSuccess = (getUsageApiV1MetaUsageGetResponse200) & {
-  headers: Headers;
-};
-;
-
-export type getUsageApiV1MetaUsageGetResponse = (getUsageApiV1MetaUsageGetResponseSuccess)
-
-export const getGetUsageApiV1MetaUsageGetUrl = () => {
+export const getGetUsageUrl = () => {
 
 
 
@@ -518,11 +462,12 @@ export const getGetUsageApiV1MetaUsageGetUrl = () => {
 }
 
 /**
+ * LLM calls and tokens per model for the current quota day (Pacific time) against configured limits.
  * @summary Get Usage
  */
-export const getUsageApiV1MetaUsageGet = async ( options?: Parameters<typeof apiFetch>[1]): Promise<getUsageApiV1MetaUsageGetResponse> => {
+export const getUsage = async ( options?: Parameters<typeof apiFetch>[1]): Promise<UsageOut> => {
 
-  return apiFetch<getUsageApiV1MetaUsageGetResponse>(getGetUsageApiV1MetaUsageGetUrl(),
+  return apiFetch<UsageOut>(getGetUsageUrl(),
   {
     ...options,
     method: 'GET'
@@ -535,69 +480,69 @@ export const getUsageApiV1MetaUsageGet = async ( options?: Parameters<typeof api
 
 
 
-export const getGetUsageApiV1MetaUsageGetQueryKey = () => {
+export const getGetUsageQueryKey = () => {
     return [
     `/api/v1/meta/usage`
     ] as const;
     }
 
 
-export const getGetUsageApiV1MetaUsageGetQueryOptions = <TData = Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getGetUsageQueryOptions = <TData = Awaited<ReturnType<typeof getUsage>>, TError = ErrorType<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsage>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetUsageApiV1MetaUsageGetQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetUsageQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>> = ({ signal }) => getUsageApiV1MetaUsageGet({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsage>>> = ({ signal }) => getUsage({ signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUsage>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetUsageApiV1MetaUsageGetQueryResult = NonNullable<Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>>
-export type GetUsageApiV1MetaUsageGetQueryError = unknown
+export type GetUsageQueryResult = NonNullable<Awaited<ReturnType<typeof getUsage>>>
+export type GetUsageQueryError = ErrorType<ErrorResponse>
 
 
-export function useGetUsageApiV1MetaUsageGet<TData = Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>, TError, TData>> & Pick<
+export function useGetUsage<TData = Awaited<ReturnType<typeof getUsage>>, TError = ErrorType<ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsage>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>,
+          Awaited<ReturnType<typeof getUsage>>,
           TError,
-          Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>
+          Awaited<ReturnType<typeof getUsage>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUsageApiV1MetaUsageGet<TData = Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>, TError, TData>> & Pick<
+export function useGetUsage<TData = Awaited<ReturnType<typeof getUsage>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsage>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>,
+          Awaited<ReturnType<typeof getUsage>>,
           TError,
-          Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>
+          Awaited<ReturnType<typeof getUsage>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUsageApiV1MetaUsageGet<TData = Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetUsage<TData = Awaited<ReturnType<typeof getUsage>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsage>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Usage
  */
 
-export function useGetUsageApiV1MetaUsageGet<TData = Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsageApiV1MetaUsageGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetUsage<TData = Awaited<ReturnType<typeof getUsage>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsage>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetUsageApiV1MetaUsageGetQueryOptions(options)
+  const queryOptions = getGetUsageQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

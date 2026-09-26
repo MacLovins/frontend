@@ -4,16 +4,18 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
-import type { DisqualificationRuleOutCondition } from './disqualificationRuleOutCondition';
+import type { RuleAction } from './ruleAction';
+import type { RuleCondition } from './ruleCondition';
+import type { RuleKind } from './ruleKind';
 
 export interface DisqualificationRuleOut {
   id: string;
   service_id: string;
   name: string;
-  kind: string;
-  condition: DisqualificationRuleOutCondition;
-  action: string;
-  cap_value: string | null;
+  kind: RuleKind;
+  condition: RuleCondition;
+  action: RuleAction;
+  cap_value: number | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;

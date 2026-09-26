@@ -1,0 +1,166 @@
+import type {
+  FirmographicConditionField,
+  FirmographicConditionOp,
+  RuleAction,
+  RuleKind,
+} from "@/api/generated/model"
+import { formatNumber } from "@/lib/format"
+
+export const copy = {
+  title: "Rules",
+  // The engine's outcome does not depend on rule order (exclude wins, caps take the minimum), so the
+  // mock's "in this order" is dropped; # is display order only.
+  subtitle: (service: string) => `${service} · applied after scoring`,
+  newRule: "New rule",
+  loadError: "Could not load rules.",
+  notFound: { title: "Service not found", action: "Back to services" },
+  tiles: [
+    {
+      key: "exclude",
+      title: "Exclude",
+      text: "Tier becomes Disqualified and priority 0. The reason is shown on the lead.",
+    },
+    {
+      key: "cap",
+      title: "Cap",
+      text: "Priority can't go above a limit, whatever the signals say.",
+    },
+    {
+      key: "flag",
+      title: "Flag",
+      text: "The score stays; a warning badge tells the rep to check before calling.",
+    },
+  ] as const,
+  table: {
+    heads: ["#", "Rule", "Based on", "Action", "Affects now", "Active"],
+    basedOn: {
+      firmographic: "Company data",
+      signal: "Signal",
+      list: "List",
+    } satisfies Record<RuleKind, string>,
+    empty: {
+      title: "No rules yet.",
+      body: "Rules exclude, cap or flag companies after scoring.",
+    },
+    toggle: (name: string) => `Rule "${name}" active`,
+  },
+  affects: {
+    none: "No companies",
+    one: (name: string) => `1 company · ${name}`,
+    many: (count: number) => `${formatNumber(count)} companies`,
+    inactive: "—",
+  },
+  editor: {
+    editTitle: (index: number, name: string) => `Edit rule ${index} · ${name}`,
+    newTitle: "New rule",
+    tagline: "Reads like a sentence. No formulas.",
+    name: "Name",
+    duplicateName: "Another rule has this name.",
+    when: "When",
+    then: "then",
+    at: "at",
+    isAtLeast: "is at least",
+    isIn: "is in",
+    kindLocked: "To base the rule on something else, create a new rule.",
+    minStrength: (value: number) => `Minimum strength ${value}`,
+    info: [
+      {
+        lead: "Company data:",
+        text: "employees, revenue, country, industry, domain, tags",
+      },
+      {
+        lead: "Signal:",
+        text: "any question of this service, with a minimum strength",
+      },
+      {
+        lead: "List:",
+        text: "domains pasted or uploaded, e.g. clients and competitors from HubSpot",
+      },
+    ],
+    preview: "Preview:",
+    previewText:
+      "Saving re-scores every company of this service instantly, with no AI calls.",
+    cancel: "Cancel",
+    save: "Save rule",
+    saving: "Saving…",
+    delete: "Delete rule",
+    kinds: {
+      firmographic: "company data",
+      signal: "the signal",
+      list: "the domain",
+    } satisfies Record<RuleKind, string>,
+    fields: {
+      employees: "employees",
+      revenue_eur: "revenue (€)",
+      country_code: "country",
+      industry_ids: "industry",
+      domain: "domain",
+      tags: "tags",
+    } satisfies Record<FirmographicConditionField, string>,
+    actions: {
+      exclude: "exclude",
+      cap: "cap priority",
+      flag: "flag",
+    } satisfies Record<RuleAction, string>,
+    ops: {
+      lt: "is less than",
+      gt: "is more than",
+      eq: "is exactly",
+      in: "is one of",
+      not_in: "is not one of",
+      intersects: "includes any of",
+    } satisfies Record<FirmographicConditionOp, string>,
+    domainIs: "is",
+    noneOf: "includes none of",
+    kindLabel: "Based on",
+    fieldLabel: "Company field",
+    opLabel: "Comparison",
+    valueLabel: "Value",
+    questionLabel: "Question",
+    strengthLabel: "Minimum strength",
+    actionLabel: "Action",
+    capLabel: "Cap value",
+    pickQuestionPlaceholder: "Pick a question",
+    pickCountries: "Pick countries",
+    pickIndustries: "Pick industries",
+    addTag: "+ tag",
+    addDomain: "+ domain",
+    domainPlaceholder: "example.com",
+    domainsLabel: "Domains, one per line",
+    domainsPlaceholder: "one domain per line",
+    upload: "Upload .csv or .txt",
+    domainCount: (count: number) =>
+      `${formatNumber(count)} ${count === 1 ? "domain" : "domains"}`,
+  },
+  strengths: [
+    { value: 0.35, label: "weak" },
+    { value: 0.6, label: "moderate" },
+    { value: 0.9, label: "strong" },
+  ],
+  errors: {
+    name: "Give the rule a name.",
+    cap: "Enter a cap between 0 and 100.",
+    domains: "Add at least one domain.",
+    question: "Pick a question.",
+    strength: "Pick a minimum strength.",
+    number: "Enter a number.",
+    domain: "Enter a domain.",
+    values: "Pick at least one value.",
+  },
+  toasts: {
+    saved: "Rule saved. Ranking re-scored with no AI calls.",
+    on: "Rule turned on",
+    off: "Rule turned off",
+    deleted: "Rule deleted",
+  },
+  confirmDelete: {
+    title: (name: string) => `Delete "${name}"?`,
+    body: "Companies it affects are re-scored right away.",
+  },
+  discard: {
+    title: "Discard changes to this rule?",
+    body: "Your edits to this rule have not been saved.",
+    keep: "Keep editing",
+    discard: "Discard changes",
+  },
+}

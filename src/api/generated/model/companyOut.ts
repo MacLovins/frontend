@@ -4,7 +4,8 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
-import type { CompanyOutAts } from './companyOutAts';
+import type { AtsRef } from './atsRef';
+import type { CompanyOrigin } from './companyOrigin';
 
 export interface CompanyOut {
   id: string;
@@ -16,7 +17,7 @@ export interface CompanyOut {
   country_code: string | null;
   industry_ids: string[];
   employees: number | null;
-  revenue_eur: string | null;
+  revenue_eur: number | null;
   hq_city: string | null;
   wikidata_qid: string | null;
   lei: string | null;
@@ -24,11 +25,11 @@ export interface CompanyOut {
   homepage_url: string | null;
   careers_url: string | null;
   newsroom_url: string | null;
-  ats: CompanyOutAts;
+  ats: AtsRef | null;
   linkedin_url: string | null;
   notes: string | null;
   tags: string[];
-  origin: string;
+  origin: CompanyOrigin;
   is_tracked: boolean;
   resolved_at: string | null;
   last_analyzed_at: string | null;

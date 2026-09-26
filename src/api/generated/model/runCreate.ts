@@ -4,9 +4,17 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { RunCreateKind } from './runCreateKind';
+import type { RunCreateMode } from './runCreateMode';
 
 export interface RunCreate {
-  kind?: string;
-  company_ids?: string[];
+  kind?: RunCreateKind;
+  mode?: RunCreateMode;
+  /**
+     * @minItems 1
+     * @maxItems 500
+     */
+  company_ids: string[];
+  /** Empty: every active service of the org */
   service_ids?: string[];
 }

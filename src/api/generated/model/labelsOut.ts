@@ -4,12 +4,38 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { LabelsOutAnswers } from './labelsOutAnswers';
 import type { LabelsOutCategories } from './labelsOutCategories';
+import type { LabelsOutLeadFeedback } from './labelsOutLeadFeedback';
+import type { LabelsOutPolarities } from './labelsOutPolarities';
+import type { LabelsOutRejectReasons } from './labelsOutRejectReasons';
+import type { LabelsOutRoles } from './labelsOutRoles';
+import type { LabelsOutRunKinds } from './labelsOutRunKinds';
+import type { LabelsOutRunStatuses } from './labelsOutRunStatuses';
+import type { LabelsOutSignalFeedback } from './labelsOutSignalFeedback';
+import type { LabelsOutSignalFlags } from './labelsOutSignalFlags';
+import type { LabelsOutSourceTypes } from './labelsOutSourceTypes';
+import type { LabelsOutStages } from './labelsOutStages';
 import type { LabelsOutStatuses } from './labelsOutStatuses';
+import type { LabelsOutStrengths } from './labelsOutStrengths';
+import type { LabelsOutTiers } from './labelsOutTiers';
 import type { LabelsOutWeights } from './labelsOutWeights';
 
 export interface LabelsOut {
   categories: LabelsOutCategories;
   weights: LabelsOutWeights;
   statuses: LabelsOutStatuses;
+  polarities: LabelsOutPolarities;
+  source_types: LabelsOutSourceTypes;
+  strengths: LabelsOutStrengths;
+  answers: LabelsOutAnswers;
+  tiers: LabelsOutTiers;
+  stages: LabelsOutStages;
+  run_kinds: LabelsOutRunKinds;
+  run_statuses: LabelsOutRunStatuses;
+  signal_feedback: LabelsOutSignalFeedback;
+  lead_feedback: LabelsOutLeadFeedback;
+  roles: LabelsOutRoles;
+  reject_reasons: LabelsOutRejectReasons;
+  signal_flags: LabelsOutSignalFlags;
 }

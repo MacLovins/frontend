@@ -27,10 +27,11 @@ import type {
   DisqualificationRuleCreate,
   DisqualificationRuleOut,
   DisqualificationRuleUpdate,
-  ExpandQuestionApiV1QuestionsIdExpandPost202,
-  HTTPValidationError,
+  ErrorResponse,
+  ExpandQuestionOut,
   ICPProfileIn,
   ICPProfileOut,
+  QuestionSuggestionsOut,
   RescoreResult,
   ScoringProfileIn,
   ScoringProfileOut,
@@ -43,6 +44,7 @@ import type {
 } from '../model';
 
 import { apiFetch } from '../../mutator';
+import type { ErrorType } from '../../mutator';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
@@ -64,19 +66,7 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type listServicesApiV1ServicesGetResponse200 = {
-  data: ServiceOut[]
-  status: 200
-}
-
-export type listServicesApiV1ServicesGetResponseSuccess = (listServicesApiV1ServicesGetResponse200) & {
-  headers: Headers;
-};
-;
-
-export type listServicesApiV1ServicesGetResponse = (listServicesApiV1ServicesGetResponseSuccess)
-
-export const getListServicesApiV1ServicesGetUrl = () => {
+export const getListServicesUrl = () => {
 
 
 
@@ -87,9 +77,9 @@ export const getListServicesApiV1ServicesGetUrl = () => {
 /**
  * @summary List Services
  */
-export const listServicesApiV1ServicesGet = async ( options?: Parameters<typeof apiFetch>[1]): Promise<listServicesApiV1ServicesGetResponse> => {
+export const listServices = async ( options?: Parameters<typeof apiFetch>[1]): Promise<ServiceOut[]> => {
 
-  return apiFetch<listServicesApiV1ServicesGetResponse>(getListServicesApiV1ServicesGetUrl(),
+  return apiFetch<ServiceOut[]>(getListServicesUrl(),
   {
     ...options,
     method: 'GET'
@@ -102,69 +92,69 @@ export const listServicesApiV1ServicesGet = async ( options?: Parameters<typeof 
 
 
 
-export const getListServicesApiV1ServicesGetQueryKey = () => {
+export const getListServicesQueryKey = () => {
     return [
     `/api/v1/services`
     ] as const;
     }
 
 
-export const getListServicesApiV1ServicesGetQueryOptions = <TData = Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getListServicesQueryOptions = <TData = Awaited<ReturnType<typeof listServices>>, TError = ErrorType<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServices>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListServicesApiV1ServicesGetQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getListServicesQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>> = ({ signal }) => listServicesApiV1ServicesGet({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listServices>>> = ({ signal }) => listServices({ signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listServices>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ListServicesApiV1ServicesGetQueryResult = NonNullable<Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>>
-export type ListServicesApiV1ServicesGetQueryError = unknown
+export type ListServicesQueryResult = NonNullable<Awaited<ReturnType<typeof listServices>>>
+export type ListServicesQueryError = ErrorType<ErrorResponse>
 
 
-export function useListServicesApiV1ServicesGet<TData = Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>, TError, TData>> & Pick<
+export function useListServices<TData = Awaited<ReturnType<typeof listServices>>, TError = ErrorType<ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServices>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>,
+          Awaited<ReturnType<typeof listServices>>,
           TError,
-          Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>
+          Awaited<ReturnType<typeof listServices>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListServicesApiV1ServicesGet<TData = Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>, TError, TData>> & Pick<
+export function useListServices<TData = Awaited<ReturnType<typeof listServices>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServices>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>,
+          Awaited<ReturnType<typeof listServices>>,
           TError,
-          Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>
+          Awaited<ReturnType<typeof listServices>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListServicesApiV1ServicesGet<TData = Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useListServices<TData = Awaited<ReturnType<typeof listServices>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServices>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List Services
  */
 
-export function useListServicesApiV1ServicesGet<TData = Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServicesApiV1ServicesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useListServices<TData = Awaited<ReturnType<typeof listServices>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServices>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getListServicesApiV1ServicesGetQueryOptions(options)
+  const queryOptions = getListServicesQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -176,26 +166,7 @@ export function useListServicesApiV1ServicesGet<TData = Awaited<ReturnType<typeo
 
 
 
-export type createServiceApiV1ServicesPostResponse201 = {
-  data: ServiceOut
-  status: 201
-}
-
-export type createServiceApiV1ServicesPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type createServiceApiV1ServicesPostResponseSuccess = (createServiceApiV1ServicesPostResponse201) & {
-  headers: Headers;
-};
-export type createServiceApiV1ServicesPostResponseError = (createServiceApiV1ServicesPostResponse422) & {
-  headers: Headers;
-};
-
-export type createServiceApiV1ServicesPostResponse = (createServiceApiV1ServicesPostResponseSuccess | createServiceApiV1ServicesPostResponseError)
-
-export const getCreateServiceApiV1ServicesPostUrl = () => {
+export const getCreateServiceUrl = () => {
 
 
 
@@ -206,7 +177,7 @@ export const getCreateServiceApiV1ServicesPostUrl = () => {
 /**
  * @summary Create Service
  */
-export const createServiceApiV1ServicesPost = async (serviceCreate: ServiceCreate, options?: Parameters<typeof apiFetch>[1]): Promise<createServiceApiV1ServicesPostResponse> => {
+export const createService = async (serviceCreate: ServiceCreate, options?: Parameters<typeof apiFetch>[1]): Promise<ServiceOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -222,7 +193,7 @@ export const createServiceApiV1ServicesPost = async (serviceCreate: ServiceCreat
     }
     return headers;
   };
-return apiFetch<createServiceApiV1ServicesPostResponse>(getCreateServiceApiV1ServicesPostUrl(),
+return apiFetch<ServiceOut>(getCreateServiceUrl(),
   {
     ...options,
     method: 'POST',
@@ -235,13 +206,13 @@ return apiFetch<createServiceApiV1ServicesPostResponse>(getCreateServiceApiV1Ser
 
 
 
-export const getCreateServiceApiV1ServicesPostMutationKey = () => ['createServiceApiV1ServicesPost'] as const;
+export const getCreateServiceMutationKey = () => ['createService'] as const;
 
-export const getCreateServiceApiV1ServicesPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createServiceApiV1ServicesPost>>, TError,CreateServiceApiV1ServicesPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createServiceApiV1ServicesPost>>, TError,CreateServiceApiV1ServicesPostMutationVariables, TContext> => {
+export const getCreateServiceMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createService>>, TError,CreateServiceMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createService>>, TError,CreateServiceMutationVariables, TContext> => {
 
-const mutationKey = getCreateServiceApiV1ServicesPostMutationKey();
+const mutationKey = getCreateServiceMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -251,10 +222,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createServiceApiV1ServicesPost>>, CreateServiceApiV1ServicesPostMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createService>>, CreateServiceMutationVariables> = (props) => {
           const {data} = props ?? {};
 
-          return  createServiceApiV1ServicesPost(data,requestOptions)
+          return  createService(data,requestOptions)
         }
 
 
@@ -264,44 +235,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type CreateServiceApiV1ServicesPostMutationResult = NonNullable<Awaited<ReturnType<typeof createServiceApiV1ServicesPost>>>
-    export type CreateServiceApiV1ServicesPostMutationBody = ServiceCreate
-    export type CreateServiceApiV1ServicesPostMutationError = HTTPValidationError
-    export type CreateServiceApiV1ServicesPostMutationVariables = {data: ServiceCreate}
+    export type CreateServiceMutationResult = NonNullable<Awaited<ReturnType<typeof createService>>>
+    export type CreateServiceMutationBody = ServiceCreate
+    export type CreateServiceMutationError = ErrorType<ErrorResponse>
+    export type CreateServiceMutationVariables = {data: ServiceCreate}
 
     /**
  * @summary Create Service
  */
-export const useCreateServiceApiV1ServicesPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createServiceApiV1ServicesPost>>, TError,CreateServiceApiV1ServicesPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useCreateService = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createService>>, TError,CreateServiceMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createServiceApiV1ServicesPost>>,
+        Awaited<ReturnType<typeof createService>>,
         TError,
-        CreateServiceApiV1ServicesPostMutationVariables,
+        CreateServiceMutationVariables,
         TContext
       > => {
-      return useMutation(getCreateServiceApiV1ServicesPostMutationOptions(options), queryClient);
+      return useMutation(getCreateServiceMutationOptions(options), queryClient);
     }
-    export type getServiceApiV1ServicesIdGetResponse200 = {
-  data: ServiceOut
-  status: 200
-}
-
-export type getServiceApiV1ServicesIdGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type getServiceApiV1ServicesIdGetResponseSuccess = (getServiceApiV1ServicesIdGetResponse200) & {
-  headers: Headers;
-};
-export type getServiceApiV1ServicesIdGetResponseError = (getServiceApiV1ServicesIdGetResponse422) & {
-  headers: Headers;
-};
-
-export type getServiceApiV1ServicesIdGetResponse = (getServiceApiV1ServicesIdGetResponseSuccess | getServiceApiV1ServicesIdGetResponseError)
-
-export const getGetServiceApiV1ServicesIdGetUrl = (id: string,) => {
+    export const getGetServiceUrl = (id: string,) => {
 
 
 
@@ -312,9 +264,9 @@ export const getGetServiceApiV1ServicesIdGetUrl = (id: string,) => {
 /**
  * @summary Get Service
  */
-export const getServiceApiV1ServicesIdGet = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<getServiceApiV1ServicesIdGetResponse> => {
+export const getService = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<ServiceOut> => {
 
-  return apiFetch<getServiceApiV1ServicesIdGetResponse>(getGetServiceApiV1ServicesIdGetUrl(id),
+  return apiFetch<ServiceOut>(getGetServiceUrl(id),
   {
     ...options,
     method: 'GET'
@@ -327,69 +279,69 @@ export const getServiceApiV1ServicesIdGet = async (id: string, options?: Paramet
 
 
 
-export const getGetServiceApiV1ServicesIdGetQueryKey = (id: string,) => {
+export const getGetServiceQueryKey = (id: string,) => {
     return [
     `/api/v1/services/${id}`
     ] as const;
     }
 
 
-export const getGetServiceApiV1ServicesIdGetQueryOptions = <TData = Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>, TError = HTTPValidationError>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getGetServiceQueryOptions = <TData = Awaited<ReturnType<typeof getService>>, TError = ErrorType<ErrorResponse>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getService>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetServiceApiV1ServicesIdGetQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetServiceQueryKey(id);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>> = ({ signal }) => getServiceApiV1ServicesIdGet(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getService>>> = ({ signal }) => getService(id, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getService>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetServiceApiV1ServicesIdGetQueryResult = NonNullable<Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>>
-export type GetServiceApiV1ServicesIdGetQueryError = HTTPValidationError
+export type GetServiceQueryResult = NonNullable<Awaited<ReturnType<typeof getService>>>
+export type GetServiceQueryError = ErrorType<ErrorResponse>
 
 
-export function useGetServiceApiV1ServicesIdGet<TData = Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>, TError = HTTPValidationError>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>, TError, TData>> & Pick<
+export function useGetService<TData = Awaited<ReturnType<typeof getService>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getService>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>,
+          Awaited<ReturnType<typeof getService>>,
           TError,
-          Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>
+          Awaited<ReturnType<typeof getService>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetServiceApiV1ServicesIdGet<TData = Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>, TError, TData>> & Pick<
+export function useGetService<TData = Awaited<ReturnType<typeof getService>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getService>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>,
+          Awaited<ReturnType<typeof getService>>,
           TError,
-          Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>
+          Awaited<ReturnType<typeof getService>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetServiceApiV1ServicesIdGet<TData = Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetService<TData = Awaited<ReturnType<typeof getService>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getService>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Service
  */
 
-export function useGetServiceApiV1ServicesIdGet<TData = Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceApiV1ServicesIdGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetService<TData = Awaited<ReturnType<typeof getService>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getService>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetServiceApiV1ServicesIdGetQueryOptions(id,options)
+  const queryOptions = getGetServiceQueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -401,26 +353,7 @@ export function useGetServiceApiV1ServicesIdGet<TData = Awaited<ReturnType<typeo
 
 
 
-export type updateServiceApiV1ServicesIdPatchResponse200 = {
-  data: ServiceOut
-  status: 200
-}
-
-export type updateServiceApiV1ServicesIdPatchResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type updateServiceApiV1ServicesIdPatchResponseSuccess = (updateServiceApiV1ServicesIdPatchResponse200) & {
-  headers: Headers;
-};
-export type updateServiceApiV1ServicesIdPatchResponseError = (updateServiceApiV1ServicesIdPatchResponse422) & {
-  headers: Headers;
-};
-
-export type updateServiceApiV1ServicesIdPatchResponse = (updateServiceApiV1ServicesIdPatchResponseSuccess | updateServiceApiV1ServicesIdPatchResponseError)
-
-export const getUpdateServiceApiV1ServicesIdPatchUrl = (id: string,) => {
+export const getUpdateServiceUrl = (id: string,) => {
 
 
 
@@ -431,8 +364,8 @@ export const getUpdateServiceApiV1ServicesIdPatchUrl = (id: string,) => {
 /**
  * @summary Update Service
  */
-export const updateServiceApiV1ServicesIdPatch = async (id: string,
-    serviceUpdate: ServiceUpdate, options?: Parameters<typeof apiFetch>[1]): Promise<updateServiceApiV1ServicesIdPatchResponse> => {
+export const updateService = async (id: string,
+    serviceUpdate: ServiceUpdate, options?: Parameters<typeof apiFetch>[1]): Promise<ServiceOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -448,7 +381,7 @@ export const updateServiceApiV1ServicesIdPatch = async (id: string,
     }
     return headers;
   };
-return apiFetch<updateServiceApiV1ServicesIdPatchResponse>(getUpdateServiceApiV1ServicesIdPatchUrl(id),
+return apiFetch<ServiceOut>(getUpdateServiceUrl(id),
   {
     ...options,
     method: 'PATCH',
@@ -461,13 +394,13 @@ return apiFetch<updateServiceApiV1ServicesIdPatchResponse>(getUpdateServiceApiV1
 
 
 
-export const getUpdateServiceApiV1ServicesIdPatchMutationKey = () => ['updateServiceApiV1ServicesIdPatch'] as const;
+export const getUpdateServiceMutationKey = () => ['updateService'] as const;
 
-export const getUpdateServiceApiV1ServicesIdPatchMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateServiceApiV1ServicesIdPatch>>, TError,UpdateServiceApiV1ServicesIdPatchMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateServiceApiV1ServicesIdPatch>>, TError,UpdateServiceApiV1ServicesIdPatchMutationVariables, TContext> => {
+export const getUpdateServiceMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateService>>, TError,UpdateServiceMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateService>>, TError,UpdateServiceMutationVariables, TContext> => {
 
-const mutationKey = getUpdateServiceApiV1ServicesIdPatchMutationKey();
+const mutationKey = getUpdateServiceMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -477,10 +410,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateServiceApiV1ServicesIdPatch>>, UpdateServiceApiV1ServicesIdPatchMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateService>>, UpdateServiceMutationVariables> = (props) => {
           const {id,data} = props ?? {};
 
-          return  updateServiceApiV1ServicesIdPatch(id,data,requestOptions)
+          return  updateService(id,data,requestOptions)
         }
 
 
@@ -490,44 +423,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type UpdateServiceApiV1ServicesIdPatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateServiceApiV1ServicesIdPatch>>>
-    export type UpdateServiceApiV1ServicesIdPatchMutationBody = ServiceUpdate
-    export type UpdateServiceApiV1ServicesIdPatchMutationError = HTTPValidationError
-    export type UpdateServiceApiV1ServicesIdPatchMutationVariables = {id: string;data: ServiceUpdate}
+    export type UpdateServiceMutationResult = NonNullable<Awaited<ReturnType<typeof updateService>>>
+    export type UpdateServiceMutationBody = ServiceUpdate
+    export type UpdateServiceMutationError = ErrorType<ErrorResponse>
+    export type UpdateServiceMutationVariables = {id: string;data: ServiceUpdate}
 
     /**
  * @summary Update Service
  */
-export const useUpdateServiceApiV1ServicesIdPatch = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateServiceApiV1ServicesIdPatch>>, TError,UpdateServiceApiV1ServicesIdPatchMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useUpdateService = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateService>>, TError,UpdateServiceMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateServiceApiV1ServicesIdPatch>>,
+        Awaited<ReturnType<typeof updateService>>,
         TError,
-        UpdateServiceApiV1ServicesIdPatchMutationVariables,
+        UpdateServiceMutationVariables,
         TContext
       > => {
-      return useMutation(getUpdateServiceApiV1ServicesIdPatchMutationOptions(options), queryClient);
+      return useMutation(getUpdateServiceMutationOptions(options), queryClient);
     }
-    export type applyPresetApiV1PresetsKeyApplyPostResponse200 = {
-  data: ServiceOut
-  status: 200
-}
-
-export type applyPresetApiV1PresetsKeyApplyPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type applyPresetApiV1PresetsKeyApplyPostResponseSuccess = (applyPresetApiV1PresetsKeyApplyPostResponse200) & {
-  headers: Headers;
-};
-export type applyPresetApiV1PresetsKeyApplyPostResponseError = (applyPresetApiV1PresetsKeyApplyPostResponse422) & {
-  headers: Headers;
-};
-
-export type applyPresetApiV1PresetsKeyApplyPostResponse = (applyPresetApiV1PresetsKeyApplyPostResponseSuccess | applyPresetApiV1PresetsKeyApplyPostResponseError)
-
-export const getApplyPresetApiV1PresetsKeyApplyPostUrl = (key: string,) => {
+    export const getApplyPresetUrl = (key: string,) => {
 
 
 
@@ -538,9 +452,9 @@ export const getApplyPresetApiV1PresetsKeyApplyPostUrl = (key: string,) => {
 /**
  * @summary Apply Preset
  */
-export const applyPresetApiV1PresetsKeyApplyPost = async (key: string, options?: Parameters<typeof apiFetch>[1]): Promise<applyPresetApiV1PresetsKeyApplyPostResponse> => {
+export const applyPreset = async (key: string, options?: Parameters<typeof apiFetch>[1]): Promise<ServiceOut> => {
 
-  return apiFetch<applyPresetApiV1PresetsKeyApplyPostResponse>(getApplyPresetApiV1PresetsKeyApplyPostUrl(key),
+  return apiFetch<ServiceOut>(getApplyPresetUrl(key),
   {
     ...options,
     method: 'POST'
@@ -553,13 +467,13 @@ export const applyPresetApiV1PresetsKeyApplyPost = async (key: string, options?:
 
 
 
-export const getApplyPresetApiV1PresetsKeyApplyPostMutationKey = () => ['applyPresetApiV1PresetsKeyApplyPost'] as const;
+export const getApplyPresetMutationKey = () => ['applyPreset'] as const;
 
-export const getApplyPresetApiV1PresetsKeyApplyPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof applyPresetApiV1PresetsKeyApplyPost>>, TError,ApplyPresetApiV1PresetsKeyApplyPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof applyPresetApiV1PresetsKeyApplyPost>>, TError,ApplyPresetApiV1PresetsKeyApplyPostMutationVariables, TContext> => {
+export const getApplyPresetMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof applyPreset>>, TError,ApplyPresetMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof applyPreset>>, TError,ApplyPresetMutationVariables, TContext> => {
 
-const mutationKey = getApplyPresetApiV1PresetsKeyApplyPostMutationKey();
+const mutationKey = getApplyPresetMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -569,10 +483,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof applyPresetApiV1PresetsKeyApplyPost>>, ApplyPresetApiV1PresetsKeyApplyPostMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof applyPreset>>, ApplyPresetMutationVariables> = (props) => {
           const {key} = props ?? {};
 
-          return  applyPresetApiV1PresetsKeyApplyPost(key,requestOptions)
+          return  applyPreset(key,requestOptions)
         }
 
 
@@ -582,44 +496,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type ApplyPresetApiV1PresetsKeyApplyPostMutationResult = NonNullable<Awaited<ReturnType<typeof applyPresetApiV1PresetsKeyApplyPost>>>
+    export type ApplyPresetMutationResult = NonNullable<Awaited<ReturnType<typeof applyPreset>>>
 
-    export type ApplyPresetApiV1PresetsKeyApplyPostMutationError = HTTPValidationError
-    export type ApplyPresetApiV1PresetsKeyApplyPostMutationVariables = {key: string}
+    export type ApplyPresetMutationError = ErrorType<ErrorResponse>
+    export type ApplyPresetMutationVariables = {key: string}
 
     /**
  * @summary Apply Preset
  */
-export const useApplyPresetApiV1PresetsKeyApplyPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof applyPresetApiV1PresetsKeyApplyPost>>, TError,ApplyPresetApiV1PresetsKeyApplyPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useApplyPreset = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof applyPreset>>, TError,ApplyPresetMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof applyPresetApiV1PresetsKeyApplyPost>>,
+        Awaited<ReturnType<typeof applyPreset>>,
         TError,
-        ApplyPresetApiV1PresetsKeyApplyPostMutationVariables,
+        ApplyPresetMutationVariables,
         TContext
       > => {
-      return useMutation(getApplyPresetApiV1PresetsKeyApplyPostMutationOptions(options), queryClient);
+      return useMutation(getApplyPresetMutationOptions(options), queryClient);
     }
-    export type listQuestionsApiV1ServicesIdQuestionsGetResponse200 = {
-  data: SignalQuestionOut[]
-  status: 200
-}
-
-export type listQuestionsApiV1ServicesIdQuestionsGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type listQuestionsApiV1ServicesIdQuestionsGetResponseSuccess = (listQuestionsApiV1ServicesIdQuestionsGetResponse200) & {
-  headers: Headers;
-};
-export type listQuestionsApiV1ServicesIdQuestionsGetResponseError = (listQuestionsApiV1ServicesIdQuestionsGetResponse422) & {
-  headers: Headers;
-};
-
-export type listQuestionsApiV1ServicesIdQuestionsGetResponse = (listQuestionsApiV1ServicesIdQuestionsGetResponseSuccess | listQuestionsApiV1ServicesIdQuestionsGetResponseError)
-
-export const getListQuestionsApiV1ServicesIdQuestionsGetUrl = (id: string,) => {
+    export const getListQuestionsUrl = (id: string,) => {
 
 
 
@@ -630,9 +525,9 @@ export const getListQuestionsApiV1ServicesIdQuestionsGetUrl = (id: string,) => {
 /**
  * @summary List Questions
  */
-export const listQuestionsApiV1ServicesIdQuestionsGet = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<listQuestionsApiV1ServicesIdQuestionsGetResponse> => {
+export const listQuestions = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<SignalQuestionOut[]> => {
 
-  return apiFetch<listQuestionsApiV1ServicesIdQuestionsGetResponse>(getListQuestionsApiV1ServicesIdQuestionsGetUrl(id),
+  return apiFetch<SignalQuestionOut[]>(getListQuestionsUrl(id),
   {
     ...options,
     method: 'GET'
@@ -645,69 +540,69 @@ export const listQuestionsApiV1ServicesIdQuestionsGet = async (id: string, optio
 
 
 
-export const getListQuestionsApiV1ServicesIdQuestionsGetQueryKey = (id: string,) => {
+export const getListQuestionsQueryKey = (id: string,) => {
     return [
     `/api/v1/services/${id}/questions`
     ] as const;
     }
 
 
-export const getListQuestionsApiV1ServicesIdQuestionsGetQueryOptions = <TData = Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>, TError = HTTPValidationError>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getListQuestionsQueryOptions = <TData = Awaited<ReturnType<typeof listQuestions>>, TError = ErrorType<ErrorResponse>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQuestions>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListQuestionsApiV1ServicesIdQuestionsGetQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getListQuestionsQueryKey(id);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>> = ({ signal }) => listQuestionsApiV1ServicesIdQuestionsGet(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listQuestions>>> = ({ signal }) => listQuestions(id, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listQuestions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ListQuestionsApiV1ServicesIdQuestionsGetQueryResult = NonNullable<Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>>
-export type ListQuestionsApiV1ServicesIdQuestionsGetQueryError = HTTPValidationError
+export type ListQuestionsQueryResult = NonNullable<Awaited<ReturnType<typeof listQuestions>>>
+export type ListQuestionsQueryError = ErrorType<ErrorResponse>
 
 
-export function useListQuestionsApiV1ServicesIdQuestionsGet<TData = Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>, TError = HTTPValidationError>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>, TError, TData>> & Pick<
+export function useListQuestions<TData = Awaited<ReturnType<typeof listQuestions>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQuestions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>,
+          Awaited<ReturnType<typeof listQuestions>>,
           TError,
-          Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>
+          Awaited<ReturnType<typeof listQuestions>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListQuestionsApiV1ServicesIdQuestionsGet<TData = Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>, TError, TData>> & Pick<
+export function useListQuestions<TData = Awaited<ReturnType<typeof listQuestions>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQuestions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>,
+          Awaited<ReturnType<typeof listQuestions>>,
           TError,
-          Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>
+          Awaited<ReturnType<typeof listQuestions>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListQuestionsApiV1ServicesIdQuestionsGet<TData = Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useListQuestions<TData = Awaited<ReturnType<typeof listQuestions>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQuestions>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List Questions
  */
 
-export function useListQuestionsApiV1ServicesIdQuestionsGet<TData = Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQuestionsApiV1ServicesIdQuestionsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useListQuestions<TData = Awaited<ReturnType<typeof listQuestions>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQuestions>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getListQuestionsApiV1ServicesIdQuestionsGetQueryOptions(id,options)
+  const queryOptions = getListQuestionsQueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -719,26 +614,7 @@ export function useListQuestionsApiV1ServicesIdQuestionsGet<TData = Awaited<Retu
 
 
 
-export type createQuestionApiV1ServicesIdQuestionsPostResponse201 = {
-  data: SignalQuestionOut
-  status: 201
-}
-
-export type createQuestionApiV1ServicesIdQuestionsPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type createQuestionApiV1ServicesIdQuestionsPostResponseSuccess = (createQuestionApiV1ServicesIdQuestionsPostResponse201) & {
-  headers: Headers;
-};
-export type createQuestionApiV1ServicesIdQuestionsPostResponseError = (createQuestionApiV1ServicesIdQuestionsPostResponse422) & {
-  headers: Headers;
-};
-
-export type createQuestionApiV1ServicesIdQuestionsPostResponse = (createQuestionApiV1ServicesIdQuestionsPostResponseSuccess | createQuestionApiV1ServicesIdQuestionsPostResponseError)
-
-export const getCreateQuestionApiV1ServicesIdQuestionsPostUrl = (id: string,) => {
+export const getCreateQuestionUrl = (id: string,) => {
 
 
 
@@ -749,8 +625,8 @@ export const getCreateQuestionApiV1ServicesIdQuestionsPostUrl = (id: string,) =>
 /**
  * @summary Create Question
  */
-export const createQuestionApiV1ServicesIdQuestionsPost = async (id: string,
-    signalQuestionCreate: SignalQuestionCreate, options?: Parameters<typeof apiFetch>[1]): Promise<createQuestionApiV1ServicesIdQuestionsPostResponse> => {
+export const createQuestion = async (id: string,
+    signalQuestionCreate: SignalQuestionCreate, options?: Parameters<typeof apiFetch>[1]): Promise<SignalQuestionOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -766,7 +642,7 @@ export const createQuestionApiV1ServicesIdQuestionsPost = async (id: string,
     }
     return headers;
   };
-return apiFetch<createQuestionApiV1ServicesIdQuestionsPostResponse>(getCreateQuestionApiV1ServicesIdQuestionsPostUrl(id),
+return apiFetch<SignalQuestionOut>(getCreateQuestionUrl(id),
   {
     ...options,
     method: 'POST',
@@ -779,13 +655,13 @@ return apiFetch<createQuestionApiV1ServicesIdQuestionsPostResponse>(getCreateQue
 
 
 
-export const getCreateQuestionApiV1ServicesIdQuestionsPostMutationKey = () => ['createQuestionApiV1ServicesIdQuestionsPost'] as const;
+export const getCreateQuestionMutationKey = () => ['createQuestion'] as const;
 
-export const getCreateQuestionApiV1ServicesIdQuestionsPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createQuestionApiV1ServicesIdQuestionsPost>>, TError,CreateQuestionApiV1ServicesIdQuestionsPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createQuestionApiV1ServicesIdQuestionsPost>>, TError,CreateQuestionApiV1ServicesIdQuestionsPostMutationVariables, TContext> => {
+export const getCreateQuestionMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createQuestion>>, TError,CreateQuestionMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createQuestion>>, TError,CreateQuestionMutationVariables, TContext> => {
 
-const mutationKey = getCreateQuestionApiV1ServicesIdQuestionsPostMutationKey();
+const mutationKey = getCreateQuestionMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -795,10 +671,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createQuestionApiV1ServicesIdQuestionsPost>>, CreateQuestionApiV1ServicesIdQuestionsPostMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createQuestion>>, CreateQuestionMutationVariables> = (props) => {
           const {id,data} = props ?? {};
 
-          return  createQuestionApiV1ServicesIdQuestionsPost(id,data,requestOptions)
+          return  createQuestion(id,data,requestOptions)
         }
 
 
@@ -808,44 +684,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type CreateQuestionApiV1ServicesIdQuestionsPostMutationResult = NonNullable<Awaited<ReturnType<typeof createQuestionApiV1ServicesIdQuestionsPost>>>
-    export type CreateQuestionApiV1ServicesIdQuestionsPostMutationBody = SignalQuestionCreate
-    export type CreateQuestionApiV1ServicesIdQuestionsPostMutationError = HTTPValidationError
-    export type CreateQuestionApiV1ServicesIdQuestionsPostMutationVariables = {id: string;data: SignalQuestionCreate}
+    export type CreateQuestionMutationResult = NonNullable<Awaited<ReturnType<typeof createQuestion>>>
+    export type CreateQuestionMutationBody = SignalQuestionCreate
+    export type CreateQuestionMutationError = ErrorType<ErrorResponse>
+    export type CreateQuestionMutationVariables = {id: string;data: SignalQuestionCreate}
 
     /**
  * @summary Create Question
  */
-export const useCreateQuestionApiV1ServicesIdQuestionsPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createQuestionApiV1ServicesIdQuestionsPost>>, TError,CreateQuestionApiV1ServicesIdQuestionsPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useCreateQuestion = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createQuestion>>, TError,CreateQuestionMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createQuestionApiV1ServicesIdQuestionsPost>>,
+        Awaited<ReturnType<typeof createQuestion>>,
         TError,
-        CreateQuestionApiV1ServicesIdQuestionsPostMutationVariables,
+        CreateQuestionMutationVariables,
         TContext
       > => {
-      return useMutation(getCreateQuestionApiV1ServicesIdQuestionsPostMutationOptions(options), queryClient);
+      return useMutation(getCreateQuestionMutationOptions(options), queryClient);
     }
-    export type updateQuestionApiV1QuestionsIdPatchResponse200 = {
-  data: SignalQuestionOut
-  status: 200
-}
-
-export type updateQuestionApiV1QuestionsIdPatchResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type updateQuestionApiV1QuestionsIdPatchResponseSuccess = (updateQuestionApiV1QuestionsIdPatchResponse200) & {
-  headers: Headers;
-};
-export type updateQuestionApiV1QuestionsIdPatchResponseError = (updateQuestionApiV1QuestionsIdPatchResponse422) & {
-  headers: Headers;
-};
-
-export type updateQuestionApiV1QuestionsIdPatchResponse = (updateQuestionApiV1QuestionsIdPatchResponseSuccess | updateQuestionApiV1QuestionsIdPatchResponseError)
-
-export const getUpdateQuestionApiV1QuestionsIdPatchUrl = (id: string,) => {
+    export const getUpdateQuestionUrl = (id: string,) => {
 
 
 
@@ -856,8 +713,8 @@ export const getUpdateQuestionApiV1QuestionsIdPatchUrl = (id: string,) => {
 /**
  * @summary Update Question
  */
-export const updateQuestionApiV1QuestionsIdPatch = async (id: string,
-    signalQuestionUpdate: SignalQuestionUpdate, options?: Parameters<typeof apiFetch>[1]): Promise<updateQuestionApiV1QuestionsIdPatchResponse> => {
+export const updateQuestion = async (id: string,
+    signalQuestionUpdate: SignalQuestionUpdate, options?: Parameters<typeof apiFetch>[1]): Promise<SignalQuestionOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -873,7 +730,7 @@ export const updateQuestionApiV1QuestionsIdPatch = async (id: string,
     }
     return headers;
   };
-return apiFetch<updateQuestionApiV1QuestionsIdPatchResponse>(getUpdateQuestionApiV1QuestionsIdPatchUrl(id),
+return apiFetch<SignalQuestionOut>(getUpdateQuestionUrl(id),
   {
     ...options,
     method: 'PATCH',
@@ -886,13 +743,13 @@ return apiFetch<updateQuestionApiV1QuestionsIdPatchResponse>(getUpdateQuestionAp
 
 
 
-export const getUpdateQuestionApiV1QuestionsIdPatchMutationKey = () => ['updateQuestionApiV1QuestionsIdPatch'] as const;
+export const getUpdateQuestionMutationKey = () => ['updateQuestion'] as const;
 
-export const getUpdateQuestionApiV1QuestionsIdPatchMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateQuestionApiV1QuestionsIdPatch>>, TError,UpdateQuestionApiV1QuestionsIdPatchMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateQuestionApiV1QuestionsIdPatch>>, TError,UpdateQuestionApiV1QuestionsIdPatchMutationVariables, TContext> => {
+export const getUpdateQuestionMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateQuestion>>, TError,UpdateQuestionMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateQuestion>>, TError,UpdateQuestionMutationVariables, TContext> => {
 
-const mutationKey = getUpdateQuestionApiV1QuestionsIdPatchMutationKey();
+const mutationKey = getUpdateQuestionMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -902,10 +759,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateQuestionApiV1QuestionsIdPatch>>, UpdateQuestionApiV1QuestionsIdPatchMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateQuestion>>, UpdateQuestionMutationVariables> = (props) => {
           const {id,data} = props ?? {};
 
-          return  updateQuestionApiV1QuestionsIdPatch(id,data,requestOptions)
+          return  updateQuestion(id,data,requestOptions)
         }
 
 
@@ -915,44 +772,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type UpdateQuestionApiV1QuestionsIdPatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateQuestionApiV1QuestionsIdPatch>>>
-    export type UpdateQuestionApiV1QuestionsIdPatchMutationBody = SignalQuestionUpdate
-    export type UpdateQuestionApiV1QuestionsIdPatchMutationError = HTTPValidationError
-    export type UpdateQuestionApiV1QuestionsIdPatchMutationVariables = {id: string;data: SignalQuestionUpdate}
+    export type UpdateQuestionMutationResult = NonNullable<Awaited<ReturnType<typeof updateQuestion>>>
+    export type UpdateQuestionMutationBody = SignalQuestionUpdate
+    export type UpdateQuestionMutationError = ErrorType<ErrorResponse>
+    export type UpdateQuestionMutationVariables = {id: string;data: SignalQuestionUpdate}
 
     /**
  * @summary Update Question
  */
-export const useUpdateQuestionApiV1QuestionsIdPatch = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateQuestionApiV1QuestionsIdPatch>>, TError,UpdateQuestionApiV1QuestionsIdPatchMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useUpdateQuestion = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateQuestion>>, TError,UpdateQuestionMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateQuestionApiV1QuestionsIdPatch>>,
+        Awaited<ReturnType<typeof updateQuestion>>,
         TError,
-        UpdateQuestionApiV1QuestionsIdPatchMutationVariables,
+        UpdateQuestionMutationVariables,
         TContext
       > => {
-      return useMutation(getUpdateQuestionApiV1QuestionsIdPatchMutationOptions(options), queryClient);
+      return useMutation(getUpdateQuestionMutationOptions(options), queryClient);
     }
-    export type deleteQuestionApiV1QuestionsIdDeleteResponse204 = {
-  data: void
-  status: 204
-}
-
-export type deleteQuestionApiV1QuestionsIdDeleteResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type deleteQuestionApiV1QuestionsIdDeleteResponseSuccess = (deleteQuestionApiV1QuestionsIdDeleteResponse204) & {
-  headers: Headers;
-};
-export type deleteQuestionApiV1QuestionsIdDeleteResponseError = (deleteQuestionApiV1QuestionsIdDeleteResponse422) & {
-  headers: Headers;
-};
-
-export type deleteQuestionApiV1QuestionsIdDeleteResponse = (deleteQuestionApiV1QuestionsIdDeleteResponseSuccess | deleteQuestionApiV1QuestionsIdDeleteResponseError)
-
-export const getDeleteQuestionApiV1QuestionsIdDeleteUrl = (id: string,) => {
+    export const getDeleteQuestionUrl = (id: string,) => {
 
 
 
@@ -961,11 +799,12 @@ export const getDeleteQuestionApiV1QuestionsIdDeleteUrl = (id: string,) => {
 }
 
 /**
+ * Soft delete: the question stops counting, its signals and history stay (rescored in one transaction).
  * @summary Delete Question
  */
-export const deleteQuestionApiV1QuestionsIdDelete = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<deleteQuestionApiV1QuestionsIdDeleteResponse> => {
+export const deleteQuestion = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<void> => {
 
-  return apiFetch<deleteQuestionApiV1QuestionsIdDeleteResponse>(getDeleteQuestionApiV1QuestionsIdDeleteUrl(id),
+  return apiFetch<void>(getDeleteQuestionUrl(id),
   {
     ...options,
     method: 'DELETE'
@@ -978,13 +817,13 @@ export const deleteQuestionApiV1QuestionsIdDelete = async (id: string, options?:
 
 
 
-export const getDeleteQuestionApiV1QuestionsIdDeleteMutationKey = () => ['deleteQuestionApiV1QuestionsIdDelete'] as const;
+export const getDeleteQuestionMutationKey = () => ['deleteQuestion'] as const;
 
-export const getDeleteQuestionApiV1QuestionsIdDeleteMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteQuestionApiV1QuestionsIdDelete>>, TError,DeleteQuestionApiV1QuestionsIdDeleteMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteQuestionApiV1QuestionsIdDelete>>, TError,DeleteQuestionApiV1QuestionsIdDeleteMutationVariables, TContext> => {
+export const getDeleteQuestionMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteQuestion>>, TError,DeleteQuestionMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteQuestion>>, TError,DeleteQuestionMutationVariables, TContext> => {
 
-const mutationKey = getDeleteQuestionApiV1QuestionsIdDeleteMutationKey();
+const mutationKey = getDeleteQuestionMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -994,10 +833,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteQuestionApiV1QuestionsIdDelete>>, DeleteQuestionApiV1QuestionsIdDeleteMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteQuestion>>, DeleteQuestionMutationVariables> = (props) => {
           const {id} = props ?? {};
 
-          return  deleteQuestionApiV1QuestionsIdDelete(id,requestOptions)
+          return  deleteQuestion(id,requestOptions)
         }
 
 
@@ -1007,44 +846,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteQuestionApiV1QuestionsIdDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof deleteQuestionApiV1QuestionsIdDelete>>>
+    export type DeleteQuestionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteQuestion>>>
 
-    export type DeleteQuestionApiV1QuestionsIdDeleteMutationError = HTTPValidationError
-    export type DeleteQuestionApiV1QuestionsIdDeleteMutationVariables = {id: string}
+    export type DeleteQuestionMutationError = ErrorType<ErrorResponse>
+    export type DeleteQuestionMutationVariables = {id: string}
 
     /**
  * @summary Delete Question
  */
-export const useDeleteQuestionApiV1QuestionsIdDelete = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteQuestionApiV1QuestionsIdDelete>>, TError,DeleteQuestionApiV1QuestionsIdDeleteMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useDeleteQuestion = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteQuestion>>, TError,DeleteQuestionMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteQuestionApiV1QuestionsIdDelete>>,
+        Awaited<ReturnType<typeof deleteQuestion>>,
         TError,
-        DeleteQuestionApiV1QuestionsIdDeleteMutationVariables,
+        DeleteQuestionMutationVariables,
         TContext
       > => {
-      return useMutation(getDeleteQuestionApiV1QuestionsIdDeleteMutationOptions(options), queryClient);
+      return useMutation(getDeleteQuestionMutationOptions(options), queryClient);
     }
-    export type expandQuestionApiV1QuestionsIdExpandPostResponse202 = {
-  data: ExpandQuestionApiV1QuestionsIdExpandPost202
-  status: 202
-}
-
-export type expandQuestionApiV1QuestionsIdExpandPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type expandQuestionApiV1QuestionsIdExpandPostResponseSuccess = (expandQuestionApiV1QuestionsIdExpandPostResponse202) & {
-  headers: Headers;
-};
-export type expandQuestionApiV1QuestionsIdExpandPostResponseError = (expandQuestionApiV1QuestionsIdExpandPostResponse422) & {
-  headers: Headers;
-};
-
-export type expandQuestionApiV1QuestionsIdExpandPostResponse = (expandQuestionApiV1QuestionsIdExpandPostResponseSuccess | expandQuestionApiV1QuestionsIdExpandPostResponseError)
-
-export const getExpandQuestionApiV1QuestionsIdExpandPostUrl = (id: string,) => {
+    export const getExpandQuestionUrl = (id: string,) => {
 
 
 
@@ -1055,9 +875,9 @@ export const getExpandQuestionApiV1QuestionsIdExpandPostUrl = (id: string,) => {
 /**
  * @summary Expand Question
  */
-export const expandQuestionApiV1QuestionsIdExpandPost = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<expandQuestionApiV1QuestionsIdExpandPostResponse> => {
+export const expandQuestion = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<ExpandQuestionOut> => {
 
-  return apiFetch<expandQuestionApiV1QuestionsIdExpandPostResponse>(getExpandQuestionApiV1QuestionsIdExpandPostUrl(id),
+  return apiFetch<ExpandQuestionOut>(getExpandQuestionUrl(id),
   {
     ...options,
     method: 'POST'
@@ -1070,13 +890,13 @@ export const expandQuestionApiV1QuestionsIdExpandPost = async (id: string, optio
 
 
 
-export const getExpandQuestionApiV1QuestionsIdExpandPostMutationKey = () => ['expandQuestionApiV1QuestionsIdExpandPost'] as const;
+export const getExpandQuestionMutationKey = () => ['expandQuestion'] as const;
 
-export const getExpandQuestionApiV1QuestionsIdExpandPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof expandQuestionApiV1QuestionsIdExpandPost>>, TError,ExpandQuestionApiV1QuestionsIdExpandPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof expandQuestionApiV1QuestionsIdExpandPost>>, TError,ExpandQuestionApiV1QuestionsIdExpandPostMutationVariables, TContext> => {
+export const getExpandQuestionMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof expandQuestion>>, TError,ExpandQuestionMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof expandQuestion>>, TError,ExpandQuestionMutationVariables, TContext> => {
 
-const mutationKey = getExpandQuestionApiV1QuestionsIdExpandPostMutationKey();
+const mutationKey = getExpandQuestionMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1086,10 +906,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof expandQuestionApiV1QuestionsIdExpandPost>>, ExpandQuestionApiV1QuestionsIdExpandPostMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof expandQuestion>>, ExpandQuestionMutationVariables> = (props) => {
           const {id} = props ?? {};
 
-          return  expandQuestionApiV1QuestionsIdExpandPost(id,requestOptions)
+          return  expandQuestion(id,requestOptions)
         }
 
 
@@ -1099,44 +919,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type ExpandQuestionApiV1QuestionsIdExpandPostMutationResult = NonNullable<Awaited<ReturnType<typeof expandQuestionApiV1QuestionsIdExpandPost>>>
+    export type ExpandQuestionMutationResult = NonNullable<Awaited<ReturnType<typeof expandQuestion>>>
 
-    export type ExpandQuestionApiV1QuestionsIdExpandPostMutationError = HTTPValidationError
-    export type ExpandQuestionApiV1QuestionsIdExpandPostMutationVariables = {id: string}
+    export type ExpandQuestionMutationError = ErrorType<ErrorResponse>
+    export type ExpandQuestionMutationVariables = {id: string}
 
     /**
  * @summary Expand Question
  */
-export const useExpandQuestionApiV1QuestionsIdExpandPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof expandQuestionApiV1QuestionsIdExpandPost>>, TError,ExpandQuestionApiV1QuestionsIdExpandPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useExpandQuestion = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof expandQuestion>>, TError,ExpandQuestionMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof expandQuestionApiV1QuestionsIdExpandPost>>,
+        Awaited<ReturnType<typeof expandQuestion>>,
         TError,
-        ExpandQuestionApiV1QuestionsIdExpandPostMutationVariables,
+        ExpandQuestionMutationVariables,
         TContext
       > => {
-      return useMutation(getExpandQuestionApiV1QuestionsIdExpandPostMutationOptions(options), queryClient);
+      return useMutation(getExpandQuestionMutationOptions(options), queryClient);
     }
-    export type getIcpApiV1ServicesIdIcpGetResponse200 = {
-  data: ICPProfileOut
-  status: 200
-}
-
-export type getIcpApiV1ServicesIdIcpGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type getIcpApiV1ServicesIdIcpGetResponseSuccess = (getIcpApiV1ServicesIdIcpGetResponse200) & {
-  headers: Headers;
-};
-export type getIcpApiV1ServicesIdIcpGetResponseError = (getIcpApiV1ServicesIdIcpGetResponse422) & {
-  headers: Headers;
-};
-
-export type getIcpApiV1ServicesIdIcpGetResponse = (getIcpApiV1ServicesIdIcpGetResponseSuccess | getIcpApiV1ServicesIdIcpGetResponseError)
-
-export const getGetIcpApiV1ServicesIdIcpGetUrl = (id: string,) => {
+    export const getGetIcpUrl = (id: string,) => {
 
 
 
@@ -1147,9 +948,9 @@ export const getGetIcpApiV1ServicesIdIcpGetUrl = (id: string,) => {
 /**
  * @summary Get Icp
  */
-export const getIcpApiV1ServicesIdIcpGet = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<getIcpApiV1ServicesIdIcpGetResponse> => {
+export const getIcp = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<ICPProfileOut> => {
 
-  return apiFetch<getIcpApiV1ServicesIdIcpGetResponse>(getGetIcpApiV1ServicesIdIcpGetUrl(id),
+  return apiFetch<ICPProfileOut>(getGetIcpUrl(id),
   {
     ...options,
     method: 'GET'
@@ -1162,69 +963,69 @@ export const getIcpApiV1ServicesIdIcpGet = async (id: string, options?: Paramete
 
 
 
-export const getGetIcpApiV1ServicesIdIcpGetQueryKey = (id: string,) => {
+export const getGetIcpQueryKey = (id: string,) => {
     return [
     `/api/v1/services/${id}/icp`
     ] as const;
     }
 
 
-export const getGetIcpApiV1ServicesIdIcpGetQueryOptions = <TData = Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>, TError = HTTPValidationError>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getGetIcpQueryOptions = <TData = Awaited<ReturnType<typeof getIcp>>, TError = ErrorType<ErrorResponse>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIcp>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetIcpApiV1ServicesIdIcpGetQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetIcpQueryKey(id);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>> = ({ signal }) => getIcpApiV1ServicesIdIcpGet(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getIcp>>> = ({ signal }) => getIcp(id, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getIcp>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetIcpApiV1ServicesIdIcpGetQueryResult = NonNullable<Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>>
-export type GetIcpApiV1ServicesIdIcpGetQueryError = HTTPValidationError
+export type GetIcpQueryResult = NonNullable<Awaited<ReturnType<typeof getIcp>>>
+export type GetIcpQueryError = ErrorType<ErrorResponse>
 
 
-export function useGetIcpApiV1ServicesIdIcpGet<TData = Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>, TError = HTTPValidationError>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>, TError, TData>> & Pick<
+export function useGetIcp<TData = Awaited<ReturnType<typeof getIcp>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIcp>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>,
+          Awaited<ReturnType<typeof getIcp>>,
           TError,
-          Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>
+          Awaited<ReturnType<typeof getIcp>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetIcpApiV1ServicesIdIcpGet<TData = Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>, TError, TData>> & Pick<
+export function useGetIcp<TData = Awaited<ReturnType<typeof getIcp>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIcp>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>,
+          Awaited<ReturnType<typeof getIcp>>,
           TError,
-          Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>
+          Awaited<ReturnType<typeof getIcp>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetIcpApiV1ServicesIdIcpGet<TData = Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetIcp<TData = Awaited<ReturnType<typeof getIcp>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIcp>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Icp
  */
 
-export function useGetIcpApiV1ServicesIdIcpGet<TData = Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIcpApiV1ServicesIdIcpGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetIcp<TData = Awaited<ReturnType<typeof getIcp>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getIcp>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetIcpApiV1ServicesIdIcpGetQueryOptions(id,options)
+  const queryOptions = getGetIcpQueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1236,26 +1037,7 @@ export function useGetIcpApiV1ServicesIdIcpGet<TData = Awaited<ReturnType<typeof
 
 
 
-export type putIcpApiV1ServicesIdIcpPutResponse200 = {
-  data: ICPProfileOut
-  status: 200
-}
-
-export type putIcpApiV1ServicesIdIcpPutResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type putIcpApiV1ServicesIdIcpPutResponseSuccess = (putIcpApiV1ServicesIdIcpPutResponse200) & {
-  headers: Headers;
-};
-export type putIcpApiV1ServicesIdIcpPutResponseError = (putIcpApiV1ServicesIdIcpPutResponse422) & {
-  headers: Headers;
-};
-
-export type putIcpApiV1ServicesIdIcpPutResponse = (putIcpApiV1ServicesIdIcpPutResponseSuccess | putIcpApiV1ServicesIdIcpPutResponseError)
-
-export const getPutIcpApiV1ServicesIdIcpPutUrl = (id: string,) => {
+export const getPutIcpUrl = (id: string,) => {
 
 
 
@@ -1266,8 +1048,8 @@ export const getPutIcpApiV1ServicesIdIcpPutUrl = (id: string,) => {
 /**
  * @summary Put Icp
  */
-export const putIcpApiV1ServicesIdIcpPut = async (id: string,
-    iCPProfileIn: ICPProfileIn, options?: Parameters<typeof apiFetch>[1]): Promise<putIcpApiV1ServicesIdIcpPutResponse> => {
+export const putIcp = async (id: string,
+    iCPProfileIn: ICPProfileIn, options?: Parameters<typeof apiFetch>[1]): Promise<ICPProfileOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -1283,7 +1065,7 @@ export const putIcpApiV1ServicesIdIcpPut = async (id: string,
     }
     return headers;
   };
-return apiFetch<putIcpApiV1ServicesIdIcpPutResponse>(getPutIcpApiV1ServicesIdIcpPutUrl(id),
+return apiFetch<ICPProfileOut>(getPutIcpUrl(id),
   {
     ...options,
     method: 'PUT',
@@ -1296,13 +1078,13 @@ return apiFetch<putIcpApiV1ServicesIdIcpPutResponse>(getPutIcpApiV1ServicesIdIcp
 
 
 
-export const getPutIcpApiV1ServicesIdIcpPutMutationKey = () => ['putIcpApiV1ServicesIdIcpPut'] as const;
+export const getPutIcpMutationKey = () => ['putIcp'] as const;
 
-export const getPutIcpApiV1ServicesIdIcpPutMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putIcpApiV1ServicesIdIcpPut>>, TError,PutIcpApiV1ServicesIdIcpPutMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof putIcpApiV1ServicesIdIcpPut>>, TError,PutIcpApiV1ServicesIdIcpPutMutationVariables, TContext> => {
+export const getPutIcpMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putIcp>>, TError,PutIcpMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof putIcp>>, TError,PutIcpMutationVariables, TContext> => {
 
-const mutationKey = getPutIcpApiV1ServicesIdIcpPutMutationKey();
+const mutationKey = getPutIcpMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1312,10 +1094,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putIcpApiV1ServicesIdIcpPut>>, PutIcpApiV1ServicesIdIcpPutMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putIcp>>, PutIcpMutationVariables> = (props) => {
           const {id,data} = props ?? {};
 
-          return  putIcpApiV1ServicesIdIcpPut(id,data,requestOptions)
+          return  putIcp(id,data,requestOptions)
         }
 
 
@@ -1325,44 +1107,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PutIcpApiV1ServicesIdIcpPutMutationResult = NonNullable<Awaited<ReturnType<typeof putIcpApiV1ServicesIdIcpPut>>>
-    export type PutIcpApiV1ServicesIdIcpPutMutationBody = ICPProfileIn
-    export type PutIcpApiV1ServicesIdIcpPutMutationError = HTTPValidationError
-    export type PutIcpApiV1ServicesIdIcpPutMutationVariables = {id: string;data: ICPProfileIn}
+    export type PutIcpMutationResult = NonNullable<Awaited<ReturnType<typeof putIcp>>>
+    export type PutIcpMutationBody = ICPProfileIn
+    export type PutIcpMutationError = ErrorType<ErrorResponse>
+    export type PutIcpMutationVariables = {id: string;data: ICPProfileIn}
 
     /**
  * @summary Put Icp
  */
-export const usePutIcpApiV1ServicesIdIcpPut = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putIcpApiV1ServicesIdIcpPut>>, TError,PutIcpApiV1ServicesIdIcpPutMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const usePutIcp = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putIcp>>, TError,PutIcpMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putIcpApiV1ServicesIdIcpPut>>,
+        Awaited<ReturnType<typeof putIcp>>,
         TError,
-        PutIcpApiV1ServicesIdIcpPutMutationVariables,
+        PutIcpMutationVariables,
         TContext
       > => {
-      return useMutation(getPutIcpApiV1ServicesIdIcpPutMutationOptions(options), queryClient);
+      return useMutation(getPutIcpMutationOptions(options), queryClient);
     }
-    export type listRulesApiV1ServicesIdRulesGetResponse200 = {
-  data: DisqualificationRuleOut[]
-  status: 200
-}
-
-export type listRulesApiV1ServicesIdRulesGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type listRulesApiV1ServicesIdRulesGetResponseSuccess = (listRulesApiV1ServicesIdRulesGetResponse200) & {
-  headers: Headers;
-};
-export type listRulesApiV1ServicesIdRulesGetResponseError = (listRulesApiV1ServicesIdRulesGetResponse422) & {
-  headers: Headers;
-};
-
-export type listRulesApiV1ServicesIdRulesGetResponse = (listRulesApiV1ServicesIdRulesGetResponseSuccess | listRulesApiV1ServicesIdRulesGetResponseError)
-
-export const getListRulesApiV1ServicesIdRulesGetUrl = (id: string,) => {
+    export const getListRulesUrl = (id: string,) => {
 
 
 
@@ -1373,9 +1136,9 @@ export const getListRulesApiV1ServicesIdRulesGetUrl = (id: string,) => {
 /**
  * @summary List Rules
  */
-export const listRulesApiV1ServicesIdRulesGet = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<listRulesApiV1ServicesIdRulesGetResponse> => {
+export const listRules = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<DisqualificationRuleOut[]> => {
 
-  return apiFetch<listRulesApiV1ServicesIdRulesGetResponse>(getListRulesApiV1ServicesIdRulesGetUrl(id),
+  return apiFetch<DisqualificationRuleOut[]>(getListRulesUrl(id),
   {
     ...options,
     method: 'GET'
@@ -1388,69 +1151,69 @@ export const listRulesApiV1ServicesIdRulesGet = async (id: string, options?: Par
 
 
 
-export const getListRulesApiV1ServicesIdRulesGetQueryKey = (id: string,) => {
+export const getListRulesQueryKey = (id: string,) => {
     return [
     `/api/v1/services/${id}/rules`
     ] as const;
     }
 
 
-export const getListRulesApiV1ServicesIdRulesGetQueryOptions = <TData = Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>, TError = HTTPValidationError>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getListRulesQueryOptions = <TData = Awaited<ReturnType<typeof listRules>>, TError = ErrorType<ErrorResponse>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRules>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListRulesApiV1ServicesIdRulesGetQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getListRulesQueryKey(id);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>> = ({ signal }) => listRulesApiV1ServicesIdRulesGet(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listRules>>> = ({ signal }) => listRules(id, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listRules>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ListRulesApiV1ServicesIdRulesGetQueryResult = NonNullable<Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>>
-export type ListRulesApiV1ServicesIdRulesGetQueryError = HTTPValidationError
+export type ListRulesQueryResult = NonNullable<Awaited<ReturnType<typeof listRules>>>
+export type ListRulesQueryError = ErrorType<ErrorResponse>
 
 
-export function useListRulesApiV1ServicesIdRulesGet<TData = Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>, TError = HTTPValidationError>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>, TError, TData>> & Pick<
+export function useListRules<TData = Awaited<ReturnType<typeof listRules>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRules>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>,
+          Awaited<ReturnType<typeof listRules>>,
           TError,
-          Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>
+          Awaited<ReturnType<typeof listRules>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListRulesApiV1ServicesIdRulesGet<TData = Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>, TError, TData>> & Pick<
+export function useListRules<TData = Awaited<ReturnType<typeof listRules>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRules>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>,
+          Awaited<ReturnType<typeof listRules>>,
           TError,
-          Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>
+          Awaited<ReturnType<typeof listRules>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListRulesApiV1ServicesIdRulesGet<TData = Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useListRules<TData = Awaited<ReturnType<typeof listRules>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRules>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List Rules
  */
 
-export function useListRulesApiV1ServicesIdRulesGet<TData = Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRulesApiV1ServicesIdRulesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useListRules<TData = Awaited<ReturnType<typeof listRules>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRules>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getListRulesApiV1ServicesIdRulesGetQueryOptions(id,options)
+  const queryOptions = getListRulesQueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1462,26 +1225,7 @@ export function useListRulesApiV1ServicesIdRulesGet<TData = Awaited<ReturnType<t
 
 
 
-export type createRuleApiV1ServicesIdRulesPostResponse201 = {
-  data: DisqualificationRuleOut
-  status: 201
-}
-
-export type createRuleApiV1ServicesIdRulesPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type createRuleApiV1ServicesIdRulesPostResponseSuccess = (createRuleApiV1ServicesIdRulesPostResponse201) & {
-  headers: Headers;
-};
-export type createRuleApiV1ServicesIdRulesPostResponseError = (createRuleApiV1ServicesIdRulesPostResponse422) & {
-  headers: Headers;
-};
-
-export type createRuleApiV1ServicesIdRulesPostResponse = (createRuleApiV1ServicesIdRulesPostResponseSuccess | createRuleApiV1ServicesIdRulesPostResponseError)
-
-export const getCreateRuleApiV1ServicesIdRulesPostUrl = (id: string,) => {
+export const getCreateRuleUrl = (id: string,) => {
 
 
 
@@ -1492,8 +1236,8 @@ export const getCreateRuleApiV1ServicesIdRulesPostUrl = (id: string,) => {
 /**
  * @summary Create Rule
  */
-export const createRuleApiV1ServicesIdRulesPost = async (id: string,
-    disqualificationRuleCreate: DisqualificationRuleCreate, options?: Parameters<typeof apiFetch>[1]): Promise<createRuleApiV1ServicesIdRulesPostResponse> => {
+export const createRule = async (id: string,
+    disqualificationRuleCreate: DisqualificationRuleCreate, options?: Parameters<typeof apiFetch>[1]): Promise<DisqualificationRuleOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -1509,7 +1253,7 @@ export const createRuleApiV1ServicesIdRulesPost = async (id: string,
     }
     return headers;
   };
-return apiFetch<createRuleApiV1ServicesIdRulesPostResponse>(getCreateRuleApiV1ServicesIdRulesPostUrl(id),
+return apiFetch<DisqualificationRuleOut>(getCreateRuleUrl(id),
   {
     ...options,
     method: 'POST',
@@ -1522,13 +1266,13 @@ return apiFetch<createRuleApiV1ServicesIdRulesPostResponse>(getCreateRuleApiV1Se
 
 
 
-export const getCreateRuleApiV1ServicesIdRulesPostMutationKey = () => ['createRuleApiV1ServicesIdRulesPost'] as const;
+export const getCreateRuleMutationKey = () => ['createRule'] as const;
 
-export const getCreateRuleApiV1ServicesIdRulesPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createRuleApiV1ServicesIdRulesPost>>, TError,CreateRuleApiV1ServicesIdRulesPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createRuleApiV1ServicesIdRulesPost>>, TError,CreateRuleApiV1ServicesIdRulesPostMutationVariables, TContext> => {
+export const getCreateRuleMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createRule>>, TError,CreateRuleMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createRule>>, TError,CreateRuleMutationVariables, TContext> => {
 
-const mutationKey = getCreateRuleApiV1ServicesIdRulesPostMutationKey();
+const mutationKey = getCreateRuleMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1538,10 +1282,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createRuleApiV1ServicesIdRulesPost>>, CreateRuleApiV1ServicesIdRulesPostMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createRule>>, CreateRuleMutationVariables> = (props) => {
           const {id,data} = props ?? {};
 
-          return  createRuleApiV1ServicesIdRulesPost(id,data,requestOptions)
+          return  createRule(id,data,requestOptions)
         }
 
 
@@ -1551,44 +1295,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type CreateRuleApiV1ServicesIdRulesPostMutationResult = NonNullable<Awaited<ReturnType<typeof createRuleApiV1ServicesIdRulesPost>>>
-    export type CreateRuleApiV1ServicesIdRulesPostMutationBody = DisqualificationRuleCreate
-    export type CreateRuleApiV1ServicesIdRulesPostMutationError = HTTPValidationError
-    export type CreateRuleApiV1ServicesIdRulesPostMutationVariables = {id: string;data: DisqualificationRuleCreate}
+    export type CreateRuleMutationResult = NonNullable<Awaited<ReturnType<typeof createRule>>>
+    export type CreateRuleMutationBody = DisqualificationRuleCreate
+    export type CreateRuleMutationError = ErrorType<ErrorResponse>
+    export type CreateRuleMutationVariables = {id: string;data: DisqualificationRuleCreate}
 
     /**
  * @summary Create Rule
  */
-export const useCreateRuleApiV1ServicesIdRulesPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createRuleApiV1ServicesIdRulesPost>>, TError,CreateRuleApiV1ServicesIdRulesPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useCreateRule = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createRule>>, TError,CreateRuleMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createRuleApiV1ServicesIdRulesPost>>,
+        Awaited<ReturnType<typeof createRule>>,
         TError,
-        CreateRuleApiV1ServicesIdRulesPostMutationVariables,
+        CreateRuleMutationVariables,
         TContext
       > => {
-      return useMutation(getCreateRuleApiV1ServicesIdRulesPostMutationOptions(options), queryClient);
+      return useMutation(getCreateRuleMutationOptions(options), queryClient);
     }
-    export type updateRuleApiV1RulesIdPatchResponse200 = {
-  data: DisqualificationRuleOut
-  status: 200
-}
-
-export type updateRuleApiV1RulesIdPatchResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type updateRuleApiV1RulesIdPatchResponseSuccess = (updateRuleApiV1RulesIdPatchResponse200) & {
-  headers: Headers;
-};
-export type updateRuleApiV1RulesIdPatchResponseError = (updateRuleApiV1RulesIdPatchResponse422) & {
-  headers: Headers;
-};
-
-export type updateRuleApiV1RulesIdPatchResponse = (updateRuleApiV1RulesIdPatchResponseSuccess | updateRuleApiV1RulesIdPatchResponseError)
-
-export const getUpdateRuleApiV1RulesIdPatchUrl = (id: string,) => {
+    export const getUpdateRuleUrl = (id: string,) => {
 
 
 
@@ -1599,8 +1324,8 @@ export const getUpdateRuleApiV1RulesIdPatchUrl = (id: string,) => {
 /**
  * @summary Update Rule
  */
-export const updateRuleApiV1RulesIdPatch = async (id: string,
-    disqualificationRuleUpdate: DisqualificationRuleUpdate, options?: Parameters<typeof apiFetch>[1]): Promise<updateRuleApiV1RulesIdPatchResponse> => {
+export const updateRule = async (id: string,
+    disqualificationRuleUpdate: DisqualificationRuleUpdate, options?: Parameters<typeof apiFetch>[1]): Promise<DisqualificationRuleOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -1616,7 +1341,7 @@ export const updateRuleApiV1RulesIdPatch = async (id: string,
     }
     return headers;
   };
-return apiFetch<updateRuleApiV1RulesIdPatchResponse>(getUpdateRuleApiV1RulesIdPatchUrl(id),
+return apiFetch<DisqualificationRuleOut>(getUpdateRuleUrl(id),
   {
     ...options,
     method: 'PATCH',
@@ -1629,13 +1354,13 @@ return apiFetch<updateRuleApiV1RulesIdPatchResponse>(getUpdateRuleApiV1RulesIdPa
 
 
 
-export const getUpdateRuleApiV1RulesIdPatchMutationKey = () => ['updateRuleApiV1RulesIdPatch'] as const;
+export const getUpdateRuleMutationKey = () => ['updateRule'] as const;
 
-export const getUpdateRuleApiV1RulesIdPatchMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateRuleApiV1RulesIdPatch>>, TError,UpdateRuleApiV1RulesIdPatchMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateRuleApiV1RulesIdPatch>>, TError,UpdateRuleApiV1RulesIdPatchMutationVariables, TContext> => {
+export const getUpdateRuleMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateRule>>, TError,UpdateRuleMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateRule>>, TError,UpdateRuleMutationVariables, TContext> => {
 
-const mutationKey = getUpdateRuleApiV1RulesIdPatchMutationKey();
+const mutationKey = getUpdateRuleMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1645,10 +1370,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateRuleApiV1RulesIdPatch>>, UpdateRuleApiV1RulesIdPatchMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateRule>>, UpdateRuleMutationVariables> = (props) => {
           const {id,data} = props ?? {};
 
-          return  updateRuleApiV1RulesIdPatch(id,data,requestOptions)
+          return  updateRule(id,data,requestOptions)
         }
 
 
@@ -1658,44 +1383,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type UpdateRuleApiV1RulesIdPatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateRuleApiV1RulesIdPatch>>>
-    export type UpdateRuleApiV1RulesIdPatchMutationBody = DisqualificationRuleUpdate
-    export type UpdateRuleApiV1RulesIdPatchMutationError = HTTPValidationError
-    export type UpdateRuleApiV1RulesIdPatchMutationVariables = {id: string;data: DisqualificationRuleUpdate}
+    export type UpdateRuleMutationResult = NonNullable<Awaited<ReturnType<typeof updateRule>>>
+    export type UpdateRuleMutationBody = DisqualificationRuleUpdate
+    export type UpdateRuleMutationError = ErrorType<ErrorResponse>
+    export type UpdateRuleMutationVariables = {id: string;data: DisqualificationRuleUpdate}
 
     /**
  * @summary Update Rule
  */
-export const useUpdateRuleApiV1RulesIdPatch = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateRuleApiV1RulesIdPatch>>, TError,UpdateRuleApiV1RulesIdPatchMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useUpdateRule = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateRule>>, TError,UpdateRuleMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateRuleApiV1RulesIdPatch>>,
+        Awaited<ReturnType<typeof updateRule>>,
         TError,
-        UpdateRuleApiV1RulesIdPatchMutationVariables,
+        UpdateRuleMutationVariables,
         TContext
       > => {
-      return useMutation(getUpdateRuleApiV1RulesIdPatchMutationOptions(options), queryClient);
+      return useMutation(getUpdateRuleMutationOptions(options), queryClient);
     }
-    export type deleteRuleApiV1RulesIdDeleteResponse204 = {
-  data: void
-  status: 204
-}
-
-export type deleteRuleApiV1RulesIdDeleteResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type deleteRuleApiV1RulesIdDeleteResponseSuccess = (deleteRuleApiV1RulesIdDeleteResponse204) & {
-  headers: Headers;
-};
-export type deleteRuleApiV1RulesIdDeleteResponseError = (deleteRuleApiV1RulesIdDeleteResponse422) & {
-  headers: Headers;
-};
-
-export type deleteRuleApiV1RulesIdDeleteResponse = (deleteRuleApiV1RulesIdDeleteResponseSuccess | deleteRuleApiV1RulesIdDeleteResponseError)
-
-export const getDeleteRuleApiV1RulesIdDeleteUrl = (id: string,) => {
+    export const getDeleteRuleUrl = (id: string,) => {
 
 
 
@@ -1706,9 +1412,9 @@ export const getDeleteRuleApiV1RulesIdDeleteUrl = (id: string,) => {
 /**
  * @summary Delete Rule
  */
-export const deleteRuleApiV1RulesIdDelete = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<deleteRuleApiV1RulesIdDeleteResponse> => {
+export const deleteRule = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<void> => {
 
-  return apiFetch<deleteRuleApiV1RulesIdDeleteResponse>(getDeleteRuleApiV1RulesIdDeleteUrl(id),
+  return apiFetch<void>(getDeleteRuleUrl(id),
   {
     ...options,
     method: 'DELETE'
@@ -1721,13 +1427,13 @@ export const deleteRuleApiV1RulesIdDelete = async (id: string, options?: Paramet
 
 
 
-export const getDeleteRuleApiV1RulesIdDeleteMutationKey = () => ['deleteRuleApiV1RulesIdDelete'] as const;
+export const getDeleteRuleMutationKey = () => ['deleteRule'] as const;
 
-export const getDeleteRuleApiV1RulesIdDeleteMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRuleApiV1RulesIdDelete>>, TError,DeleteRuleApiV1RulesIdDeleteMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteRuleApiV1RulesIdDelete>>, TError,DeleteRuleApiV1RulesIdDeleteMutationVariables, TContext> => {
+export const getDeleteRuleMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRule>>, TError,DeleteRuleMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteRule>>, TError,DeleteRuleMutationVariables, TContext> => {
 
-const mutationKey = getDeleteRuleApiV1RulesIdDeleteMutationKey();
+const mutationKey = getDeleteRuleMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1737,10 +1443,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteRuleApiV1RulesIdDelete>>, DeleteRuleApiV1RulesIdDeleteMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteRule>>, DeleteRuleMutationVariables> = (props) => {
           const {id} = props ?? {};
 
-          return  deleteRuleApiV1RulesIdDelete(id,requestOptions)
+          return  deleteRule(id,requestOptions)
         }
 
 
@@ -1750,44 +1456,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteRuleApiV1RulesIdDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof deleteRuleApiV1RulesIdDelete>>>
+    export type DeleteRuleMutationResult = NonNullable<Awaited<ReturnType<typeof deleteRule>>>
 
-    export type DeleteRuleApiV1RulesIdDeleteMutationError = HTTPValidationError
-    export type DeleteRuleApiV1RulesIdDeleteMutationVariables = {id: string}
+    export type DeleteRuleMutationError = ErrorType<ErrorResponse>
+    export type DeleteRuleMutationVariables = {id: string}
 
     /**
  * @summary Delete Rule
  */
-export const useDeleteRuleApiV1RulesIdDelete = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRuleApiV1RulesIdDelete>>, TError,DeleteRuleApiV1RulesIdDeleteMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useDeleteRule = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRule>>, TError,DeleteRuleMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteRuleApiV1RulesIdDelete>>,
+        Awaited<ReturnType<typeof deleteRule>>,
         TError,
-        DeleteRuleApiV1RulesIdDeleteMutationVariables,
+        DeleteRuleMutationVariables,
         TContext
       > => {
-      return useMutation(getDeleteRuleApiV1RulesIdDeleteMutationOptions(options), queryClient);
+      return useMutation(getDeleteRuleMutationOptions(options), queryClient);
     }
-    export type getScoringProfileApiV1ServicesIdScoringProfileGetResponse200 = {
-  data: ScoringProfileOut
-  status: 200
-}
-
-export type getScoringProfileApiV1ServicesIdScoringProfileGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type getScoringProfileApiV1ServicesIdScoringProfileGetResponseSuccess = (getScoringProfileApiV1ServicesIdScoringProfileGetResponse200) & {
-  headers: Headers;
-};
-export type getScoringProfileApiV1ServicesIdScoringProfileGetResponseError = (getScoringProfileApiV1ServicesIdScoringProfileGetResponse422) & {
-  headers: Headers;
-};
-
-export type getScoringProfileApiV1ServicesIdScoringProfileGetResponse = (getScoringProfileApiV1ServicesIdScoringProfileGetResponseSuccess | getScoringProfileApiV1ServicesIdScoringProfileGetResponseError)
-
-export const getGetScoringProfileApiV1ServicesIdScoringProfileGetUrl = (id: string,) => {
+    export const getGetScoringProfileUrl = (id: string,) => {
 
 
 
@@ -1798,9 +1485,9 @@ export const getGetScoringProfileApiV1ServicesIdScoringProfileGetUrl = (id: stri
 /**
  * @summary Get Scoring Profile
  */
-export const getScoringProfileApiV1ServicesIdScoringProfileGet = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<getScoringProfileApiV1ServicesIdScoringProfileGetResponse> => {
+export const getScoringProfile = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<ScoringProfileOut> => {
 
-  return apiFetch<getScoringProfileApiV1ServicesIdScoringProfileGetResponse>(getGetScoringProfileApiV1ServicesIdScoringProfileGetUrl(id),
+  return apiFetch<ScoringProfileOut>(getGetScoringProfileUrl(id),
   {
     ...options,
     method: 'GET'
@@ -1813,69 +1500,69 @@ export const getScoringProfileApiV1ServicesIdScoringProfileGet = async (id: stri
 
 
 
-export const getGetScoringProfileApiV1ServicesIdScoringProfileGetQueryKey = (id: string,) => {
+export const getGetScoringProfileQueryKey = (id: string,) => {
     return [
     `/api/v1/services/${id}/scoring-profile`
     ] as const;
     }
 
 
-export const getGetScoringProfileApiV1ServicesIdScoringProfileGetQueryOptions = <TData = Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>, TError = HTTPValidationError>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getGetScoringProfileQueryOptions = <TData = Awaited<ReturnType<typeof getScoringProfile>>, TError = ErrorType<ErrorResponse>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScoringProfile>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetScoringProfileApiV1ServicesIdScoringProfileGetQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetScoringProfileQueryKey(id);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>> = ({ signal }) => getScoringProfileApiV1ServicesIdScoringProfileGet(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getScoringProfile>>> = ({ signal }) => getScoringProfile(id, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getScoringProfile>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetScoringProfileApiV1ServicesIdScoringProfileGetQueryResult = NonNullable<Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>>
-export type GetScoringProfileApiV1ServicesIdScoringProfileGetQueryError = HTTPValidationError
+export type GetScoringProfileQueryResult = NonNullable<Awaited<ReturnType<typeof getScoringProfile>>>
+export type GetScoringProfileQueryError = ErrorType<ErrorResponse>
 
 
-export function useGetScoringProfileApiV1ServicesIdScoringProfileGet<TData = Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>, TError = HTTPValidationError>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>, TError, TData>> & Pick<
+export function useGetScoringProfile<TData = Awaited<ReturnType<typeof getScoringProfile>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScoringProfile>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>,
+          Awaited<ReturnType<typeof getScoringProfile>>,
           TError,
-          Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>
+          Awaited<ReturnType<typeof getScoringProfile>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetScoringProfileApiV1ServicesIdScoringProfileGet<TData = Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>, TError, TData>> & Pick<
+export function useGetScoringProfile<TData = Awaited<ReturnType<typeof getScoringProfile>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScoringProfile>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>,
+          Awaited<ReturnType<typeof getScoringProfile>>,
           TError,
-          Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>
+          Awaited<ReturnType<typeof getScoringProfile>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetScoringProfileApiV1ServicesIdScoringProfileGet<TData = Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetScoringProfile<TData = Awaited<ReturnType<typeof getScoringProfile>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScoringProfile>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Scoring Profile
  */
 
-export function useGetScoringProfileApiV1ServicesIdScoringProfileGet<TData = Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScoringProfileApiV1ServicesIdScoringProfileGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetScoringProfile<TData = Awaited<ReturnType<typeof getScoringProfile>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScoringProfile>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetScoringProfileApiV1ServicesIdScoringProfileGetQueryOptions(id,options)
+  const queryOptions = getGetScoringProfileQueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1887,26 +1574,7 @@ export function useGetScoringProfileApiV1ServicesIdScoringProfileGet<TData = Awa
 
 
 
-export type putScoringProfileApiV1ServicesIdScoringProfilePutResponse200 = {
-  data: RescoreResult
-  status: 200
-}
-
-export type putScoringProfileApiV1ServicesIdScoringProfilePutResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type putScoringProfileApiV1ServicesIdScoringProfilePutResponseSuccess = (putScoringProfileApiV1ServicesIdScoringProfilePutResponse200) & {
-  headers: Headers;
-};
-export type putScoringProfileApiV1ServicesIdScoringProfilePutResponseError = (putScoringProfileApiV1ServicesIdScoringProfilePutResponse422) & {
-  headers: Headers;
-};
-
-export type putScoringProfileApiV1ServicesIdScoringProfilePutResponse = (putScoringProfileApiV1ServicesIdScoringProfilePutResponseSuccess | putScoringProfileApiV1ServicesIdScoringProfilePutResponseError)
-
-export const getPutScoringProfileApiV1ServicesIdScoringProfilePutUrl = (id: string,) => {
+export const getPutScoringProfileUrl = (id: string,) => {
 
 
 
@@ -1917,8 +1585,8 @@ export const getPutScoringProfileApiV1ServicesIdScoringProfilePutUrl = (id: stri
 /**
  * @summary Put Scoring Profile
  */
-export const putScoringProfileApiV1ServicesIdScoringProfilePut = async (id: string,
-    scoringProfileIn: ScoringProfileIn, options?: Parameters<typeof apiFetch>[1]): Promise<putScoringProfileApiV1ServicesIdScoringProfilePutResponse> => {
+export const putScoringProfile = async (id: string,
+    scoringProfileIn: ScoringProfileIn, options?: Parameters<typeof apiFetch>[1]): Promise<RescoreResult> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -1934,7 +1602,7 @@ export const putScoringProfileApiV1ServicesIdScoringProfilePut = async (id: stri
     }
     return headers;
   };
-return apiFetch<putScoringProfileApiV1ServicesIdScoringProfilePutResponse>(getPutScoringProfileApiV1ServicesIdScoringProfilePutUrl(id),
+return apiFetch<RescoreResult>(getPutScoringProfileUrl(id),
   {
     ...options,
     method: 'PUT',
@@ -1947,13 +1615,13 @@ return apiFetch<putScoringProfileApiV1ServicesIdScoringProfilePutResponse>(getPu
 
 
 
-export const getPutScoringProfileApiV1ServicesIdScoringProfilePutMutationKey = () => ['putScoringProfileApiV1ServicesIdScoringProfilePut'] as const;
+export const getPutScoringProfileMutationKey = () => ['putScoringProfile'] as const;
 
-export const getPutScoringProfileApiV1ServicesIdScoringProfilePutMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putScoringProfileApiV1ServicesIdScoringProfilePut>>, TError,PutScoringProfileApiV1ServicesIdScoringProfilePutMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof putScoringProfileApiV1ServicesIdScoringProfilePut>>, TError,PutScoringProfileApiV1ServicesIdScoringProfilePutMutationVariables, TContext> => {
+export const getPutScoringProfileMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putScoringProfile>>, TError,PutScoringProfileMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof putScoringProfile>>, TError,PutScoringProfileMutationVariables, TContext> => {
 
-const mutationKey = getPutScoringProfileApiV1ServicesIdScoringProfilePutMutationKey();
+const mutationKey = getPutScoringProfileMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1963,10 +1631,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putScoringProfileApiV1ServicesIdScoringProfilePut>>, PutScoringProfileApiV1ServicesIdScoringProfilePutMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putScoringProfile>>, PutScoringProfileMutationVariables> = (props) => {
           const {id,data} = props ?? {};
 
-          return  putScoringProfileApiV1ServicesIdScoringProfilePut(id,data,requestOptions)
+          return  putScoringProfile(id,data,requestOptions)
         }
 
 
@@ -1976,21 +1644,94 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PutScoringProfileApiV1ServicesIdScoringProfilePutMutationResult = NonNullable<Awaited<ReturnType<typeof putScoringProfileApiV1ServicesIdScoringProfilePut>>>
-    export type PutScoringProfileApiV1ServicesIdScoringProfilePutMutationBody = ScoringProfileIn
-    export type PutScoringProfileApiV1ServicesIdScoringProfilePutMutationError = HTTPValidationError
-    export type PutScoringProfileApiV1ServicesIdScoringProfilePutMutationVariables = {id: string;data: ScoringProfileIn}
+    export type PutScoringProfileMutationResult = NonNullable<Awaited<ReturnType<typeof putScoringProfile>>>
+    export type PutScoringProfileMutationBody = ScoringProfileIn
+    export type PutScoringProfileMutationError = ErrorType<ErrorResponse>
+    export type PutScoringProfileMutationVariables = {id: string;data: ScoringProfileIn}
 
     /**
  * @summary Put Scoring Profile
  */
-export const usePutScoringProfileApiV1ServicesIdScoringProfilePut = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putScoringProfileApiV1ServicesIdScoringProfilePut>>, TError,PutScoringProfileApiV1ServicesIdScoringProfilePutMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const usePutScoringProfile = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putScoringProfile>>, TError,PutScoringProfileMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putScoringProfileApiV1ServicesIdScoringProfilePut>>,
+        Awaited<ReturnType<typeof putScoringProfile>>,
         TError,
-        PutScoringProfileApiV1ServicesIdScoringProfilePutMutationVariables,
+        PutScoringProfileMutationVariables,
         TContext
       > => {
-      return useMutation(getPutScoringProfileApiV1ServicesIdScoringProfilePutMutationOptions(options), queryClient);
+      return useMutation(getPutScoringProfileMutationOptions(options), queryClient);
+    }
+    export const getSuggestServiceQuestionsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/services/${id}/questions/suggest`
+}
+
+/**
+ * @summary Suggest Service Questions
+ */
+export const suggestServiceQuestions = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<QuestionSuggestionsOut> => {
+
+  return apiFetch<QuestionSuggestionsOut>(getSuggestServiceQuestionsUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getSuggestServiceQuestionsMutationKey = () => ['suggestServiceQuestions'] as const;
+
+export const getSuggestServiceQuestionsMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof suggestServiceQuestions>>, TError,SuggestServiceQuestionsMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof suggestServiceQuestions>>, TError,SuggestServiceQuestionsMutationVariables, TContext> => {
+
+const mutationKey = getSuggestServiceQuestionsMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof suggestServiceQuestions>>, SuggestServiceQuestionsMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  suggestServiceQuestions(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SuggestServiceQuestionsMutationResult = NonNullable<Awaited<ReturnType<typeof suggestServiceQuestions>>>
+
+    export type SuggestServiceQuestionsMutationError = ErrorType<ErrorResponse>
+    export type SuggestServiceQuestionsMutationVariables = {id: string}
+
+    /**
+ * @summary Suggest Service Questions
+ */
+export const useSuggestServiceQuestions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof suggestServiceQuestions>>, TError,SuggestServiceQuestionsMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof suggestServiceQuestions>>,
+        TError,
+        SuggestServiceQuestionsMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSuggestServiceQuestionsMutationOptions(options), queryClient);
     }

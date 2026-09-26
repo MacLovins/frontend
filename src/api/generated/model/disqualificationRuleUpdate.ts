@@ -4,12 +4,13 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
-import type { DisqualificationRuleUpdateCondition } from './disqualificationRuleUpdateCondition';
+import type { DisqualificationRuleUpdateAction } from './disqualificationRuleUpdateAction';
+import type { RuleCondition } from './ruleCondition';
 
 export interface DisqualificationRuleUpdate {
   name?: string | null;
-  condition?: DisqualificationRuleUpdateCondition;
-  action?: string | null;
-  cap_value?: number | string | null;
+  condition?: RuleCondition | null;
+  action?: DisqualificationRuleUpdateAction;
+  cap_value?: number | null;
   is_active?: boolean | null;
 }

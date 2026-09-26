@@ -4,10 +4,14 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { ImportDuplicateOut } from './importDuplicateOut';
 
 export interface CompanyImportReport {
-  created?: number;
-  updated?: number;
-  skipped?: number;
-  errors?: string[];
+  created: number;
+  updated: number;
+  skipped: number;
+  errors: string[];
+  total_rows: number;
+  warnings: string[];
+  duplicates: ImportDuplicateOut[];
 }

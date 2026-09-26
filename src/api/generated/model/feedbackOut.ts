@@ -4,13 +4,17 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { FeedbackOutTargetType } from './feedbackOutTargetType';
+import type { FeedbackOutVerdict } from './feedbackOutVerdict';
+import type { ScoreSummary } from './scoreSummary';
 
 export interface FeedbackOut {
   id: string;
   user_id: string;
-  target_type: string;
+  target_type: FeedbackOutTargetType;
   target_id: string;
   service_id: string;
-  verdict: string;
+  verdict: typeof FeedbackOutVerdict[keyof typeof FeedbackOutVerdict];
   reason: string | null;
+  score: ScoreSummary | null;
 }

@@ -4,12 +4,9 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
-import type { DomainEventOutPayload } from './domainEventOutPayload';
+import type { FeedbackCreatedEvent } from './feedbackCreatedEvent';
+import type { LeadTierChangedEvent } from './leadTierChangedEvent';
+import type { RunFinishedEvent } from './runFinishedEvent';
+import type { SignalDetectedEvent } from './signalDetectedEvent';
 
-export interface DomainEventOut {
-  id: string;
-  type: string;
-  payload: DomainEventOutPayload;
-  created_at: string;
-  processed_at?: string | null;
-}
+export type DomainEventOut = SignalDetectedEvent | LeadTierChangedEvent | RunFinishedEvent | FeedbackCreatedEvent;

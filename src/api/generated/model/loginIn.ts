@@ -8,4 +8,5 @@
 export interface LoginIn {
   email: string;
   password: string;
+  remember_me?: boolean;
 }
