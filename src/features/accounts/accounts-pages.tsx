@@ -12,14 +12,25 @@ import { useServiceId } from "@/lib/use-service"
 export function AccountsPage() {
   const { me } = useSession()
   const queryClient = useQueryClient()
-  const accounts = useQuery({ queryKey: ["accounts"], queryFn: api.accounts })
+  const serviceId = useServiceId()
+  const accounts = useQuery({ queryKey: ["accounts"], queryFn: api.companies })
+  const countries = useQuery({ queryKey: ["countries"], queryFn: api.countries, staleTime: 60_000 })
+  const industries = useQuery({ queryKey: ["industries"], queryFn: api.industries, staleTime: 60_000 })
   const [name, setName] = useState("")
   const [domain, setDomain] = useState("")
-  const [country, setCountry] = useState("Germany")
-  const [industry, setIndustry] = useState("Logistics")
-  const serviceId = useServiceId()
+  const [country, setCountry] = useState("")
+  const [industry, setIndustry] = useState("")
+  const countryName = new Map((countries.data ?? []).map((item) => [item.code, item.name]))
+  const industryName = new Map((industries.data ?? []).map((item) => [item.id, item.label]))
   const add = useMutation({
-    mutationFn: () => api.addAccount({ name, domain, country, industry }),
+    mutationFn: () =>
+      api.addCompany({
+        name,
+        domain,
+        country_code: country || null,
+        industry_ids: industry ? [industry] : [],
+        tags: [],
+      }),
     onSuccess: () => {
       toast.success("Company added")
       void queryClient.invalidateQueries({ queryKey: ["accounts"] })
@@ -27,18 +38,20 @@ export function AccountsPage() {
       setName("")
       setDomain("")
     },
-    onError: () => toast.error("Could not add this company"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Could not add this company"),
   })
   const remove = useMutation({
-    mutationFn: (id: string) => api.deleteAccount(id),
+    mutationFn: (id: string) => api.deleteCompany(id),
     onSuccess: () => {
       toast.success("Company removed")
       void queryClient.invalidateQueries({ queryKey: ["accounts"] })
     },
   })
   const analyze = useMutation({
-    mutationFn: (ids: string[]) => api.startRun(serviceId, ids),
+    mutationFn: (ids: string[]) =>
+      api.startRun({ kind: "analyze", company_ids: ids, service_ids: serviceId ? [serviceId] : [] }),
     onSuccess: () => toast.success("Analysis started"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Could not start analysis"),
   })
 
   return (
@@ -53,12 +66,22 @@ export function AccountsPage() {
       >
         <Input placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} required />
         <Input placeholder="domain.com" value={domain} onChange={(event) => setDomain(event.target.value)} required />
-        <Input value={country} onChange={(event) => setCountry(event.target.value)} />
-        <Input value={industry} onChange={(event) => setIndustry(event.target.value)} />
+        <Select
+          label="Country"
+          value={country}
+          options={(countries.data ?? []).map((item) => ({ value: item.code, label: item.name }))}
+          onChange={setCountry}
+        />
+        <Select
+          label="Industry"
+          value={industry}
+          options={(industries.data ?? []).map((item) => ({ value: item.id, label: item.label }))}
+          onChange={setIndustry}
+        />
         <Button type="submit">{labels.add}</Button>
       </form>
       <label className="text-sm">
-        Import CSV (name,domain,country,industry)
+        Import CSV
         <input
           className="mt-1 block text-sm"
           type="file"
@@ -68,12 +91,10 @@ export function AccountsPage() {
             if (!file) {
               return
             }
-            void file.text().then((text) =>
-              api.importCsv(text).then((report) => {
-                toast.success(`Added ${report.added}, skipped ${report.skipped}`)
-                void queryClient.invalidateQueries({ queryKey: ["accounts"] })
-              }),
-            )
+            void api.importCsv(file).then((report) => {
+              toast.success(`Added ${report.created}, skipped ${report.skipped}`)
+              void queryClient.invalidateQueries({ queryKey: ["accounts"] })
+            })
           }}
         />
       </label>
@@ -88,14 +109,16 @@ export function AccountsPage() {
             </tr>
           </thead>
           <tbody>
-            {(accounts.data ?? []).map((account) => (
+            {(accounts.data?.items ?? []).map((account) => (
               <tr key={account.id} className="border-t border-border">
                 <td className="px-3 py-2">
                   <div className="font-medium">{account.name}</div>
                   <div className="text-xs text-muted-foreground">{account.domain}</div>
                 </td>
-                <td className="px-3 py-2">{account.country}</td>
-                <td className="px-3 py-2">{account.industry}</td>
+                <td className="px-3 py-2">{countryName.get(account.country_code ?? "") ?? account.country_code}</td>
+                <td className="px-3 py-2">
+                  {account.industry_ids.map((id) => industryName.get(id) ?? id).join(", ")}
+                </td>
                 <td className="px-3 py-2 text-right">
                   <Button size="sm" variant="outline" onClick={() => analyze.mutate([account.id])}>
                     {labels.analyze}
@@ -115,81 +138,73 @@ export function AccountsPage() {
   )
 }
 
-const POPULAR_COUNTRIES = [
-  { id: "Germany", label: "🇩🇪 Germany" },
-  { id: "Switzerland", label: "🇨🇭 Switzerland" },
-  { id: "Denmark", label: "🇩🇰 Denmark" },
-  { id: "Netherlands", label: "🇳🇱 Netherlands" },
-  { id: "France", label: "🇫🇷 France" },
-  { id: "United States", label: "🇺🇸 USA" },
-  { id: "all", label: "🌍 All Countries" },
-]
-
 export function DiscoveryPage() {
   const serviceId = useServiceId()
-  const [country, setCountry] = useState("Germany")
+  const [country, setCountry] = useState("")
+  const [keywords, setKeywords] = useState("")
+  const [search, setSearch] = useState({ country: "", keywords: [] as string[] })
   const [selected, setSelected] = useState<string[]>([])
   const queryClient = useQueryClient()
-
-  const { data: candidates = [], isLoading, isFetching } = useQuery({
-    queryKey: ["discovery", country],
-    queryFn: () => api.discover(country),
-    staleTime: 30_000,
+  const countries = useQuery({ queryKey: ["countries"], queryFn: api.countries, staleTime: 60_000 })
+  const countryName = new Map((countries.data ?? []).map((item) => [item.code, item.name]))
+  const discovery = useQuery({
+    queryKey: ["discovery", serviceId, search],
+    enabled: Boolean(serviceId),
+    queryFn: () =>
+      api.discover({
+        service_id: serviceId,
+        country: search.country || null,
+        limit: 10,
+        keywords: search.keywords,
+      }),
   })
-
+  const candidates = discovery.data?.items ?? []
   const allSelected = candidates.length > 0 && selected.length === candidates.length
 
-  const handleSelectAll = () => {
-    if (allSelected) {
-      setSelected([])
-    } else {
-      setSelected(candidates.map((c) => c.id))
+  function acceptBody(item: (typeof candidates)[number]) {
+    return {
+      name: item.name,
+      domain: item.domain,
+      country_code: item.country_code,
+      industry_ids: item.industry_ids,
+      employees: item.employees,
+      tags: [],
+      service_id: serviceId || null,
     }
   }
 
   const addSelected = useMutation({
     mutationFn: async () => {
-      const chosen = candidates.filter((item) => selected.includes(item.id))
-      return Promise.all(
-        chosen.map((item) =>
-          api.addAccount({
-            name: item.name,
-            domain: item.domain,
-            country: item.country,
-            industry: "Enterprise",
-          }),
-        ),
-      )
+      const chosen = candidates.filter((item) => selected.includes(item.domain))
+      return Promise.all(chosen.map((item) => api.acceptDiscovery(acceptBody(item))))
     },
     onSuccess: (added) => {
       toast.success(`Added ${added.length} companies to accounts`)
       void queryClient.invalidateQueries({ queryKey: ["accounts"] })
       void queryClient.invalidateQueries({ queryKey: ["prospects"] })
+      void queryClient.invalidateQueries({ queryKey: ["discovery"] })
       setSelected([])
     },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Could not add companies"),
   })
 
   const analyzeSelected = useMutation({
     mutationFn: async () => {
-      const chosen = candidates.filter((item) => selected.includes(item.id))
-      await Promise.all(
-        chosen.map((item) =>
-          api
-            .addAccount({
-              name: item.name,
-              domain: item.domain,
-              country: item.country,
-              industry: "Enterprise",
-            })
-            .catch(() => null),
-        ),
-      )
-      return api.startRun(serviceId, chosen.map((item) => item.id))
+      const chosen = candidates.filter((item) => selected.includes(item.domain))
+      const added = await Promise.all(chosen.map((item) => api.acceptDiscovery(acceptBody(item))))
+      return api.startRun({
+        kind: "analyze",
+        company_ids: added.map((item) => item.id),
+        service_ids: serviceId ? [serviceId] : [],
+      })
     },
     onSuccess: () => {
       toast.success("Analysis started for selected companies")
+      void queryClient.invalidateQueries({ queryKey: ["accounts"] })
       void queryClient.invalidateQueries({ queryKey: ["runs"] })
+      setSelected([])
     },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Could not start analysis"),
   })
 
   return (
@@ -201,85 +216,75 @@ export function DiscoveryPage() {
         </p>
       </div>
 
-      {/* Country quick-select chips */}
-      <div className="flex flex-wrap gap-2">
-        {POPULAR_COUNTRIES.map((chip) => {
-          const isActive = country.toLowerCase() === chip.id.toLowerCase()
-          return (
-            <button
-              key={chip.id}
-              type="button"
-              onClick={() => {
-                setCountry(chip.id === "all" ? "" : chip.id)
-                setSelected([])
-              }}
-              className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
-                isActive
-                  ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                  : "border-border bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
-            >
-              {chip.label}
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Search Input Bar */}
-      <div className="flex items-center gap-2">
-        <Input
-          placeholder="Filter by country, company name, or domain (e.g. Germany, Switzerland, Siemens)..."
+      <div className="flex flex-wrap items-center gap-2">
+        <Select
+          label="Country"
           value={country}
-          onChange={(event) => setCountry(event.target.value)}
-          className="flex-1"
+          options={(countries.data ?? []).map((item) => ({ value: item.code, label: item.name }))}
+          onChange={(value) => {
+            setCountry(value)
+            setSelected([])
+          }}
+        />
+        <Input
+          placeholder="Keywords, comma separated"
+          value={keywords}
+          onChange={(event) => setKeywords(event.target.value)}
+          className="max-w-md flex-1"
         />
         <Button
           type="button"
           variant="outline"
           onClick={() => {
-            void queryClient.invalidateQueries({ queryKey: ["discovery"] })
+            setSelected([])
+            setSearch({
+              country,
+              keywords: keywords
+                .split(",")
+                .map((item) => item.trim())
+                .filter(Boolean),
+            })
           }}
-          disabled={isLoading || isFetching}
+          disabled={!serviceId || discovery.isFetching}
         >
-          {isLoading || isFetching ? "Searching..." : "Search"}
+          {discovery.isFetching ? "Searching..." : "Search"}
         </Button>
       </div>
 
-      {/* Results Header and Select All */}
       <div className="flex items-center justify-between border-b border-border pb-2 text-sm">
         <span className="font-medium text-foreground">
-          {isLoading ? (
-            "Scanning registries..."
-          ) : (
-            `Found ${candidates.length} target accounts ${country ? `for "${country}"` : ""}`
-          )}
+          {!serviceId
+            ? "Choose a service to search."
+            : discovery.isLoading
+              ? "Scanning registries..."
+              : `Found ${candidates.length} target accounts`}
         </span>
-        {candidates.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={handleSelectAll} className="h-7 text-xs">
+        {candidates.length > 0 ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSelected(allSelected ? [] : candidates.map((item) => item.domain))}
+            className="h-7 text-xs"
+          >
             {allSelected ? "Deselect all" : "Select all"}
           </Button>
-        )}
+        ) : null}
       </div>
 
-      {/* Candidate List */}
-      {candidates.length === 0 && !isLoading ? (
+      {candidates.length === 0 && !discovery.isLoading ? (
         <div className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-          No companies found matching &ldquo;{country}&rdquo;.
-          <div className="mt-2 text-xs">
-            Try clicking one of the country chips above or search for &ldquo;Germany&rdquo;, &ldquo;Switzerland&rdquo;, or &ldquo;All&rdquo;.
-          </div>
+          No companies found.
         </div>
       ) : (
         <div className="grid gap-2.5 sm:grid-cols-2">
           {candidates.map((candidate) => {
-            const isChecked = selected.includes(candidate.id)
-            const isHighFit = candidate.fit >= 88
+            const isChecked = selected.includes(candidate.domain)
             return (
               <div
-                key={candidate.id}
+                key={candidate.domain}
                 onClick={() => {
-                  setSelected((curr) =>
-                    isChecked ? curr.filter((id) => id !== candidate.id) : [...curr, candidate.id],
+                  setSelected((current) =>
+                    isChecked ? current.filter((domain) => domain !== candidate.domain) : [...current, candidate.domain],
                   )
                 }}
                 className={`group flex cursor-pointer items-center justify-between rounded-xl border p-3.5 transition-all ${
@@ -301,38 +306,24 @@ export function DiscoveryPage() {
                     className="size-6 rounded-md bg-muted/60 p-0.5"
                   />
                   <div>
-                    <div className="font-medium text-foreground group-hover:text-primary">
-                      {candidate.name}
-                    </div>
+                    <div className="font-medium text-foreground group-hover:text-primary">{candidate.name}</div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <span>{candidate.domain}</span>
                       <span>·</span>
-                      <span className="rounded bg-muted px-1.5 py-0.5 font-medium">{candidate.country}</span>
+                      <span className="rounded bg-muted px-1.5 py-0.5 font-medium">
+                        {countryName.get(candidate.country_code ?? "") ?? candidate.country_code ?? "—"}
+                      </span>
+                      {candidate.already_tracked ? <span>Tracked</span> : null}
                     </div>
                   </div>
                 </div>
-
-                <div className="text-right">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-muted-foreground">Fit</span>
-                    <span
-                      className={`rounded px-1.5 py-0.5 text-xs font-semibold ${
-                        isHighFit
-                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                          : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                      }`}
-                    >
-                      {candidate.fit}%
-                    </span>
-                  </div>
-                </div>
+                <div className="text-right text-xs text-muted-foreground">Fit {candidate.fit_score}</div>
               </div>
             )
           })}
         </div>
       )}
 
-      {/* Action Footer */}
       <div className="flex items-center justify-between rounded-xl border border-border bg-muted/20 p-3">
         <span className="text-xs text-muted-foreground">
           {selected.length} of {candidates.length} companies selected
@@ -356,5 +347,33 @@ export function DiscoveryPage() {
         </div>
       </div>
     </section>
+  )
+}
+
+function Select({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string
+  value: string
+  options: { value: string; label: string }[]
+  onChange: (value: string) => void
+}) {
+  return (
+    <select
+      aria-label={label}
+      className="h-9 rounded-lg border border-input bg-background px-2 text-sm"
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+    >
+      <option value="">{label}</option>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
   )
 }
