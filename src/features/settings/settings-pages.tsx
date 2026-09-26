@@ -4,7 +4,6 @@ import { Link, useParams } from "react-router"
 import { toast } from "sonner"
 
 import { api } from "@/api/client"
-import type { Question, Rule, Scoring, Weight } from "@/api/types"
 import { Button } from "@/features/components/ui/button"
 import { Input } from "@/features/components/ui/input"
 import { labels } from "@/lib/labels"
@@ -21,7 +20,8 @@ export function ServicesPage() {
         {(services.data ?? []).map((service) => (
           <li key={service.id} className="rounded-xl border border-border p-4">
             <p className="font-medium">{service.name}</p>
-            <p className="text-muted-foreground">Preset {service.preset}</p>
+            <p className="text-muted-foreground">{service.slug}</p>
+            {service.description ? <p className="text-muted-foreground">{service.description}</p> : null}
             <div className="mt-2 flex flex-wrap gap-3">
               <Link className="underline" to={`/settings/${service.id}/questions?service=${serviceId}`}>
                 {labels.questions}
@@ -50,13 +50,26 @@ export function QuestionsPage() {
   const queryClient = useQueryClient()
   const questions = useQuery({
     queryKey: ["questions", serviceId],
+    enabled: Boolean(serviceId),
     queryFn: () => api.questions(serviceId),
-    refetchInterval: (query) =>
-      query.state.data?.some((item) => item.keywordStatus === "pending") ? 1000 : false,
+    refetchInterval: (query) => (query.state.data?.some((item) => item.keywords_status === "pending") ? 1000 : false),
   })
+  const labelsMeta = useQuery({ queryKey: ["labels"], queryFn: api.labels, staleTime: 60_000 })
+  const weightOptions = Object.keys(labelsMeta.data?.weights ?? {})
   const [draft, setDraft] = useState("")
   const save = useMutation({
-    mutationFn: (question: Question) => api.saveQuestion(question),
+    mutationFn: (text: string) =>
+      api.createQuestion(serviceId, {
+        key: questionKey(text),
+        text,
+        category: "ai_automation",
+        polarity: "positive",
+        weight: "medium",
+        source_types: ["website", "news", "jobs"],
+        recency_days: 180,
+        job_titles: [],
+        negative_terms: [],
+      }),
     onSuccess: () => {
       toast.success("Question saved. Keywords are generating.")
       void queryClient.invalidateQueries({ queryKey: ["questions", serviceId] })
@@ -64,13 +77,13 @@ export function QuestionsPage() {
     },
   })
   const weight = useMutation({
-    mutationFn: ({ id, value }: { id: string; value: Weight }) => api.setWeight(id, value),
-    onSuccess: (result) => {
-      toast.success(result.message)
+    mutationFn: ({ id, value }: { id: string; value: string }) => api.updateQuestion(id, { weight: value }),
+    onSuccess: () => {
+      toast.success("Ranking updated")
       void queryClient.invalidateQueries({ queryKey: ["questions", serviceId] })
     },
   })
-  const changed = (questions.data ?? []).filter((item) => item.keywordStatus === "pending").length
+  const changed = (questions.data ?? []).filter((item) => item.keywords_status === "pending").length
 
   return (
     <section className="flex flex-col gap-4">
@@ -93,22 +106,23 @@ export function QuestionsPage() {
                 <td className="px-3 py-2">
                   {question.text}
                   <div className="text-xs text-muted-foreground">
-                    {question.category} · {question.polarity} · {question.keywordStatus}
+                    {question.category} · {question.polarity} · {question.keywords_status}
                   </div>
                 </td>
                 <td className="px-3 py-2">
                   <select
                     value={question.weight}
-                    onChange={(event) =>
-                      weight.mutate({ id: question.id, value: event.target.value as Weight })
-                    }
+                    onChange={(event) => weight.mutate({ id: question.id, value: event.target.value })}
                   >
-                    <option>H</option>
-                    <option>M</option>
-                    <option>L</option>
+                    {weightOptions.includes(question.weight) ? null : <option value={question.weight}>{question.weight}</option>}
+                    {weightOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {labelsMeta.data?.weights[option] ?? option}
+                      </option>
+                    ))}
                   </select>
                 </td>
-                <td className="px-3 py-2">{question.keywords.join(", ")}</td>
+                <td className="px-3 py-2">{keywordText(question.keywords)}</td>
               </tr>
             ))}
           </tbody>
@@ -118,19 +132,7 @@ export function QuestionsPage() {
         className="flex gap-2"
         onSubmit={(event) => {
           event.preventDefault()
-          save.mutate({
-            id: `q-${Date.now()}`,
-            serviceId,
-            text: draft,
-            category: "Automation & AI projects",
-            polarity: "+",
-            weight: "M",
-            sources: ["web"],
-            windowDays: 180,
-            keywordStatus: "pending",
-            keywords: [],
-            active: true,
-          })
+          save.mutate(draft)
         }}
       >
         <Input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="New question" required />
@@ -141,15 +143,29 @@ export function QuestionsPage() {
 }
 
 export function IcpPage() {
-  const icp = useQuery({ queryKey: ["icp"], queryFn: api.icp })
+  const params = useParams()
+  const fromQuery = useServiceId()
+  const serviceId = params.serviceId ?? fromQuery
+  const queryClient = useQueryClient()
+  const icp = useQuery({ queryKey: ["icp", serviceId], queryFn: () => api.icp(serviceId), enabled: Boolean(serviceId) })
   const save = useMutation({
     mutationFn: () => {
       if (!icp.data) {
         throw new Error("missing")
       }
-      return api.saveIcp({ ...icp.data, countries: ["Germany", "Romania", "Poland"] })
+      return api.saveIcp(serviceId, {
+        countries: icp.data.countries,
+        industries_any: icp.data.industries_any,
+        employees_min: icp.data.employees_min,
+        employees_max: icp.data.employees_max,
+        revenue_min_eur: icp.data.revenue_min_eur,
+        nice_to_have: icp.data.nice_to_have,
+      })
     },
-    onSuccess: () => toast.success("ICP saved"),
+    onSuccess: () => {
+      toast.success("ICP saved")
+      void queryClient.invalidateQueries({ queryKey: ["icp", serviceId] })
+    },
   })
   const data = icp.data
 
@@ -158,18 +174,14 @@ export function IcpPage() {
       <h1 className="font-heading text-2xl font-medium">{labels.icp}</h1>
       {data ? (
         <>
-          <p>Must-have countries: {data.countries.join(", ")}</p>
-          <p>Industries: {data.industries.join(", ")}</p>
-          <p>Headcount {data.headcount} · Revenue {data.revenue}</p>
-          <ul>
-            {data.nice.map((item) => (
-              <li key={item.label}>
-                {item.label} · weight {item.weight}
-              </li>
-            ))}
-          </ul>
+          <p>Countries: {data.countries.join(", ") || "—"}</p>
+          <p>Industries: {data.industries_any.join(", ") || "—"}</p>
+          <p>
+            Employees {data.employees_min ?? "—"}–{data.employees_max ?? "—"} · Revenue {data.revenue_min_eur ?? "—"}
+          </p>
+          {data.nice_to_have ? <p>Nice to have: {JSON.stringify(data.nice_to_have)}</p> : null}
           <Button className="self-start" onClick={() => save.mutate()}>
-            Apply region preset
+            {labels.save}
           </Button>
         </>
       ) : (
@@ -184,19 +196,21 @@ export function RulesPage() {
   const fromQuery = useServiceId()
   const serviceId = params.serviceId ?? fromQuery
   const queryClient = useQueryClient()
-  const rules = useQuery({ queryKey: ["rules", serviceId], queryFn: () => api.rules(serviceId) })
+  const rules = useQuery({
+    queryKey: ["rules", serviceId],
+    queryFn: () => api.rules(serviceId),
+    enabled: Boolean(serviceId),
+  })
   const [name, setName] = useState("")
   const save = useMutation({
     mutationFn: () => {
-      const rule: Rule = {
-        id: `rule-${Date.now()}`,
-        serviceId,
+      return api.saveRule(serviceId, {
         name,
         kind: "domains",
-        effect: "exclude",
-        detail: name,
-      }
-      return api.saveRule(rule)
+        condition: { domains: name.split(/[,\s]+/).filter(Boolean) },
+        action: "disqualify",
+        is_active: true,
+      })
     },
     onSuccess: () => {
       toast.success("Rule saved")
@@ -211,7 +225,7 @@ export function RulesPage() {
       <ul className="text-sm">
         {(rules.data ?? []).map((rule) => (
           <li key={rule.id}>
-            {rule.name} · {rule.effect} · {rule.detail}
+            {rule.name} · {rule.kind} · {rule.action} · {JSON.stringify(rule.condition)}
           </li>
         ))}
       </ul>
@@ -230,22 +244,34 @@ export function RulesPage() {
 }
 
 export function ScoringPage() {
-  const scoring = useQuery({ queryKey: ["scoring"], queryFn: api.scoring })
-  const [draft, setDraft] = useState<Scoring | null>(null)
-  const value = draft ?? scoring.data ?? null
+  const params = useParams()
+  const fromQuery = useServiceId()
+  const serviceId = params.serviceId ?? fromQuery
+  const scoring = useQuery({
+    queryKey: ["scoring", serviceId],
+    queryFn: () => api.scoring(serviceId),
+    enabled: Boolean(serviceId),
+  })
+  const [draft, setDraft] = useState<Record<string, unknown> | null>(null)
+  const paramsValue = draft ?? scoring.data?.params ?? null
   const save = useMutation({
     mutationFn: () => {
-      if (!value) {
+      if (!paramsValue) {
         throw new Error("missing")
       }
-      return api.saveScoring(value)
+      return api.saveScoring(serviceId, { params: paramsValue })
     },
-    onSuccess: (result) => toast.success(result.message),
+    onSuccess: (result) =>
+      toast.success(
+        `Rescored ${result.rescored} companies in ${(result.duration_ms / 1000).toFixed(1)} s, ${result.tier_changes} tier changes`,
+      ),
   })
 
-  if (!value) {
+  if (!paramsValue) {
     return <p className="text-sm text-muted-foreground">{labels.loading}</p>
   }
+
+  const fields = Object.entries(paramsValue)
 
   return (
     <form
@@ -256,28 +282,23 @@ export function ScoringPage() {
       }}
     >
       <h1 className="font-heading text-2xl font-medium">{labels.scoring}</h1>
-      <NumberField
-        label="Half-life for news: after this many days a news signal counts half as much"
-        value={value.newsHalfLife}
-        onChange={(newsHalfLife) => setDraft({ ...value, newsHalfLife })}
-      />
-      <NumberField
-        label="How much ICP fit counts versus buying signals"
-        value={value.fitBalance}
-        onChange={(fitBalance) => setDraft({ ...value, fitBalance })}
-      />
-      <NumberField
-        label="Penalty when blockers are high"
-        value={value.riskPenalty}
-        onChange={(riskPenalty) => setDraft({ ...value, riskPenalty })}
-      />
-      <NumberField label="Hot threshold" value={value.hot} onChange={(hot) => setDraft({ ...value, hot })} />
-      <NumberField label="Warm threshold" value={value.warm} onChange={(warm) => setDraft({ ...value, warm })} />
-      <NumberField
-        label="Minimum confidence before a signal counts"
-        value={value.minConfidence}
-        onChange={(minConfidence) => setDraft({ ...value, minConfidence })}
-      />
+      {fields.length === 0 ? <p className="text-muted-foreground">No scoring parameters yet.</p> : null}
+      {fields.map(([key, value]) =>
+        typeof value === "number" ? (
+          <label key={key} className="flex flex-col gap-1">
+            {key}
+            <Input
+              type="number"
+              value={value}
+              onChange={(event) => setDraft({ ...paramsValue, [key]: Number(event.target.value) })}
+            />
+          </label>
+        ) : (
+          <p key={key}>
+            <span className="text-muted-foreground">{key}</span> {JSON.stringify(value)}
+          </p>
+        ),
+      )}
       <Button type="submit" className="self-start">
         {labels.save}
       </Button>
@@ -285,19 +306,20 @@ export function ScoringPage() {
   )
 }
 
-function NumberField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string
-  value: number
-  onChange: (value: number) => void
-}) {
-  return (
-    <label className="flex flex-col gap-1">
-      {label}
-      <Input type="number" value={value} onChange={(event) => onChange(Number(event.target.value))} />
-    </label>
-  )
+function questionKey(text: string) {
+  const slug = text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 128)
+  return slug || `q-${Date.now()}`
+}
+
+function keywordText(keywords: { [key: string]: unknown } | null | undefined) {
+  if (!keywords) {
+    return ""
+  }
+  return Object.entries(keywords)
+    .map(([key, value]) => (typeof value === "string" ? value : key))
+    .join(", ")
 }

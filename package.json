@@ -10,7 +10,9 @@
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sync:api": "node scripts/sync-api.mjs",
+    "gen:api": "orval"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -27,6 +29,7 @@
     "eventsource-parser": "^4.1.1",
     "i18next": "^26.4.2",
     "motion": "^13.4.4",
+    "openapi-fetch": "^0.17.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-hook-form": "^7.88.0",
@@ -41,6 +44,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10",
+    "@faker-js/faker": "^10.6.0",
+    "@maclovins/leadradar-api": "^0.1.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -49,16 +54,19 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17",
+    "msw": "^2.15.0",
+    "orval": "^8.35.0",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "typescript": "~6",
     "typescript-eslint": "^8",
     "vite": "^8",
-    "vitest": "^3.2.7"
+    "vitest": "^5.0.2"
   },
   "allowScripts": {
     "eslint@10.11.0": true,
     "esbuild@0.28.2": true,
-    "fsevents@2.3.3": true
+    "fsevents@2.3.3": true,
+    "msw@2.15.0": true
   }
 }

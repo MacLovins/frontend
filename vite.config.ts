@@ -13,7 +13,12 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": "http://localhost:8000",
+      "/api": {
+        target: "https://api.leadradar.business",
+        changeOrigin: true,
+        secure: true,
+        cookieDomainRewrite: "localhost",
+      },
     },
   },
 })

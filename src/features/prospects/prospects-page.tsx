@@ -2,18 +2,19 @@ import { useQuery } from "@tanstack/react-query"
 import { useNavigate, useSearchParams } from "react-router"
 
 import { api } from "@/api/client"
-import type { Tier } from "@/api/types"
 import { Button } from "@/features/components/ui/button"
 import { Input } from "@/features/components/ui/input"
-import { useServiceId } from "@/lib/use-service"
-import { faviconUrl, relativeDate } from "@/lib/format"
+import { faviconUrl } from "@/lib/format"
 import { labels, tiers } from "@/lib/labels"
+import { useServiceId } from "@/lib/use-service"
 import { cn } from "cn"
 
 export function ProspectsPage() {
   const serviceId = useServiceId()
   const [params, setParams] = useSearchParams()
   const navigate = useNavigate()
+  const countries = useQuery({ queryKey: ["countries"], queryFn: api.countries, staleTime: 60_000 })
+  const industries = useQuery({ queryKey: ["industries"], queryFn: api.industries, staleTime: 60_000 })
   const query = {
     serviceId,
     q: params.get("q") ?? "",
@@ -25,7 +26,8 @@ export function ProspectsPage() {
   }
   const prospects = useQuery({
     queryKey: ["prospects", query],
-    queryFn: () => api.prospects(query),
+    queryFn: () => api.leads(query),
+    enabled: Boolean(serviceId),
     staleTime: 30_000,
   })
 
@@ -36,29 +38,27 @@ export function ProspectsPage() {
     } else {
       next.delete(key)
     }
-    next.set("service", serviceId)
+    if (serviceId) {
+      next.set("service", serviceId)
+    }
     setParams(next)
   }
 
-  const rows = prospects.data ?? []
+  const rows = prospects.data?.items ?? []
   const counts = {
-    hot: rows.filter((row) => row.tier === "hot").length,
-    warm: rows.filter((row) => row.tier === "warm").length,
-    cold: rows.filter((row) => row.tier === "cold").length,
-    disqualified: rows.filter((row) => row.tier === "disqualified").length,
+    hot: rows.filter((row) => row.score.tier === "hot").length,
+    warm: rows.filter((row) => row.score.tier === "warm").length,
+    cold: rows.filter((row) => row.score.tier === "cold").length,
+    disqualified: rows.filter((row) => row.score.tier === "disqualified" || row.score.disqualified).length,
   }
 
   return (
     <section className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-        <p>
-          {tiers.hot} {counts.hot} · {tiers.warm} {counts.warm} · {tiers.cold} {counts.cold} ·{" "}
-          {tiers.disqualified} {counts.disqualified}
-        </p>
-        <p className="text-muted-foreground">
-          {labels.precision} 86% (124)
-        </p>
-      </div>
+      <p className="text-sm">
+        {tiers.hot} {counts.hot} · {tiers.warm} {counts.warm} · {tiers.cold} {counts.cold} · {tiers.disqualified}{" "}
+        {counts.disqualified}
+        {prospects.data ? <span className="text-muted-foreground"> · {prospects.data.total} total</span> : null}
+      </p>
       <div className="flex flex-wrap gap-2">
         <Input
           className="max-w-xs"
@@ -66,9 +66,24 @@ export function ProspectsPage() {
           value={query.q}
           onChange={(event) => setParam("q", event.target.value)}
         />
-        <FilterSelect label="Country" value={query.country} options={["Germany", "Romania"]} onChange={(value) => setParam("country", value)} />
-        <FilterSelect label="Industry" value={query.industry} options={["Logistics", "Industrial", "Food"]} onChange={(value) => setParam("industry", value)} />
-        <FilterSelect label="Tier" value={query.tier} options={["hot", "warm", "cold", "disqualified"]} onChange={(value) => setParam("tier", value)} />
+        <FilterSelect
+          label="Country"
+          value={query.country}
+          options={(countries.data ?? []).map((country) => ({ value: country.code, label: country.name }))}
+          onChange={(value) => setParam("country", value)}
+        />
+        <FilterSelect
+          label="Industry"
+          value={query.industry}
+          options={(industries.data ?? []).map((industry) => ({ value: industry.id, label: industry.label }))}
+          onChange={(value) => setParam("industry", value)}
+        />
+        <FilterSelect
+          label="Tier"
+          value={query.tier}
+          options={["hot", "warm", "cold", "disqualified"].map((tier) => ({ value: tier, label: tiers[tier as keyof typeof tiers] }))}
+          onChange={(value) => setParam("tier", value)}
+        />
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -82,7 +97,7 @@ export function ProspectsPage() {
           <input
             type="range"
             min={0}
-            max={80}
+            max={100}
             value={query.minPriority}
             onChange={(event) => setParam("min", event.target.value === "0" ? "" : event.target.value)}
           />
@@ -94,7 +109,7 @@ export function ProspectsPage() {
           {labels.retry}
         </Button>
       ) : null}
-      {!prospects.isLoading && rows.length === 0 ? (
+      {!prospects.isLoading && !prospects.isError && rows.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border p-8 text-sm text-muted-foreground">
           {query.q || query.country || query.tier ? labels.emptyFilters : labels.emptyLeads}
         </div>
@@ -104,10 +119,9 @@ export function ProspectsPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-muted/50 text-muted-foreground">
               <tr>
-                <th className="px-3 py-2">#</th>
                 <th className="px-3 py-2">Company</th>
                 <th className="px-3 py-2">{labels.priority}</th>
-                <th className="px-3 py-2">{labels.fit} · {labels.signals} · {labels.blockers}</th>
+                <th className="px-3 py-2">{labels.fit} · intent · risk</th>
                 <th className="px-3 py-2">{labels.whyNow}</th>
                 <th className="px-3 py-2">Signals</th>
               </tr>
@@ -115,44 +129,44 @@ export function ProspectsPage() {
             <tbody>
               {rows.map((row) => (
                 <tr
-                  key={row.id}
+                  key={row.company.id}
                   tabIndex={0}
                   className="cursor-pointer border-t border-border hover:bg-muted/40"
-                  onClick={() => navigate(`/companies/${row.id}?service=${serviceId}`)}
+                  onClick={() => navigate(`/companies/${row.company.id}?service=${serviceId}`)}
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
-                      navigate(`/companies/${row.id}?service=${serviceId}`)
+                      navigate(`/companies/${row.company.id}?service=${serviceId}`)
                     }
                   }}
                 >
-                  <td className="px-3 py-3">{row.rank}</td>
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-2 font-medium">
-                      <img alt="" src={faviconUrl(row.domain)} className="size-4" />
-                      {row.name} <span className="text-muted-foreground">{row.countryCode}</span>
+                      <img alt="" src={faviconUrl(row.company.domain)} className="size-4" />
+                      {row.company.name}{" "}
+                      <span className="text-muted-foreground">{row.company.country_code}</span>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {row.domain} · {row.industry}
-                    </div>
+                    <div className="text-xs text-muted-foreground">{row.company.domain}</div>
                   </td>
                   <td className="px-3 py-3">
-                    {row.priority} <TierBadge tier={row.tier} />
+                    {row.score.priority} <TierBadge tier={row.score.tier} disqualified={row.score.disqualified} />
                   </td>
-                  <td className="px-3 py-3">
-                    <MiniBars fit={row.fit} signals={row.signals} blockers={row.blockers} />
+                  <td className="px-3 py-3 text-xs text-muted-foreground">
+                    {row.score.fit} · {row.score.intent} · {row.score.risk}
                   </td>
                   <td className="px-3 py-3">
                     <ul className="max-w-sm space-y-1">
-                      {row.whyNow.map((item) => (
-                        <li key={item.text}>
-                          {item.positive ? "✓" : "⚠"} {item.text}
-                          <span className="text-muted-foreground"> · {item.source} · {relativeDate(item.date)}</span>
-                        </li>
+                      {row.top_reasons.map((item, index) => (
+                        <li key={index}>{recordText(item)}</li>
                       ))}
                     </ul>
                   </td>
                   <td className="px-3 py-3">
-                    {row.signalCount} {row.newCount > 0 ? <span className="rounded bg-primary/15 px-1.5 py-0.5 text-xs">{row.newCount} {labels.new}</span> : null}
+                    {row.signals_count}{" "}
+                    {row.new_signals_7d > 0 ? (
+                      <span className="rounded bg-primary/15 px-1.5 py-0.5 text-xs">
+                        {row.new_signals_7d} {labels.new}
+                      </span>
+                    ) : null}
                   </td>
                 </tr>
               ))}
@@ -164,39 +178,33 @@ export function ProspectsPage() {
   )
 }
 
-function TierBadge({ tier }: { tier: Tier }) {
+function TierBadge({ tier, disqualified }: { tier: string; disqualified: boolean }) {
+  const key = disqualified ? "disqualified" : tier
+  const label = key in tiers ? tiers[key as keyof typeof tiers] : tier
   return (
     <span
       className={cn(
         "rounded-full px-2 py-0.5 text-xs",
-        tier === "hot" && "bg-primary/15 text-primary",
-        tier === "warm" && "bg-chart-2/20",
-        tier === "cold" && "bg-muted text-muted-foreground",
-        tier === "disqualified" && "bg-destructive/10 text-destructive",
+        key === "hot" && "bg-primary/15 text-primary",
+        key === "warm" && "bg-chart-2/20",
+        key === "cold" && "bg-muted text-muted-foreground",
+        key === "disqualified" && "bg-destructive/10 text-destructive",
       )}
     >
-      {tier === "hot" ? "🔥 " : tier === "disqualified" ? "⊘ " : ""}
-      {tiers[tier]}
+      {label}
     </span>
   )
 }
 
-function MiniBars({ fit, signals, blockers }: { fit: number; signals: number; blockers: number }) {
-  return (
-    <div className="flex w-36 flex-col gap-1" title={`${labels.fit} ${fit}, ${labels.signals} ${signals}, ${labels.blockers} ${blockers}`}>
-      <Bar value={fit} />
-      <Bar value={signals} />
-      <Bar value={blockers} />
-    </div>
-  )
-}
-
-function Bar({ value }: { value: number }) {
-  return (
-    <div className="h-1.5 rounded bg-muted">
-      <div className="h-1.5 rounded bg-primary" style={{ width: `${value}%` }} />
-    </div>
-  )
+function recordText(value: { [key: string]: unknown }) {
+  for (const key of ["text", "summary", "reason", "label"]) {
+    const item = value[key]
+    if (typeof item === "string" && item) {
+      return item
+    }
+  }
+  const compact = JSON.stringify(value)
+  return compact === "{}" ? "" : compact
 }
 
 function FilterSelect({
@@ -207,7 +215,7 @@ function FilterSelect({
 }: {
   label: string
   value: string
-  options: string[]
+  options: { value: string; label: string }[]
   onChange: (value: string) => void
 }) {
   return (
@@ -219,8 +227,8 @@ function FilterSelect({
     >
       <option value="">{label}</option>
       {options.map((option) => (
-        <option key={option} value={option}>
-          {option}
+        <option key={option.value} value={option.value}>
+          {option.label}
         </option>
       ))}
     </select>

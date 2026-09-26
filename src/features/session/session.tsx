@@ -3,11 +3,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createContext, useContext, type ReactNode } from "react"
 import { Navigate, Outlet, useLocation } from "react-router"
 
-import { api } from "@/api/client"
-import type { Me } from "@/api/types"
+import { api, type UserOut } from "@/api/client"
 import { labels } from "@/lib/labels"
 
-const AuthContext = createContext<{ me: Me | null; loading: boolean } | null>(null)
+const AuthContext = createContext<{ me: UserOut | null; loading: boolean } | null>(null)
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const me = useQuery({
@@ -35,7 +34,8 @@ export function useSession() {
 export function useLogin() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) => api.login(email, password),
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      api.login({ email, password, remember_me: false }),
     onSuccess: (me) => {
       queryClient.setQueryData(["me"], me)
     },

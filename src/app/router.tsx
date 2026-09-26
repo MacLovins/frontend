@@ -14,6 +14,7 @@ import {
   ScoringPage,
   ServicesPage,
 } from "@/features/settings/settings-pages"
+import { UsersPage } from "@/features/settings/users-page"
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
             element: <RequireAdmin />,
             children: [
               { path: "settings/services", element: <ServicesPage /> },
+              { path: "settings/users", element: <UsersPage /> },
               { path: "settings/:serviceId/questions", element: <QuestionsPage /> },
               { path: "settings/:serviceId/icp", element: <IcpPage /> },
               { path: "settings/:serviceId/rules", element: <RulesPage /> },

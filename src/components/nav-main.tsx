@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 import { Link, useLocation } from "react-router"
 
 import {
@@ -32,40 +32,53 @@ export function NavMain({ items }: { items: NavItem[] }) {
     <SidebarGroup>
       <SidebarGroupLabel>Radar</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => {
-          const open =
-            item.items?.some((subItem) => pathname === subItem.url.split("?")[0]) ||
-            pathname === item.url.split("?")[0]
-          return (
-            <Collapsible
-              key={item.title}
-              defaultOpen={open}
-              className="group/collapsible"
-              render={<SidebarMenuItem />}
-            >
-              <CollapsibleTrigger render={<SidebarMenuButton tooltip={item.title} />}>
-                {item.icon}
-                <span>{item.title}</span>
-                <CaretRightIcon className="ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90" />
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton
-                        isActive={pathname === subItem.url.split("?")[0]}
-                        render={<Link to={subItem.url} />}
-                      >
-                        <span>{subItem.title}</span>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </Collapsible>
-          )
-        })}
+        {items.map((item) => (
+          <NavSection key={item.title} item={item} pathname={pathname} />
+        ))}
       </SidebarMenu>
     </SidebarGroup>
+  )
+}
+
+function isActive(pathname: string, url: string) {
+  return pathname === url.split("?")[0]
+}
+
+function NavSection({ item, pathname }: { item: NavItem; pathname: string }) {
+  const active =
+    item.items?.some((subItem) => isActive(pathname, subItem.url)) || isActive(pathname, item.url)
+  const [open, setOpen] = useState(active)
+
+  useEffect(() => {
+    if (active) setOpen(true)
+  }, [active])
+
+  return (
+    <Collapsible
+      open={open}
+      onOpenChange={setOpen}
+      className="group/collapsible"
+      render={<SidebarMenuItem />}
+    >
+      <CollapsibleTrigger render={<SidebarMenuButton tooltip={item.title} />}>
+        {item.icon}
+        <span>{item.title}</span>
+        <CaretRightIcon className="ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90" />
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <SidebarMenuSub>
+          {item.items?.map((subItem) => (
+            <SidebarMenuSubItem key={subItem.title}>
+              <SidebarMenuSubButton
+                isActive={isActive(pathname, subItem.url)}
+                render={<Link to={subItem.url} />}
+              >
+                <span>{subItem.title}</span>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+          ))}
+        </SidebarMenuSub>
+      </CollapsibleContent>
+    </Collapsible>
   )
 }

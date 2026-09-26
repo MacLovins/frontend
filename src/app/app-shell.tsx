@@ -4,11 +4,10 @@ import {
   FireIcon,
   GearIcon,
   LightningIcon,
-  ShieldIcon,
   TargetIcon,
 } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Outlet, useLocation, useNavigate, useSearchParams } from "react-router"
 import { toast } from "sonner"
 
@@ -34,11 +33,20 @@ export function AppShell() {
   const [params, setParams] = useSearchParams()
   const { pathname } = useLocation()
   const services = useQuery({ queryKey: ["services"], queryFn: api.services, staleTime: 30_000 })
-  const serviceId = params.get("service") ?? services.data?.[0]?.id ?? "ia"
+  const serviceId = params.get("service") || services.data?.[0]?.id || ""
+  useEffect(() => {
+    const first = services.data?.[0]?.id
+    if (!params.get("service") && first) {
+      const updated = new URLSearchParams(params)
+      updated.set("service", first)
+      setParams(updated, { replace: true })
+    }
+  }, [params, services.data, setParams])
   const prospects = useQuery({
     queryKey: ["prospects", "sidebar", serviceId],
+    enabled: Boolean(serviceId),
     queryFn: () =>
-      api.prospects({
+      api.leads({
         serviceId,
         q: "",
         country: "",
@@ -60,7 +68,7 @@ export function AppShell() {
     setParams(updated)
   }
 
-  const withService = (path: string) => `${path}?service=${serviceId}`
+  const withService = (path: string) => (serviceId ? `${path}?service=${serviceId}` : path)
   const items: NavItem[] = [
     {
       title: labels.prospects,
@@ -91,10 +99,11 @@ export function AppShell() {
       icon: <GearIcon />,
       items: [
         { title: labels.services, url: "/settings/services" },
-        { title: labels.questions, url: `/settings/${serviceId}/questions` },
-        { title: labels.icp, url: `/settings/${serviceId}/icp` },
-        { title: labels.rules, url: `/settings/${serviceId}/rules` },
-        { title: labels.scoring, url: `/settings/${serviceId}/scoring` },
+        { title: labels.questions, url: serviceId ? `/settings/${serviceId}/questions` : "/settings/services" },
+        { title: labels.icp, url: serviceId ? `/settings/${serviceId}/icp` : "/settings/services" },
+        { title: labels.rules, url: serviceId ? `/settings/${serviceId}/rules` : "/settings/services" },
+        { title: labels.scoring, url: serviceId ? `/settings/${serviceId}/scoring` : "/settings/services" },
+        { title: labels.users, url: "/settings/users" },
       ],
     })
   }
@@ -102,13 +111,13 @@ export function AppShell() {
   const teams = (services.data ?? []).map((service) => ({
     id: service.id,
     name: service.name,
-    plan: service.preset === "cyber" ? "Security" : "Automation",
-    logo: service.preset === "cyber" ? <ShieldIcon /> : <TargetIcon />,
+    plan: service.slug,
+    logo: <TargetIcon />,
   }))
 
-  const projects = (prospects.data ?? []).slice(0, 3).map((row) => ({
-    name: `${row.name} · ${row.priority}`,
-    url: withService(`/companies/${row.id}`),
+  const projects = (prospects.data?.items ?? []).slice(0, 3).map((row) => ({
+    name: `${row.company.name} · ${row.score.priority}`,
+    url: withService(`/companies/${row.company.id}`),
     icon: <FireIcon />,
   }))
 
@@ -192,6 +201,9 @@ function crumbFor(pathname: string) {
   if (pathname.includes("/scoring")) {
     return { section: labels.settings, title: labels.scoring }
   }
+  if (pathname.startsWith("/settings/users")) {
+    return { section: labels.settings, title: labels.users }
+  }
   if (pathname.startsWith("/settings")) {
     return { section: labels.settings, title: labels.services }
   }
@@ -224,7 +236,9 @@ function AnalyzeDialog({
             disabled={pending}
             onClick={() => {
               setPending(true)
-              void api.startRun(serviceId, []).then((run) => onStarted(run.id))
+              void api
+                .startRun({ kind: "analyze", company_ids: [], service_ids: [serviceId] })
+                .then((run) => onStarted(run.id))
             }}
           >
             {labels.analyze}

@@ -4,11 +4,10 @@ import { useParams } from "react-router"
 import { toast } from "sonner"
 
 import { api } from "@/api/client"
-import type { Feedback } from "@/api/types"
 import { Button } from "@/features/components/ui/button"
 import { Input } from "@/features/components/ui/input"
 import { faviconUrl, relativeDate } from "@/lib/format"
-import { labels, tiers } from "@/lib/labels"
+import { labels } from "@/lib/labels"
 import { linkedinSearchUrl } from "@/lib/linkedin"
 import { useServiceId } from "@/lib/use-service"
 
@@ -17,57 +16,56 @@ export function CompanyPage() {
   const serviceId = useServiceId()
   const [tab, setTab] = useState<"score" | "sources">("score")
   const queryClient = useQueryClient()
-  const company = useQuery({
-    queryKey: ["company", id],
-    queryFn: () => api.company(id),
+  const lead = useQuery({
+    queryKey: ["lead", id, serviceId],
+    queryFn: () => api.lead(id, serviceId),
+    enabled: Boolean(id && serviceId),
   })
   const feedback = useMutation({
-    mutationFn: (input: { signalId: string; feedback: Feedback }) =>
-      api.feedback(id, serviceId, input.signalId, input.feedback),
-    onSuccess: (next) => {
-      queryClient.setQueryData(["company", id], next)
+    mutationFn: (input: { signalId: string; verdict: string }) =>
+      api.feedback(input.signalId, { verdict: input.verdict, service_id: serviceId }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["lead", id, serviceId] })
       void queryClient.invalidateQueries({ queryKey: ["prospects"] })
       toast.success("Feedback saved")
     },
   })
   const notes = useMutation({
-    mutationFn: (value: string) => api.notes(id, value),
+    mutationFn: (value: string) => api.notes(id, { notes: value }),
     onSuccess: () => toast.success("Notes saved"),
   })
   const rerun = useMutation({
-    mutationFn: () => api.startRun(serviceId, [id]),
+    mutationFn: () => api.startRun({ kind: "analyze", company_ids: [id], service_ids: [serviceId] }),
     onSuccess: () => toast.success("Re-analyze started"),
   })
 
-  if (company.isLoading) {
+  if (!serviceId || lead.isLoading) {
     return <p className="text-sm text-muted-foreground">{labels.loading}</p>
   }
-  if (company.isError || !company.data) {
-    return <Button onClick={() => void company.refetch()}>{labels.retry}</Button>
+  if (lead.isError || !lead.data) {
+    return <Button onClick={() => void lead.refetch()}>{labels.retry}</Button>
   }
 
-  const data = company.data
-  const score = data.scores[serviceId]
-  const reasons = data.whyNow[serviceId] ?? []
-  const breakdown = data.breakdown[serviceId] ?? []
-  const signals = data.signals[serviceId] ?? []
+  const data = lead.data
+  const company = data.company
 
   return (
     <article className="flex flex-col gap-6">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="flex items-center gap-2 font-heading text-2xl font-medium">
-            <img alt="" src={faviconUrl(data.domain)} className="size-5" />
-            {data.name}
+            <img alt="" src={faviconUrl(company.domain)} className="size-5" />
+            {company.name}
           </h1>
           <p className="text-sm text-muted-foreground">
-            <a className="underline" href={`https://${data.domain}`} target="_blank" rel="noreferrer">
-              {data.domain}
-            </a>{" "}
-            · {data.country} · {data.industry} · {data.employees}
+            <a className="underline" href={company.homepage_url || `https://${company.domain}`} target="_blank" rel="noreferrer">
+              {company.domain}
+            </a>
+            {company.country_code ? ` · ${company.country_code}` : ""}
+            {company.employees != null ? ` · ${company.employees}` : ""}
           </p>
         </div>
-        <Button disabled={rerun.isPending} onClick={() => rerun.mutate()}>
+        <Button disabled={rerun.isPending || !serviceId} onClick={() => rerun.mutate()}>
           {labels.reanalyze}
         </Button>
       </header>
@@ -81,91 +79,92 @@ export function CompanyPage() {
       </div>
       {tab === "sources" ? (
         <ul className="flex flex-col gap-2 text-sm">
-          {data.sources.length === 0 ? <li className="text-muted-foreground">Nothing scanned yet.</li> : null}
-          {data.sources.map((source) => (
-            <li key={source.url + source.title}>
-              <a className="underline" href={source.url} target="_blank" rel="noreferrer">
-                {source.title}
-              </a>{" "}
-              · {source.type} · {relativeDate(source.date)}
+          {Object.keys(data.sources_summary).length === 0 ? (
+            <li className="text-muted-foreground">Nothing scanned yet.</li>
+          ) : null}
+          {Object.entries(data.sources_summary).map(([source, count]) => (
+            <li key={source}>
+              {source} · {count}
             </li>
           ))}
         </ul>
       ) : (
         <>
-          {score ? (
-            <p className="text-sm">
-              {labels.priority} {score.priority} · {tiers[score.tier]} · {labels.fit} {score.fit} · {labels.signals}{" "}
-              {score.signals} · {labels.blockers} {score.blockers}
-            </p>
-          ) : null}
-          <section>
-            <h2 className="font-medium">{labels.whyNow}</h2>
-            <ul className="mt-2 space-y-1 text-sm">
-              {reasons.map((item) => (
-                <li key={item.text}>
-                  {item.positive ? "✓" : "⚠"} {item.text} — {item.source} · {relativeDate(item.date)}
-                </li>
-              ))}
-            </ul>
-          </section>
-          <section>
-            <h2 className="font-medium">Score breakdown</h2>
-            <ul className="mt-2 space-y-2 text-sm">
-              {breakdown.map((row) => (
-                <li key={row.label} className="grid grid-cols-[1fr_8rem_4rem] items-center gap-2">
-                  <span>
-                    {row.label} ({row.weight})
-                  </span>
-                  <span className="h-2 rounded bg-muted">
-                    <span className="block h-2 rounded bg-primary" style={{ width: `${row.width}%` }} />
-                  </span>
-                  <span>{row.delta > 0 ? `+${row.delta}` : row.delta}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
+          <dl className="grid gap-1 text-sm">
+            {scalarEntries(data.score).map(([key, value]) => (
+              <div key={key}>
+                <span className="text-muted-foreground">{key}</span> {String(value)}
+              </div>
+            ))}
+          </dl>
           <section className="flex flex-col gap-3">
             <h2 className="font-medium">Evidence by question</h2>
-            {signals.map((signal) => (
-              <article key={signal.id} className="rounded-xl border border-border p-4 text-sm">
-                <h3 className="font-medium">{signal.question}</h3>
-                <p className="mt-2">“{signal.quote}”</p>
+            {data.signals_by_question.map((group, index) => (
+              <article key={index} className="rounded-xl border border-border p-4 text-sm">
+                <h3 className="font-medium">{recordLabel(group.question) || "Question"}</h3>
                 <p className="mt-1 text-muted-foreground">
-                  {signal.source} · {relativeDate(signal.date)} · {signal.strength} · {signal.confidence}%
+                  Strength {group.strength} · points {group.points}
                 </p>
-                <div className="mt-3 flex gap-2">
-                  {(["correct", "wrong", "irrelevant"] as const).map((value) => (
-                    <Button
-                      key={value}
-                      size="sm"
-                      variant={signal.feedback === value ? "default" : "outline"}
-                      onClick={() => feedback.mutate({ signalId: signal.id, feedback: value })}
-                    >
-                      {value === "correct" ? labels.correct : value === "wrong" ? labels.wrong : labels.irrelevant}
-                    </Button>
+                <ul className="mt-3 flex flex-col gap-3">
+                  {group.signals.map((signal) => (
+                    <li key={signal.id}>
+                      <p>“{signal.quote}”</p>
+                      <p className="mt-1 text-muted-foreground">
+                        {signal.source_name} · {signal.source_type}
+                        {signal.event_date ? ` · ${relativeDate(signal.event_date)}` : ""} · {signal.strength} ·{" "}
+                        {signal.confidence}
+                      </p>
+                      <div className="mt-2 flex gap-2">
+                        {(["correct", "wrong", "irrelevant"] as const).map((value) => (
+                          <Button
+                            key={value}
+                            size="sm"
+                            variant="outline"
+                            onClick={() => feedback.mutate({ signalId: signal.id, verdict: value })}
+                          >
+                            {value === "correct" ? labels.correct : value === "wrong" ? labels.wrong : labels.irrelevant}
+                          </Button>
+                        ))}
+                      </div>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </article>
             ))}
           </section>
           <section>
             <h2 className="font-medium">Decision makers to validate</h2>
             <ul className="mt-2 flex flex-wrap gap-3 text-sm">
-              {data.decisionMakers.map((title) => (
+              {data.decision_makers.map((title) => (
                 <li key={title}>
-                  <a className="underline" href={linkedinSearchUrl(title, data.name)} target="_blank" rel="noreferrer">
+                  <a className="underline" href={linkedinSearchUrl(title, company.name)} target="_blank" rel="noreferrer">
                     {title}
                   </a>
                 </li>
               ))}
             </ul>
           </section>
-          <NotesForm initial={data.notes} onSave={(value) => notes.mutate(value)} />
+          <NotesForm initial={company.notes ?? ""} onSave={(value) => notes.mutate(value)} />
         </>
       )}
     </article>
   )
+}
+
+function scalarEntries(value: { [key: string]: unknown }) {
+  return Object.entries(value).filter(
+    ([, item]) => typeof item === "string" || typeof item === "number" || typeof item === "boolean",
+  )
+}
+
+function recordLabel(value: { [key: string]: unknown }) {
+  for (const key of ["text", "label", "key", "name"]) {
+    const item = value[key]
+    if (typeof item === "string" && item) {
+      return item
+    }
+  }
+  return ""
 }
 
 function NotesForm({ initial, onSave }: { initial: string; onSave: (value: string) => void }) {
@@ -179,7 +178,7 @@ function NotesForm({ initial, onSave }: { initial: string; onSave: (value: strin
       }}
     >
       <label className="text-sm font-medium">
-        Notes / LinkedIn URL
+        Notes
         <Input className="mt-1" value={value} onChange={(event) => setValue(event.target.value)} />
       </label>
       <Button type="submit" variant="outline" className="self-start">
