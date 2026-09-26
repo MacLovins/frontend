@@ -1,1 +1,1 @@
-export { Button, buttonVariants } from "@/features/components/ui/button"
+export { Button } from "@/features/components/ui/button"
