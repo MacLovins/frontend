@@ -28,6 +28,7 @@ import { BrandMark } from "@/components/common/brand-mark"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
@@ -154,7 +155,9 @@ function UserMenu({ me }: { me: UserOut }) {
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent side="top" className="min-w-[232px]">
-        <DropdownMenuLabel className="truncate">{me.email}</DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="truncate">{me.email}</DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         {me.role === "admin" ? (
           <DropdownMenuItem onClick={() => void navigate("/settings/users")}>Users</DropdownMenuItem>
