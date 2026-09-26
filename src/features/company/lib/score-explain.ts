@@ -145,7 +145,7 @@ export function pointSums(breakdown: Contribution[]) {
   return { positive, negative }
 }
 
-export type ActivityItem = {
+type ActivityItem = {
   key: string
   strong: string
   rest: string

@@ -1,5 +1,5 @@
 /** Region shortcuts for country pickers: UI helpers that add ISO codes in one click, not data. */
-export type Region = { key: string; name: string; codes: readonly string[] }
+type Region = { key: string; name: string; codes: readonly string[] }
 
 export const eu27: Region = {
   key: "eu27",

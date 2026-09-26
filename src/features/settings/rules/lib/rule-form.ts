@@ -135,7 +135,7 @@ export function toDraft(rule: DisqualificationRuleOut): RuleDraft {
 }
 
 /** Condition JSON exactly as the ai contracts expect (extra keys are rejected with 422). */
-export function toCondition(draft: RuleDraft): RuleCondition {
+function toCondition(draft: RuleDraft): RuleCondition {
   if (draft.kind === "list") return { domains: parseDomains(draft.domains) }
   if (draft.kind === "signal")
     return { question_key: draft.questionKey, min_strength: draft.minStrength }

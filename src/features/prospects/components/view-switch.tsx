@@ -47,9 +47,9 @@ export function ViewSwitch({
             to={viewHref(params, item.view)}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex h-[34px] items-center rounded-sm px-3 text-[13px] no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black",
+              "flex h-[34px] items-center rounded-sm px-3 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black",
               active
-                ? "bg-white font-semibold text-black hover:text-black"
+                ? "bg-white font-semibold text-black"
                 : "text-text-secondary hover:text-black"
             )}
           >

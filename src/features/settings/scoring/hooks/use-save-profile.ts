@@ -27,10 +27,12 @@ export function useSaveProfile(serviceId: string) {
                 result.tier_changes
               )
         )
-        void queryClient.invalidateQueries({
+        void invalidateApi(queryClient, apiPaths.leads, apiPaths.activity)
+        // Awaited so the page stays in its saving state until v{n+1} arrives and remounts the editor; otherwise
+        // the old draft is briefly dirty and savable again, which would store a duplicate version.
+        return queryClient.invalidateQueries({
           queryKey: getGetScoringProfileQueryKey(serviceId),
         })
-        void invalidateApi(queryClient, apiPaths.leads, apiPaths.activity)
       },
       onError: (error) => {
         if (error.status === 401) {

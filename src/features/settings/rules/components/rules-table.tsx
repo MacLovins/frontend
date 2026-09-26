@@ -81,8 +81,10 @@ function RuleRow({
       <span className="truncate">
         {leads === undefined && rule.is_active ? (
           <Skeleton className="h-4 w-24" />
+        ) : leads ? (
+          affectsNow(rule, leads)
         ) : (
-          affectsNow(rule, leads ?? [])
+          copy.affects.inactive
         )}
       </span>
       <span className="relative z-10 flex">
@@ -102,14 +104,15 @@ export function RulesTable({
   selectedId,
   describe,
   leads,
-  togglingId,
+  pendingIds,
   onToggle,
 }: {
   rules: DisqualificationRuleOut[]
   selectedId: string | null
   describe: (rule: DisqualificationRuleOut) => string
   leads: LeadListItem[] | null | undefined
-  togglingId: string | undefined
+  /** Rules with a PATCH in flight. */
+  pendingIds: (string | undefined)[]
   onToggle: (rule: DisqualificationRuleOut, active: boolean) => void
 }) {
   return (
@@ -122,7 +125,7 @@ export function RulesTable({
           sentence={describe(rule)}
           selected={rule.id === selectedId}
           leads={leads}
-          toggling={togglingId === rule.id}
+          toggling={pendingIds.includes(rule.id)}
           onToggle={(active) => onToggle(rule, active)}
         />
       ))}

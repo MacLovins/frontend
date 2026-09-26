@@ -14,6 +14,7 @@ export function NumberInput({
   value,
   onChange,
   onBlur,
+  maxLength = 19,
   className,
   ...props
 }: Omit<ComponentProps<"input">, "value" | "onChange" | "type"> & {
@@ -28,7 +29,7 @@ export function NumberInput({
       type="text"
       inputMode="numeric"
       autoComplete="off"
-      maxLength={19}
+      maxLength={maxLength}
       value={draft ?? (value === null ? "" : formatNumber(value))}
       onChange={(event) => {
         const text = event.target.value.replace(/[^\d,\s]/g, "")

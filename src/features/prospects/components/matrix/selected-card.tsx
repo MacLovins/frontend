@@ -68,10 +68,7 @@ export function SelectedCard({
       )}
       <Link
         to={withService(`/companies/${company.id}`, serviceId)}
-        className={cn(
-          buttonVariants({ variant: "black" }),
-          "self-start no-underline hover:text-white"
-        )}
+        className={cn(buttonVariants({ variant: "black" }), "self-start")}
       >
         {matrixCopy.openCompany}
       </Link>

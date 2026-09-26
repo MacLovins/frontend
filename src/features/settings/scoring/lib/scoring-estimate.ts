@@ -35,7 +35,7 @@ export type PreviewRow = {
   previewTier: Tier
 }
 
-export type Preview = { rows: PreviewRow[]; tierChanges: number; moved: number }
+type Preview = { rows: PreviewRow[]; tierChanges: number; moved: number }
 
 type WeightLevels = ReadonlyMap<string, Weight>
 
@@ -59,12 +59,29 @@ function saturate(points: number, tau: number) {
   return 100 * (1 - Math.exp(-points / tau))
 }
 
+/** Which sub-scores a draft changes; the others keep their stored value. */
+export type Recompute = { intent: boolean; risk: boolean }
+
+export function recomputeFor(
+  draft: ScoringParams,
+  saved: ScoringParams
+): Recompute {
+  const weightsChanged =
+    draft.weights.high !== saved.weights.high ||
+    draft.weights.medium !== saved.weights.medium ||
+    draft.weights.low !== saved.weights.low
+  return {
+    intent: weightsChanged || draft.tau_intent !== saved.tau_intent,
+    risk: weightsChanged || draft.tau_risk !== saved.tau_risk,
+  }
+}
+
 /** Estimated priority (one decimal, as the engine rounds it) of one sampled company under `params`. */
 export function estimatePriority(
   sample: SampleLead,
   levels: WeightLevels,
   params: ScoringParams,
-  saved: ScoringParams
+  recompute: Recompute
 ) {
   if (
     sample.score.disqualified ||
@@ -72,24 +89,18 @@ export function estimatePriority(
   )
     return 0
 
-  const weightsChanged =
-    params.weights.high !== saved.weights.high ||
-    params.weights.medium !== saved.weights.medium ||
-    params.weights.low !== saved.weights.low
-  const intent =
-    weightsChanged || params.tau_intent !== saved.tau_intent
-      ? saturate(
-          questionPoints(sample, "positive", levels, params),
-          params.tau_intent
-        )
-      : sample.score.intent
-  const risk =
-    weightsChanged || params.tau_risk !== saved.tau_risk
-      ? saturate(
-          questionPoints(sample, "negative", levels, params),
-          params.tau_risk
-        )
-      : sample.score.risk
+  const intent = recompute.intent
+    ? saturate(
+        questionPoints(sample, "positive", levels, params),
+        params.tau_intent
+      )
+    : sample.score.intent
+  const risk = recompute.risk
+    ? saturate(
+        questionPoints(sample, "negative", levels, params),
+        params.tau_risk
+      )
+    : sample.score.risk
 
   const priority =
     100 *
@@ -102,7 +113,7 @@ export function estimatePriority(
   return round1(Math.min(priority, ...caps))
 }
 
-export function tierFor(
+function tierFor(
   priority: number,
   disqualified: boolean,
   tiers: ScoringParams["tiers"]
@@ -113,8 +124,8 @@ export function tierFor(
 }
 
 /**
- * Anchors every row on the stored score and applies only the estimated change (draft − saved, both estimated
- * the same way), so the 2-dp rounding of the stored strengths never shows up as movement.
+ * Anchors every row on the stored score and applies only the estimated change. Both sides of the change are
+ * estimated from the same inputs, so the 2-dp rounding of the stored strengths never shows up as movement.
  */
 export function buildPreview(
   samples: SampleLead[],
@@ -122,10 +133,13 @@ export function buildPreview(
   saved: ScoringParams,
   draft: ScoringParams
 ): Preview {
+  const recompute = recomputeFor(draft, saved)
+  const tiersChanged =
+    draft.tiers.hot !== saved.tiers.hot || draft.tiers.warm !== saved.tiers.warm
   const rows = samples.map((sample): PreviewRow => {
     const change =
-      estimatePriority(sample, levels, draft, saved) -
-      estimatePriority(sample, levels, saved, saved)
+      estimatePriority(sample, levels, draft, recompute) -
+      estimatePriority(sample, levels, saved, recompute)
     const priority = Math.min(100, Math.max(0, sample.score.priority + change))
     const disqualified =
       sample.score.disqualified || sample.score.tier === "disqualified"
@@ -138,7 +152,11 @@ export function buildPreview(
       preview,
       delta: preview - savedPriority,
       savedTier: sample.score.tier,
-      previewTier: tierFor(priority, disqualified, draft.tiers),
+      // Nothing previewable changed: the stored tier stands (half-life or confidence edits are not estimated).
+      previewTier:
+        change === 0 && !tiersChanged
+          ? sample.score.tier
+          : tierFor(priority, disqualified, draft.tiers),
     }
   })
   rows.sort(
