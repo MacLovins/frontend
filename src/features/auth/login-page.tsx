@@ -8,6 +8,7 @@ import { meQueryKey } from "@/api/cache"
 import { useLogin } from "@/api/generated/auth/auth"
 import { ApiError, errorMessage } from "@/api/mutator"
 import { BrandMark } from "@/components/common/brand-mark"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -54,7 +55,8 @@ export function LoginPage() {
   const submit = form.handleSubmit((values) => login.mutate({ data: values }))
 
   return (
-    <div className="grid min-h-svh bg-canvas lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
+    <div className="relative grid min-h-svh bg-canvas lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
+      <ThemeToggle className="absolute top-5 right-8 z-10 bg-card" />
       <section className="hidden flex-col justify-between bg-black p-12 text-white lg:flex">
         <div className="flex items-center gap-3">
           <BrandMark size={40} />

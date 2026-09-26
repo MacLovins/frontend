@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import { Link } from "react-router"
 
 import { BrandMark } from "@/components/common/brand-mark"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { useMe } from "@/hooks/use-session"
 
@@ -35,6 +36,7 @@ export function PublicTopBar({
         )}
       </div>
       <div className="flex flex-wrap items-center gap-2 text-[13px]">
+        <ThemeToggle />
         {children}
         <Button
           variant="black"

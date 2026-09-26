@@ -18,5 +18,6 @@ export function writeStorage(key: string, value: string) {
 
 export const storageKeys = {
   service: "lr:service",
+  theme: "lr:theme",
   todaySeen: (userId: string) => `lr:today-seen:${userId}`,
 }

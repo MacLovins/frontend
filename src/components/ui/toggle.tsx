@@ -9,7 +9,7 @@ const toggleVariants = cva(
       variant: {
         // Segment of a grey segmented track (see ToggleGroup)
         default:
-          "bg-transparent font-normal text-text-secondary hover:text-black data-pressed:bg-white data-pressed:font-semibold data-pressed:text-black",
+          "bg-transparent font-normal text-text-secondary hover:text-black data-pressed:bg-card data-pressed:font-semibold data-pressed:text-black",
         // Stand-alone bordered option (Importance, "Where to look" chips)
         outline:
           "border border-input bg-white font-normal text-black hover:bg-muted data-pressed:border-black data-pressed:bg-black data-pressed:font-semibold data-pressed:text-white",

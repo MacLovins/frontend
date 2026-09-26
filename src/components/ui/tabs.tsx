@@ -39,12 +39,12 @@ const tabsListVariants = cva(
 )
 
 const tabsTriggerVariants = cva(
-  "relative inline-flex items-center justify-center gap-1.5 text-sm whitespace-nowrap text-text-secondary transition-colors group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black disabled:pointer-events-none disabled:opacity-50 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-active:font-semibold data-active:text-black [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "relative inline-flex items-center justify-center gap-1.5 text-sm whitespace-nowrap text-text-secondary transition-colors group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-active:font-semibold data-active:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          "h-[34px] rounded-sm px-3.5 data-active:bg-white data-active:shadow-segment",
+          "h-[34px] rounded-sm px-3.5 data-active:bg-card data-active:shadow-segment",
         line: "h-11 rounded-none border-b-[3px] border-transparent px-3 data-active:border-primary",
       },
     },

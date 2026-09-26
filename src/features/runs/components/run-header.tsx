@@ -22,7 +22,7 @@ export function RunHeader({
   actions?: ReactNode
 }) {
   return (
-    <header className="sticky top-0 z-10 flex h-[72px] shrink-0 items-center gap-4 border-b border-border bg-card px-8">
+    <header className="sticky top-0 z-10 flex h-[72px] shrink-0 items-center gap-4 border-b border-border bg-card pr-20 pl-8">
       <Breadcrumb className="shrink-0">
         <BreadcrumbList>
           <BreadcrumbItem>{copy.runs}</BreadcrumbItem>
