@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react"
+import { startTransition, useEffect, useState, type ReactNode } from "react"
 import { Link, useLocation } from "react-router"
 
 import {
@@ -50,7 +50,9 @@ function NavSection({ item, pathname }: { item: NavItem; pathname: string }) {
   const [open, setOpen] = useState(active)
 
   useEffect(() => {
-    if (active) setOpen(true)
+    if (active) {
+      startTransition(() => setOpen(true))
+    }
   }, [active])
 
   return (
