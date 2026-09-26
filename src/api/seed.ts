@@ -293,9 +293,38 @@ export const seedAccounts: Account[] = seedCompanies.map((company) => ({
 }))
 
 export const discoveryPool: Candidate[] = [
-  { id: "maersk", name: "Maersk", domain: "maersk.com", country: "Denmark", fit: 84 },
-  { id: "db", name: "Deutsche Bahn", domain: "bahn.de", country: "Germany", fit: 77 },
-  { id: "eon", name: "E.ON", domain: "eon.com", country: "Germany", fit: 69 },
+  // Germany
+  { id: "db", name: "Deutsche Bahn", domain: "bahn.de", country: "Germany", fit: 88 },
+  { id: "eon", name: "E.ON", domain: "eon.com", country: "Germany", fit: 79 },
+  { id: "siemens", name: "Siemens AG", domain: "siemens.com", country: "Germany", fit: 94 },
+  { id: "bayer", name: "Bayer AG", domain: "bayer.com", country: "Germany", fit: 82 },
+  { id: "bmw", name: "BMW Group", domain: "bmwgroup.com", country: "Germany", fit: 91 },
+  { id: "sap", name: "SAP SE", domain: "sap.com", country: "Germany", fit: 96 },
+  { id: "bosch", name: "Robert Bosch GmbH", domain: "bosch.com", country: "Germany", fit: 93 },
+  { id: "basf", name: "BASF SE", domain: "basf.com", country: "Germany", fit: 85 },
+  { id: "lufthansa", name: "Lufthansa Group", domain: "lufthansagroup.com", country: "Germany", fit: 76 },
+  // Switzerland
+  { id: "kn", name: "Kuehne + Nagel", domain: "kuehne-nagel.com", country: "Switzerland", fit: 95 },
+  { id: "nestle", name: "Nestlé", domain: "nestle.com", country: "Switzerland", fit: 87 },
+  { id: "novartis", name: "Novartis", domain: "novartis.com", country: "Switzerland", fit: 89 },
+  { id: "abb", name: "ABB Ltd", domain: "abb.com", country: "Switzerland", fit: 92 },
+  { id: "roche", name: "F. Hoffmann-La Roche", domain: "roche.com", country: "Switzerland", fit: 84 },
+  // Denmark
+  { id: "maersk", name: "A.P. Moller - Maersk", domain: "maersk.com", country: "Denmark", fit: 90 },
+  { id: "dsv", name: "DSV Global Transport", domain: "dsv.com", country: "Denmark", fit: 87 },
+  { id: "novo", name: "Novo Nordisk", domain: "novonordisk.com", country: "Denmark", fit: 93 },
+  // Netherlands
+  { id: "asml", name: "ASML Holding", domain: "asml.com", country: "Netherlands", fit: 97 },
+  { id: "heineken", name: "Heineken N.V.", domain: "theheinekencompany.com", country: "Netherlands", fit: 78 },
+  { id: "philips", name: "Royal Philips", domain: "philips.com", country: "Netherlands", fit: 84 },
+  // France
+  { id: "se", name: "Schneider Electric", domain: "se.com", country: "France", fit: 92 },
+  { id: "total", name: "TotalEnergies", domain: "totalenergies.com", country: "France", fit: 81 },
+  { id: "airbus", name: "Airbus SE", domain: "airbus.com", country: "France", fit: 89 },
+  // United States
+  { id: "amazon", name: "Amazon", domain: "amazon.com", country: "United States", fit: 98 },
+  { id: "microsoft", name: "Microsoft", domain: "microsoft.com", country: "United States", fit: 96 },
+  { id: "tesla", name: "Tesla Inc.", domain: "tesla.com", country: "United States", fit: 91 },
 ]
 
 export function emptyRun(id: string, serviceId: string, names: { id: string; name: string }[]): Run {

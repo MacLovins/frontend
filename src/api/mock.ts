@@ -233,9 +233,42 @@ export function mockImportCsv(text: string) {
   return wait(report)
 }
 
+const COUNTRY_SYNONYMS: Record<string, string[]> = {
+  Germany: ["germany", "de", "deutschland", "германия", "нем", "deu"],
+  Switzerland: ["switzerland", "ch", "schweiz", "suisse", "швейцария", "che"],
+  Denmark: ["denmark", "dk", "danmark", "дания", "dnk"],
+  Netherlands: ["netherlands", "nl", "holland", "nederland", "нидерланды", "голландия", "nld"],
+  France: ["france", "fr", "frankreich", "франция", "fra"],
+  "United States": ["united states", "usa", "us", "america", "сша", "америка"],
+}
+
 export function mockDiscover(country: string): Promise<Candidate[]> {
-  const rows = discoveryPool.filter((item) => !country || item.country === country)
-  return wait(rows)
+  const q = (country || "").trim().toLowerCase()
+  if (!q || q === "all" || q === "все") {
+    return wait(discoveryPool)
+  }
+
+  // Check synonym matching
+  let targetCanonical: string | null = null
+  for (const [canonical, syns] of Object.entries(COUNTRY_SYNONYMS)) {
+    if (canonical.toLowerCase() === q || syns.some((s) => s === q || q.includes(s) || s.includes(q))) {
+      targetCanonical = canonical
+      break
+    }
+  }
+
+  const rows = discoveryPool.filter((item) => {
+    if (targetCanonical && item.country.toLowerCase() === targetCanonical.toLowerCase()) {
+      return true
+    }
+    return (
+      item.country.toLowerCase().includes(q) ||
+      item.name.toLowerCase().includes(q) ||
+      item.domain.toLowerCase().includes(q)
+    )
+  })
+
+  return wait(rows.length > 0 ? rows : discoveryPool.slice(0, 10))
 }
 
 export function mockQuestions(serviceId: string) {
