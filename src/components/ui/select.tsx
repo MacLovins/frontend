@@ -38,7 +38,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex h-10 w-fit items-center justify-between gap-2 rounded-md border border-input bg-white px-3 text-sm whitespace-nowrap text-black transition-colors outline-none select-none focus-visible:border-black data-popup-open:border-black disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive data-placeholder:text-muted-foreground data-[size=sm]:h-[34px] data-[size=sm]:rounded-sm data-[size=sm]:px-2.5 data-[size=sm]:text-[13px] *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "flex h-10 w-fit items-center justify-between gap-2 rounded-md border border-input bg-white px-3 text-sm whitespace-nowrap text-black transition-colors outline-none select-none focus-visible:border-black disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive data-placeholder:text-muted-foreground data-popup-open:border-black data-[size=sm]:h-[34px] data-[size=sm]:rounded-sm data-[size=sm]:px-2.5 data-[size=sm]:text-[13px] *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
@@ -102,7 +102,10 @@ function SelectLabel({
   return (
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
-      className={cn("px-2.5 py-1.5 text-xs font-semibold text-muted-foreground", className)}
+      className={cn(
+        "px-2.5 py-1.5 text-xs font-semibold text-muted-foreground",
+        className
+      )}
       {...props}
     />
   )
@@ -162,8 +165,7 @@ function SelectScrollUpButton({
       )}
       {...props}
     >
-      <CaretUpIcon
-      />
+      <CaretUpIcon />
     </SelectPrimitive.ScrollUpArrow>
   )
 }
@@ -181,8 +183,7 @@ function SelectScrollDownButton({
       )}
       {...props}
     >
-      <CaretDownIcon
-      />
+      <CaretDownIcon />
     </SelectPrimitive.ScrollDownArrow>
   )
 }

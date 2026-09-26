@@ -34,10 +34,10 @@ const buttonVariants = cva(
         sm: "h-[34px] gap-1.5 rounded-sm px-3 text-[13px] has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5",
         lg: "h-11 gap-2 rounded-md px-5 text-sm has-data-[icon=inline-end]:pr-4 has-data-[icon=inline-start]:pl-4",
         icon: "size-10 rounded-md [&_svg:not([class*='size-'])]:size-[18px]",
-        "icon-xs":
-          "size-6 rounded-sm [&_svg:not([class*='size-'])]:size-3.5",
+        "icon-xs": "size-6 rounded-sm [&_svg:not([class*='size-'])]:size-3.5",
         "icon-sm": "size-8 rounded-sm",
-        "icon-lg": "size-11 rounded-md [&_svg:not([class*='size-'])]:size-[18px]",
+        "icon-lg":
+          "size-11 rounded-md [&_svg:not([class*='size-'])]:size-[18px]",
       },
     },
     compoundVariants: [

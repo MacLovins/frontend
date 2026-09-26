@@ -4,7 +4,11 @@ import type { Reason } from "@/api/generated/model"
 import { compactAge } from "@/lib/format"
 import { pickReasons, reasonSource } from "@/lib/reasons"
 
-const reason = (polarity: Reason["polarity"], text: string, extra: Partial<Reason> = {}): Reason => ({
+const reason = (
+  polarity: Reason["polarity"],
+  text: string,
+  extra: Partial<Reason> = {}
+): Reason => ({
   text,
   polarity,
   signal_id: null,
@@ -26,16 +30,28 @@ describe("pickReasons", () => {
   })
 
   it("fills the remaining slots with fit and data-gap notes", () => {
-    const picked = pickReasons([reason("positive", "a"), reason("fit", "Outside ICP"), reason("data_gap", "Unknown size")])
-    expect(picked.map((item) => item.text)).toEqual(["a", "Outside ICP", "Unknown size"])
+    const picked = pickReasons([
+      reason("positive", "a"),
+      reason("fit", "Outside ICP"),
+      reason("data_gap", "Unknown size"),
+    ])
+    expect(picked.map((item) => item.text)).toEqual([
+      "a",
+      "Outside ICP",
+      "Unknown size",
+    ])
   })
 })
 
 describe("reasonSource", () => {
   it("joins the source and a compact age, and omits what is missing", () => {
     const now = new Date()
-    const sixDaysAgo = new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
-    expect(reasonSource({ source_name: "dhl.com", date: sixDaysAgo })).toBe("dhl.com · 6 d")
+    const sixDaysAgo = new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10)
+    expect(reasonSource({ source_name: "dhl.com", date: sixDaysAgo })).toBe(
+      "dhl.com · 6 d"
+    )
     expect(reasonSource({ source_name: null, date: null })).toBe("")
   })
 })

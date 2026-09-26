@@ -8,10 +8,12 @@ export function ForbiddenPage() {
     <EmptyState
       className="my-auto"
       title="This page is for admins"
-      actions={<Button render={<Link to="/prospects" />}>Go to Prospects</Button>}
+      actions={
+        <Button render={<Link to="/prospects" />}>Go to Prospects</Button>
+      }
     >
-      Services, questions, the ideal customer profile, rules and scoring are configured by an admin. Ask one to
-      change them for you.
+      Services, questions, the ideal customer profile, rules and scoring are
+      configured by an admin. Ask one to change them for you.
     </EmptyState>
   )
 }

@@ -51,7 +51,7 @@ function SheetContent({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "fixed z-50 flex w-[520px] max-w-full flex-col gap-0 bg-white bg-clip-padding p-0 text-sm text-black shadow-sheet transition duration-200 ease-in-out outline-none data-ending-style:opacity-0 data-starting-style:opacity-0 data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto data-[side=bottom]:w-full data-[side=bottom]:max-h-full data-[side=bottom]:shadow-dialog data-[side=bottom]:data-ending-style:translate-y-[2.5rem] data-[side=bottom]:data-starting-style:translate-y-[2.5rem] data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:shadow-[8px_0_24px_rgb(0_0_0/0.18)] data-[side=left]:data-ending-style:translate-x-[-2.5rem] data-[side=left]:data-starting-style:translate-x-[-2.5rem] data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:data-ending-style:translate-x-[2.5rem] data-[side=right]:data-starting-style:translate-x-[2.5rem] data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:h-auto data-[side=top]:w-full data-[side=top]:max-h-full data-[side=top]:shadow-dialog data-[side=top]:data-ending-style:translate-y-[-2.5rem] data-[side=top]:data-starting-style:translate-y-[-2.5rem]",
+          "fixed z-50 flex w-[520px] max-w-full flex-col gap-0 bg-white bg-clip-padding p-0 text-sm text-black shadow-sheet transition duration-200 ease-in-out outline-none data-ending-style:opacity-0 data-starting-style:opacity-0 data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto data-[side=bottom]:max-h-full data-[side=bottom]:w-full data-[side=bottom]:shadow-dialog data-[side=bottom]:data-ending-style:translate-y-[2.5rem] data-[side=bottom]:data-starting-style:translate-y-[2.5rem] data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:shadow-[8px_0_24px_rgb(0_0_0/0.18)] data-[side=left]:data-ending-style:translate-x-[-2.5rem] data-[side=left]:data-starting-style:translate-x-[-2.5rem] data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:data-ending-style:translate-x-[2.5rem] data-[side=right]:data-starting-style:translate-x-[2.5rem] data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:h-auto data-[side=top]:max-h-full data-[side=top]:w-full data-[side=top]:shadow-dialog data-[side=top]:data-ending-style:translate-y-[-2.5rem] data-[side=top]:data-starting-style:translate-y-[-2.5rem]",
           className
         )}
         {...props}
@@ -123,7 +123,10 @@ function SheetDescription({
   return (
     <SheetPrimitive.Description
       data-slot="sheet-description"
-      className={cn("text-[13px] leading-[1.4] text-muted-foreground", className)}
+      className={cn(
+        "text-[13px] leading-[1.4] text-muted-foreground",
+        className
+      )}
       {...props}
     />
   )

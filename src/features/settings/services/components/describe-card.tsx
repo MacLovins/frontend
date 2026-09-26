@@ -17,7 +17,11 @@ import { storeService } from "@/features/settings/services/hooks/use-service-wri
 import { uniqueSlug } from "@/features/settings/services/lib/service-summary"
 
 const schema = z.object({
-  name: z.string().trim().min(1, copy.validation.describeName).max(255, copy.validation.name),
+  name: z
+    .string()
+    .trim()
+    .min(1, copy.validation.describeName)
+    .max(255, copy.validation.name),
   description: z.string().trim().min(20, copy.validation.describeText),
 })
 
@@ -27,10 +31,17 @@ type Values = z.infer<typeof schema>
  * Creates an inactive draft service, then opens its Questions screen with the suggestions sheet
  * (`?suggest=1`), which calls POST /services/{id}/questions/suggest. Suggestions are never stored.
  */
-export function DescribeCard({ services }: { services: readonly ServiceOut[] }) {
+export function DescribeCard({
+  services,
+}: {
+  services: readonly ServiceOut[]
+}) {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const form = useForm<Values>({ resolver: zodResolver(schema), defaultValues: { name: "", description: "" } })
+  const form = useForm<Values>({
+    resolver: zodResolver(schema),
+    defaultValues: { name: "", description: "" },
+  })
   const { errors, isSubmitting } = form.formState
 
   const create = useCreateService({
@@ -43,14 +54,22 @@ export function DescribeCard({ services }: { services: readonly ServiceOut[] }) 
       onError: (error) => {
         const fields = fieldErrors(error)
         if (fields.name) form.setError("name", { message: fields.name })
-        else if (fields.description) form.setError("description", { message: fields.description })
+        else if (fields.description)
+          form.setError("description", { message: fields.description })
         else form.setError("root", { message: errorMessage(error) })
       },
     },
   })
 
   const submit = form.handleSubmit(({ name, description }) =>
-    create.mutate({ data: { name, slug: uniqueSlug(name, services), description, is_active: false } }),
+    create.mutate({
+      data: {
+        name,
+        slug: uniqueSlug(name, services),
+        description,
+        is_active: false,
+      },
+    })
   )
 
   return (
@@ -81,16 +100,23 @@ export function DescribeCard({ services }: { services: readonly ServiceOut[] }) 
           rows={4}
           placeholder={copy.describe.placeholder}
           aria-invalid={!!errors.description}
-          className="min-h-0 resize-y rounded-sm px-2.5 py-2.5 field-sizing-fixed"
+          className="field-sizing-fixed min-h-0 resize-y rounded-sm px-2.5 py-2.5"
           {...form.register("description")}
         />
         <FieldError errors={[errors.description]} />
       </div>
       <FieldError errors={[errors.root]} />
-      <Button type="submit" variant="black" className="self-start" disabled={isSubmitting || create.isPending}>
+      <Button
+        type="submit"
+        variant="black"
+        className="self-start"
+        disabled={isSubmitting || create.isPending}
+      >
         {create.isPending ? copy.describe.submitting : copy.describe.submit}
       </Button>
-      <p className="m-0 text-xs leading-[1.45] text-text-secondary">{copy.describe.note}</p>
+      <p className="m-0 text-xs leading-[1.45] text-text-secondary">
+        {copy.describe.note}
+      </p>
     </form>
   )
 }

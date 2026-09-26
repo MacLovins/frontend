@@ -1,5 +1,11 @@
 import type { UserOutRole } from "@/api/generated/model"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 import { roleItems } from "@/features/settings/users/lib/user-form"
 
@@ -17,8 +23,17 @@ export function RoleSelect({
   describedBy?: string
 }) {
   return (
-    <Select items={roleItems} value={value} onValueChange={(role) => role && onChange(role)} disabled={disabled}>
-      <SelectTrigger id={id} aria-describedby={describedBy} className="w-full rounded-sm px-2.5">
+    <Select
+      items={roleItems}
+      value={value}
+      onValueChange={(role) => role && onChange(role)}
+      disabled={disabled}
+    >
+      <SelectTrigger
+        id={id}
+        aria-describedby={describedBy}
+        className="w-full rounded-sm px-2.5"
+      >
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

@@ -3,7 +3,10 @@ import { type KeyboardEvent, useState } from "react"
 import { Input } from "@/components/ui/input"
 
 import { copy } from "@/features/settings/services/copy"
-import { addRole, MAX_ROLE_LENGTH } from "@/features/settings/services/lib/service-form"
+import {
+  addRole,
+  MAX_ROLE_LENGTH,
+} from "@/features/settings/services/lib/service-form"
 
 /** Removable role chips plus a dashed "+ role" chip that turns into an inline input. */
 export function DecisionMakersInput({
@@ -36,7 +39,10 @@ export function DecisionMakersInput({
   return (
     <div className="flex flex-wrap items-center gap-1.5 text-[13px]">
       {value.map((role) => (
-        <span key={role} className="inline-flex items-center gap-1.5 rounded-sm bg-muted py-[5px] pr-1.5 pl-2.5">
+        <span
+          key={role}
+          className="inline-flex items-center gap-1.5 rounded-sm bg-muted py-[5px] pr-1.5 pl-2.5"
+        >
           {role}
           <button
             type="button"

@@ -17,7 +17,14 @@ type ExportSource = {
 }
 
 /** The service in the ai preset format (ai/presets/<key>.yaml), active questions and rules only. */
-export function serviceToPreset({ service, questions, rules, icp, scoring, questionLabel }: ExportSource) {
+export function serviceToPreset({
+  service,
+  questions,
+  rules,
+  icp,
+  scoring,
+  questionLabel,
+}: ExportSource) {
   return {
     key: service.slug,
     name: service.name,
@@ -36,7 +43,13 @@ export function serviceToPreset({ service, questions, rules, icp, scoring, quest
     }),
     rules: rules
       .filter((rule) => rule.is_active)
-      .map(({ name, kind, condition, action, cap_value }) => ({ name, kind, condition, action, cap_value })),
+      .map(({ name, kind, condition, action, cap_value }) => ({
+        name,
+        kind,
+        condition,
+        action,
+        cap_value,
+      })),
     ...(scoring && { scoring: { params: scoring.params } }),
     questions: questions
       .filter((question) => question.is_active)
@@ -62,7 +75,8 @@ const RESERVED = /^(true|false|null|yes|no|on|off|y|n)$/i
 function scalar(value: unknown): string {
   if (value === null || value === undefined) return "null"
   if (typeof value === "string") {
-    const plain = PLAIN.test(value) && value.trimEnd() === value && !RESERVED.test(value)
+    const plain =
+      PLAIN.test(value) && value.trimEnd() === value && !RESERVED.test(value)
     // A JSON string literal is a valid YAML double-quoted scalar.
     return plain ? value : JSON.stringify(value)
   }
@@ -73,7 +87,8 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value)
 
 const isBlock = (value: unknown) =>
-  (Array.isArray(value) && value.length > 0) || (isRecord(value) && Object.keys(value).length > 0)
+  (Array.isArray(value) && value.length > 0) ||
+  (isRecord(value) && Object.keys(value).length > 0)
 
 function inline(value: unknown) {
   if (Array.isArray(value)) return "[]"
@@ -91,7 +106,9 @@ function blockLines(value: unknown, indent: string): string[] {
   }
   if (!isRecord(value)) return [`${indent}${inline(value)}`]
   return Object.entries(value).flatMap(([key, item]) =>
-    isBlock(item) ? [`${indent}${scalar(key)}:`, ...blockLines(item, `${indent}  `)] : [`${indent}${scalar(key)}: ${inline(item)}`],
+    isBlock(item)
+      ? [`${indent}${scalar(key)}:`, ...blockLines(item, `${indent}  `)]
+      : [`${indent}${scalar(key)}: ${inline(item)}`]
   )
 }
 

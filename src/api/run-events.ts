@@ -52,7 +52,12 @@ export type RunEvent =
   | { id: number | null; event: "company.stage"; data: CompanyStageData }
   | { id: number | null; event: "company.done"; data: CompanyDoneData }
 
-const EVENT_NAMES = new Set(["run.progress", "run.finished", "company.stage", "company.done"])
+const EVENT_NAMES = new Set([
+  "run.progress",
+  "run.finished",
+  "company.stage",
+  "company.done",
+])
 
 export type ReadRunEventsOptions = {
   lastEventId?: number | null
@@ -63,9 +68,13 @@ export type ReadRunEventsOptions = {
 }
 
 /** Reads the stream until the server closes it. Rejects with ApiError when the request itself fails. */
-export async function readRunEvents(runId: string, options: ReadRunEventsOptions) {
+export async function readRunEvents(
+  runId: string,
+  options: ReadRunEventsOptions
+) {
   const headers: Record<string, string> = { Accept: "text/event-stream" }
-  if (options.lastEventId != null) headers["Last-Event-ID"] = String(options.lastEventId)
+  if (options.lastEventId != null)
+    headers["Last-Event-ID"] = String(options.lastEventId)
 
   let response: Response
   try {
@@ -77,12 +86,24 @@ export async function readRunEvents(runId: string, options: ReadRunEventsOptions
     })
   } catch (error) {
     if (options.signal?.aborted) throw error
-    throw new ApiError(0, "network", "Lost connection to the live progress stream.")
+    throw new ApiError(
+      0,
+      "network",
+      "Lost connection to the live progress stream."
+    )
   }
 
   // Auth and "run not found" fail before streaming, as ordinary JSON errors.
-  if (!response.ok || !response.body || !response.headers.get("content-type")?.includes("text/event-stream")) {
-    throw new ApiError(response.status, "stream_unavailable", "Live progress is unavailable.")
+  if (
+    !response.ok ||
+    !response.body ||
+    !response.headers.get("content-type")?.includes("text/event-stream")
+  ) {
+    throw new ApiError(
+      response.status,
+      "stream_unavailable",
+      "Live progress is unavailable."
+    )
   }
 
   const parser = createParser({
@@ -97,14 +118,18 @@ export async function readRunEvents(runId: string, options: ReadRunEventsOptions
         return
       }
       const id = message.id ? Number(message.id) : null
-      options.onEvent({ id: Number.isFinite(id) ? id : null, event: message.event, data } as RunEvent)
+      options.onEvent({
+        id: Number.isFinite(id) ? id : null,
+        event: message.event,
+        data,
+      } as RunEvent)
     },
   })
 
   const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
   try {
     for (;;) {
-      const { done, value } = await reader.read()
+      const { done, value } = await readChunk(reader, options.signal)
       if (done) return
       options.onActivity?.()
       parser.feed(value)
@@ -112,4 +137,38 @@ export async function readRunEvents(runId: string, options: ReadRunEventsOptions
   } finally {
     reader.releaseLock()
   }
+}
+
+function abortError(signal: AbortSignal) {
+  return signal.reason instanceof Error
+    ? signal.reason
+    : new DOMException("The operation was aborted.", "AbortError")
+}
+
+/** `fetch` abort does not always reject a body that has already started, so cancel the reader explicitly. */
+function readChunk(
+  reader: ReadableStreamDefaultReader<string>,
+  signal: AbortSignal | undefined,
+) {
+  if (!signal) return reader.read()
+  if (signal.aborted) return Promise.reject(abortError(signal))
+
+  return new Promise<ReadableStreamReadResult<string>>((resolve, reject) => {
+    const onAbort = () => {
+      void reader.cancel().catch(() => undefined)
+      reject(abortError(signal))
+    }
+    signal.addEventListener("abort", onAbort, { once: true })
+    reader.read().then(
+      (chunk) => {
+        signal.removeEventListener("abort", onAbort)
+        if (signal.aborted) reject(abortError(signal))
+        else resolve(chunk)
+      },
+      (error: unknown) => {
+        signal.removeEventListener("abort", onAbort)
+        reject(signal.aborted ? abortError(signal) : error)
+      },
+    )
+  })
 }

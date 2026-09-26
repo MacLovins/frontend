@@ -23,7 +23,10 @@ export function FormRow({
       </label>
       {children}
       {help ? (
-        <p id={`${id}-help`} className="m-0 text-xs leading-[1.45] text-muted-foreground">
+        <p
+          id={`${id}-help`}
+          className="m-0 text-xs leading-[1.45] text-muted-foreground"
+        >
           {help}
         </p>
       ) : null}

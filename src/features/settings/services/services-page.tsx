@@ -25,8 +25,12 @@ export function ServicesPage() {
   const presets = useGetPresets({ query: { staleTime: Infinity } })
   const { serviceId } = useCurrentService()
 
-  const sorted = useMemo(() => sortServices(services.data ?? []), [services.data])
-  const selected = sorted.find((service) => service.id === serviceId) ?? sorted[0]
+  const sorted = useMemo(
+    () => sortServices(services.data ?? []),
+    [services.data]
+  )
+  const selected =
+    sorted.find((service) => service.id === serviceId) ?? sorted[0]
   const creating = params.get(NEW_PARAM) === "1"
 
   // `?service=` is the global service param, so selecting a card also switches the app's service.
@@ -47,7 +51,8 @@ export function ServicesPage() {
       return next
     })
 
-  const presetFor = (slug: string) => presets.data?.find((preset) => preset.key === slug)
+  const presetFor = (slug: string) =>
+    presets.data?.find((preset) => preset.key === slug)
   const showDetails = creating || selected !== undefined
 
   return (
@@ -70,7 +75,11 @@ export function ServicesPage() {
           </div>
         ) : services.isError ? (
           <div className="rounded-lg border border-border bg-card">
-            <ErrorState title={copy.loadError} error={services.error} onRetry={() => void services.refetch()} />
+            <ErrorState
+              title={copy.loadError}
+              error={services.error}
+              onRetry={() => void services.refetch()}
+            />
           </div>
         ) : sorted.length === 0 ? (
           <div className="rounded-lg border border-border bg-card">

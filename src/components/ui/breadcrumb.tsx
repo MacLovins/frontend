@@ -104,8 +104,7 @@ function BreadcrumbEllipsis({
       )}
       {...props}
     >
-      <DotsThreeIcon
-      />
+      <DotsThreeIcon />
       <span className="sr-only">More</span>
     </span>
   )

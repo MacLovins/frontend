@@ -13,7 +13,12 @@ beforeAll(() => {
   // patched fetch so the resolved URL reaches its interceptor.
   const mocked = globalThis.fetch
   globalThis.fetch = (input, init) =>
-    mocked(typeof input === "string" && input.startsWith("/") ? new URL(input, window.location.origin) : input, init)
+    mocked(
+      typeof input === "string" && input.startsWith("/")
+        ? new URL(input, window.location.origin)
+        : input,
+      init
+    )
 })
 
 afterEach(() => {

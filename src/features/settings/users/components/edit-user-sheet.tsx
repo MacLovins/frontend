@@ -10,17 +10,40 @@ import { errorMessage, fieldErrors } from "@/api/mutator"
 import { Button } from "@/components/ui/button"
 import { FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 
 import { FormRow } from "@/features/settings/users/components/form-row"
 import { RoleSelect } from "@/features/settings/users/components/role-select"
 import { copy } from "@/features/settings/users/copy"
-import { diffUser, editUserSchema, type EditUserValues, toEditValues } from "@/features/settings/users/lib/user-form"
+import {
+  diffUser,
+  editUserSchema,
+  type EditUserValues,
+  toEditValues,
+} from "@/features/settings/users/lib/user-form"
 
-function EditUserForm({ user, isSelf, onDone }: { user: UserOut; isSelf: boolean; onDone: () => void }) {
+function EditUserForm({
+  user,
+  isSelf,
+  onDone,
+}: {
+  user: UserOut
+  isSelf: boolean
+  onDone: () => void
+}) {
   const queryClient = useQueryClient()
-  const form = useForm<EditUserValues>({ resolver: zodResolver(editUserSchema), defaultValues: toEditValues(user) })
+  const form = useForm<EditUserValues>({
+    resolver: zodResolver(editUserSchema),
+    defaultValues: toEditValues(user),
+  })
   const { errors, isDirty } = form.formState
 
   const update = useUpdateUser({
@@ -31,12 +54,16 @@ function EditUserForm({ user, isSelf, onDone }: { user: UserOut; isSelf: boolean
         onDone()
         await Promise.all([
           invalidateApi(queryClient, apiPaths.users),
-          isSelf ? queryClient.invalidateQueries({ queryKey: meQueryKey }) : null,
+          isSelf
+            ? queryClient.invalidateQueries({ queryKey: meQueryKey })
+            : null,
         ])
       },
       onError: (error) => {
         const fields = fieldErrors(error)
-        const field = (["full_name", "role", "is_active", "password"] as const).find((name) => fields[name])
+        const field = (
+          ["full_name", "role", "is_active", "password"] as const
+        ).find((name) => fields[name])
         if (field) form.setError(field, { message: fields[field] })
         else form.setError("root", { message: errorMessage(error) })
       },
@@ -52,7 +79,11 @@ function EditUserForm({ user, isSelf, onDone }: { user: UserOut; isSelf: boolean
   return (
     <form noValidate onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-6 py-5">
-        <FormRow id="edit-name" label={copy.form.fullName} error={errors.full_name}>
+        <FormRow
+          id="edit-name"
+          label={copy.form.fullName}
+          error={errors.full_name}
+        >
           <Input
             id="edit-name"
             autoComplete="off"
@@ -100,11 +131,19 @@ function EditUserForm({ user, isSelf, onDone }: { user: UserOut; isSelf: boolean
               )}
             />
           </div>
-          <p id="edit-active-help" className="m-0 text-xs leading-[1.45] text-muted-foreground">
+          <p
+            id="edit-active-help"
+            className="m-0 text-xs leading-[1.45] text-muted-foreground"
+          >
             {isSelf ? copy.form.selfActive : copy.form.activeHelp}
           </p>
         </div>
-        <FormRow id="edit-password" label={copy.form.newPassword} help={copy.form.newPasswordHelp} error={errors.password}>
+        <FormRow
+          id="edit-password"
+          label={copy.form.newPassword}
+          help={copy.form.newPasswordHelp}
+          error={errors.password}
+        >
           <Input
             id="edit-password"
             type="password"
@@ -121,7 +160,11 @@ function EditUserForm({ user, isSelf, onDone }: { user: UserOut; isSelf: boolean
         <Button type="button" variant="outline" onClick={onDone}>
           {copy.form.cancel}
         </Button>
-        <Button type="submit" variant="black" disabled={!isDirty || update.isPending}>
+        <Button
+          type="submit"
+          variant="black"
+          disabled={!isDirty || update.isPending}
+        >
           {update.isPending ? copy.form.saving : copy.form.save}
         </Button>
       </SheetFooter>
@@ -146,7 +189,10 @@ export function EditUserSheet({
   onClose: () => void
 }) {
   return (
-    <Sheet open={open && user !== undefined} onOpenChange={(next) => !next && onClose()}>
+    <Sheet
+      open={open && user !== undefined}
+      onOpenChange={(next) => !next && onClose()}
+    >
       <SheetContent>
         {user ? (
           <>
@@ -154,7 +200,12 @@ export function EditUserSheet({
               <SheetTitle>{copy.editTitle}</SheetTitle>
               <SheetDescription>{user.email}</SheetDescription>
             </SheetHeader>
-            <EditUserForm key={user.id} user={user} isSelf={user.id === currentUserId} onDone={onClose} />
+            <EditUserForm
+              key={user.id}
+              user={user}
+              isSelf={user.id === currentUserId}
+              onDone={onClose}
+            />
           </>
         ) : null}
       </SheetContent>

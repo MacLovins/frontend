@@ -170,8 +170,7 @@ function DropdownMenuCheckboxItem({
         data-slot="dropdown-menu-checkbox-item-indicator"
       >
         <MenuPrimitive.CheckboxItemIndicator>
-          <CheckIcon
-          />
+          <CheckIcon />
         </MenuPrimitive.CheckboxItemIndicator>
       </span>
       {children}
@@ -211,8 +210,7 @@ function DropdownMenuRadioItem({
         data-slot="dropdown-menu-radio-item-indicator"
       >
         <MenuPrimitive.RadioItemIndicator>
-          <CheckIcon
-          />
+          <CheckIcon />
         </MenuPrimitive.RadioItemIndicator>
       </span>
       {children}

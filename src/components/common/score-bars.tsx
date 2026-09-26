@@ -29,11 +29,20 @@ export function ScoreBar({
       aria-hidden="true"
       className={cn(
         "block overflow-hidden",
-        size === "sm" ? "h-1.5 rounded-[3px] bg-subtle" : "h-2.5 rounded-sm bg-muted",
-        className,
+        size === "sm"
+          ? "h-1.5 rounded-[3px] bg-subtle"
+          : "h-2.5 rounded-sm bg-muted",
+        className
       )}
     >
-      <span className={cn("block h-full", size === "lg" && "rounded-sm", fills[metric])} style={{ width }} />
+      <span
+        className={cn(
+          "block h-full",
+          size === "lg" && "rounded-sm",
+          fills[metric]
+        )}
+        style={{ width }}
+      />
     </span>
   )
 }
@@ -51,7 +60,9 @@ export function SubScoreBars({ fit, intent, risk }: Record<Metric, number>) {
         <span key={metric} className="flex items-center gap-1.5">
           <span className="w-11 shrink-0">{metricShortLabels[metric]}</span>
           <ScoreBar value={value} metric={metric} className="flex-1" />
-          <span className="w-5 shrink-0 text-right font-mono text-black">{score(value)}</span>
+          <span className="w-5 shrink-0 text-right font-mono text-black">
+            {score(value)}
+          </span>
         </span>
       ))}
     </span>

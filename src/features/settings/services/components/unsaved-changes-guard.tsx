@@ -18,17 +18,27 @@ import { copy } from "@/features/settings/services/copy"
  * Blocks in-app navigation (including a switch of `?service=`) while the form is dirty.
  * `bypass` lets a successful create move to the new service without asking.
  */
-export function UnsavedChangesGuard({ dirty, bypass }: { dirty: boolean; bypass: RefObject<boolean> }) {
+export function UnsavedChangesGuard({
+  dirty,
+  bypass,
+}: {
+  dirty: boolean
+  bypass: RefObject<boolean>
+}) {
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       dirty &&
       !bypass.current &&
-      (currentLocation.pathname !== nextLocation.pathname || currentLocation.search !== nextLocation.search),
+      (currentLocation.pathname !== nextLocation.pathname ||
+        currentLocation.search !== nextLocation.search)
   )
   const open = blocker.state === "blocked"
 
   return (
-    <AlertDialog open={open} onOpenChange={(next) => !next && blocker.reset?.()}>
+    <AlertDialog
+      open={open}
+      onOpenChange={(next) => !next && blocker.reset?.()}
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{copy.discard.title}</AlertDialogTitle>
