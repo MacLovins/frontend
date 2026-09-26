@@ -55,38 +55,25 @@ export function LoginPage() {
   const submit = form.handleSubmit((values) => login.mutate({ data: values }))
 
   return (
-    <div className="relative grid min-h-svh bg-canvas lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
-      <ThemeToggle className="absolute top-5 right-8 z-10 bg-card" />
-      <section className="hidden flex-col justify-between bg-black p-12 text-white lg:flex">
+    <div className="relative grid min-h-svh place-items-center overflow-hidden bg-[#ffffff] px-6 text-[#000000] dark:bg-[#000000] dark:text-[#ffffff]">
+      <div className="login-backdrop" aria-hidden="true">
+        <span className="login-gradient" />
+      </div>
+      <ThemeToggle className="absolute top-5 right-8 z-20 text-[#000000] hover:bg-black/5 dark:text-[#ffffff] dark:hover:bg-white/10" />
+      <header className="absolute top-10 left-1/2 z-10 -translate-x-1/2">
         <div className="flex items-center gap-3">
           <BrandMark size={40} />
           <span className="text-[22px] font-bold tracking-[-0.01em]">LeadRadar</span>
         </div>
-        <div className="flex max-w-[640px] flex-col gap-5">
-          <p className="m-0 text-[44px] leading-[1.05] font-extrabold tracking-[-0.03em]">
-            Turn public business signals into a ranked call list, where every reason comes with a quote you can check.
-          </p>
-          <p className="m-0 text-base leading-normal text-[#cccccc]">
-            LeadRadar reads news, company sites, reports and job boards for each service you sell, and shows the
-            evidence behind every score.
-          </p>
-        </div>
-        <Link to="/about" className="text-sm font-semibold text-white">
-          How LeadRadar works →
-        </Link>
-      </section>
+      </header>
 
-      <main className="flex items-center justify-center p-6">
+      <main className="relative z-10 flex w-full max-w-[440px] flex-col items-center rounded-3xl border border-white/70 bg-white/55 px-8 py-8 shadow-[0_12px_48px_rgb(255_121_0/0.12)] backdrop-blur-2xl dark:border-white/15 dark:bg-black/45 dark:shadow-[0_12px_48px_rgb(0_0_0/0.35)]">
         <form
           noValidate
           onSubmit={submit}
-          className="flex w-full max-w-[400px] flex-col gap-6 rounded-lg border border-border bg-card p-8"
+          className="flex w-full flex-col gap-6"
         >
-          <div className="flex items-center gap-2.5 lg:hidden">
-            <BrandMark />
-            <span className="text-base font-bold">LeadRadar</span>
-          </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 text-center">
             <h1 className="m-0 text-2xl font-bold tracking-[-0.01em]">Sign in</h1>
             <p className="m-0 text-sm text-muted-foreground">Use the account your admin created for you.</p>
           </div>
@@ -133,6 +120,9 @@ export function LoginPage() {
             </p>
           ) : null}
         </form>
+        <Link to="/about" className="mt-8 text-sm font-semibold text-inherit">
+          How LeadRadar works →
+        </Link>
       </main>
     </div>
   )

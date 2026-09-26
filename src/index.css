@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+
+/* Follow the toggle on <html class="dark">, not the operating system setting. */
+@custom-variant dark (&:where(.dark, .dark *));
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
 
@@ -263,4 +266,52 @@
 .dark .bg-primary.text-black,
 .dark .text-primary-foreground {
   color: #000000;
+}
+
+/* Login backdrop: a pale primary wash. Opacity only shifts a little. */
+.login-backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #ffffff;
+}
+.dark .login-backdrop {
+  background: #000000;
+}
+.login-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(128deg, #ffe3cc 0%, #fff6ee 48%, #ffd7b3 100%);
+  animation: login-gradient 16s ease-in-out infinite;
+}
+.dark .login-gradient {
+  background: linear-gradient(128deg, #ffc48a 0%, #ffe0c2 50%, #ffb56a 100%);
+  animation-name: login-gradient-dark;
+}
+@keyframes login-gradient {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+@keyframes login-gradient-dark {
+  0%,
+  100% {
+    opacity: 0.16;
+  }
+  50% {
+    opacity: 0.26;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .login-gradient {
+    animation: none;
+    opacity: 0.8;
+  }
+  .dark .login-gradient {
+    opacity: 0.2;
+  }
 }
