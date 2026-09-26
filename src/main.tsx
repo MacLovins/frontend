@@ -4,7 +4,10 @@ import { RouterProvider } from "react-router"
 
 import { Providers } from "@/app/providers"
 import { router } from "@/app/router"
+import { applyStoredTheme } from "@/lib/theme"
 import "./index.css"
+
+applyStoredTheme()
 
 // `npm run dev:mock` serves the API from an in-browser mock; the import keeps it out of production bundles.
 async function startMocks() {

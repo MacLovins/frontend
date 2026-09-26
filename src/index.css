@@ -4,7 +4,7 @@
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
 
-/* LeadRadar palette: black, white and Orange (#ff7900) with neutral greys. Light only (dark mode is P2). */
+/* LeadRadar palette: black, white and Orange (#ff7900) with neutral greys. `.dark` on <html> inverts the surfaces. */
 :root {
   --radius: 0.625rem;
 
@@ -95,6 +95,47 @@
   --sidebar-input: #1f1f1f;
   --sidebar-muted: #8c8c8c;
   --sidebar-subtle: #b3b3b3;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #0a0a0a;
+  --foreground: #f5f5f5;
+  --canvas: #111111;
+  --card: #1a1a1a;
+  --card-foreground: #f5f5f5;
+  --popover: #1a1a1a;
+  --popover-foreground: #f5f5f5;
+  --secondary: #262626;
+  --secondary-foreground: #f5f5f5;
+  --muted: #262626;
+  --muted-foreground: #a3a3a3;
+  --accent: #262626;
+  --accent-foreground: #f5f5f5;
+  --destructive: #e85d3a;
+  --border: #333333;
+  --input: #404040;
+  --ring: #ffffff;
+  --subtle: #262626;
+  --text-secondary: #d4d4d4;
+  --faint: #737373;
+  --link-hover: #ff9a40;
+  --primary-surface: #3a2414;
+  --primary-surface-subtle: #2a1a10;
+  --tier-cold-surface: #163544;
+  --tier-dq-surface: #2a2a2a;
+  --tier-dq-foreground: #c4c4c4;
+  --positive: #6dcaa0;
+  --positive-strong: #b7ebcf;
+  --positive-surface: #143026;
+  --negative-strong: #ffb4a2;
+  --negative-surface: #3a1c14;
+  --negative-foreground: #ffd0c4;
+  --warning-surface: #3a3208;
+  --warning-border: #6a5a10;
+  --warning-strong: #ffe566;
+  --warning-foreground: #ffe566;
+  --sidebar-border: #333333;
 }
 
 @theme inline {
@@ -210,4 +251,16 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+}
+
+/* Hardcoded light surfaces follow the theme. Orange controls keep black text. The switch thumb stays light. */
+.dark .bg-white:not([data-slot="switch-thumb"]) {
+  background-color: var(--card);
+}
+.dark .text-black {
+  color: var(--foreground);
+}
+.dark .bg-primary.text-black,
+.dark .text-primary-foreground {
+  color: #000000;
 }

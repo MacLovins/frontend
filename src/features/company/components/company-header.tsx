@@ -24,7 +24,7 @@ export type Analysis = { busy: boolean; label: string; start: () => void }
 
 function HeaderFrame({ children }: { children: ReactNode }) {
   return (
-    <header className="flex shrink-0 flex-col gap-4 border-b border-border bg-card px-8 pt-5">
+    <header className="flex shrink-0 flex-col gap-4 border-b border-border bg-card pt-5 pr-20 pl-8">
       {children}
     </header>
   )

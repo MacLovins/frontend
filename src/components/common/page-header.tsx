@@ -19,7 +19,7 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "flex min-h-[72px] shrink-0 flex-wrap items-center gap-4 border-b border-border bg-card px-8 py-3",
+        "flex min-h-[72px] shrink-0 flex-wrap items-center gap-4 border-b border-border bg-card py-3 pr-20 pl-8",
         className,
       )}
     >

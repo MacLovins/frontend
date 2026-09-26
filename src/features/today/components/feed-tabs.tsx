@@ -21,7 +21,7 @@ export function FeedTabs({
           <TabsTrigger
             key={filter}
             value={filter}
-            className="px-3 text-[13px] not-data-active:hover:bg-white/60 data-active:shadow-none!"
+            className="px-3 text-[13px] not-data-active:hover:bg-foreground/8 data-active:shadow-none!"
           >
             {feedTabLabels[filter]}
           </TabsTrigger>
