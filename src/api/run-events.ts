@@ -148,7 +148,7 @@ function abortError(signal: AbortSignal) {
 /** `fetch` abort does not always reject a body that has already started, so cancel the reader explicitly. */
 function readChunk(
   reader: ReadableStreamDefaultReader<string>,
-  signal: AbortSignal | undefined,
+  signal: AbortSignal | undefined
 ) {
   if (!signal) return reader.read()
   if (signal.aborted) return Promise.reject(abortError(signal))
@@ -168,7 +168,7 @@ function readChunk(
       (error: unknown) => {
         signal.removeEventListener("abort", onAbort)
         reject(signal.aborted ? abortError(signal) : error)
-      },
+      }
     )
   })
 }
