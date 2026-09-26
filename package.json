@@ -46,7 +46,7 @@
     "@eslint/js": "^10",
     "@faker-js/faker": "^10.6.0",
     "@maclovins/leadradar-api": "^0.1.1",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6",
