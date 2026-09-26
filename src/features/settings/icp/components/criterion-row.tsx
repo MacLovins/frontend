@@ -110,6 +110,7 @@ export function CriterionRow({
       <Button
         variant="outline"
         size="icon-sm"
+        className="border-border"
         aria-label={strings.remove}
         onClick={onRemove}
       >

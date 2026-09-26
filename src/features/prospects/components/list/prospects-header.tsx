@@ -28,10 +28,7 @@ function ExportCsvButton({
     <a
       href={leadsExportUrl(params)}
       download
-      className={cn(
-        buttonVariants({ variant: "outline" }),
-        "border-border no-underline hover:text-black"
-      )}
+      className={cn(buttonVariants({ variant: "outline" }), "border-border")}
     >
       {prospectsCopy.exportCsv}
     </a>

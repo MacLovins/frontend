@@ -4,7 +4,7 @@ import type { ScoringParams } from "@/api/generated/model"
  * The backend's own defaults (ai/contracts.py ScoringProfile), used when a service has no scoring profile
  * row yet (GET /services/{id}/scoring-profile answers 404). Explanatory text only: scores come from the API.
  */
-export const scoringDefaults = {
+const scoringDefaults = {
   weights: { high: 3, medium: 2, low: 1 },
   fit_exponent: 0.4,
   intent_exponent: 0.6,

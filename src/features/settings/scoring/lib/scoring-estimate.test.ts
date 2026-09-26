@@ -10,6 +10,7 @@ import { DEFAULT_PARAMS } from "@/features/settings/scoring/lib/params"
 import {
   buildPreview,
   estimatePriority,
+  recomputeFor,
   type SampleLead,
 } from "@/features/settings/scoring/lib/scoring-estimate"
 
@@ -73,17 +74,22 @@ const withParams = (patch: Partial<ScoringParams>): ScoringParams => ({
   ...patch,
 })
 
+const RECOMPUTE_ALL = { intent: true, risk: true }
+const KEEP_STORED = { intent: false, risk: false }
+
 describe("estimatePriority", () => {
   it("reproduces the engine priority from the stored breakdown", () => {
-    // A different saved Low weight forces the recompute; no question here is Low.
-    const saved = withParams({ weights: { high: 3, medium: 2, low: 0.5 } })
-    expect(estimatePriority(lead(), levels, DEFAULT_PARAMS, saved)).toBe(52.6)
+    expect(
+      estimatePriority(lead(), levels, DEFAULT_PARAMS, RECOMPUTE_ALL)
+    ).toBe(52.6)
   })
 
   it("recomputes Buying signals when a weight changes", () => {
     const draft = withParams({ weights: { high: 5, medium: 2, low: 1 } })
+    const recompute = recomputeFor(draft, DEFAULT_PARAMS)
+    expect(recompute).toEqual(RECOMPUTE_ALL)
     // points 5·0.8 + 2·0.5 = 5 → Intent 63.2 → Priority 100 · 0.632^0.6 · 0.803 = 61.0
-    expect(estimatePriority(lead(), levels, draft, DEFAULT_PARAMS)).toBe(61)
+    expect(estimatePriority(lead(), levels, draft, recompute)).toBe(61)
   })
 
   it("keeps an excluded company at 0 whatever the weights", () => {
@@ -93,16 +99,16 @@ describe("estimatePriority", () => {
         sample,
         levels,
         withParams({ fit_exponent: 0.1 }),
-        DEFAULT_PARAMS
+        RECOMPUTE_ALL
       )
     ).toBe(0)
   })
 
   it("applies caps after scoring", () => {
     const sample = lead({ ruleHits: [hit("cap", 35), hit("flag")] })
-    expect(
-      estimatePriority(sample, levels, DEFAULT_PARAMS, DEFAULT_PARAMS)
-    ).toBe(35)
+    expect(estimatePriority(sample, levels, DEFAULT_PARAMS, KEEP_STORED)).toBe(
+      35
+    )
   })
 })
 
@@ -122,6 +128,46 @@ describe("buildPreview", () => {
       previewTier: "warm",
     })
     expect(preview).toMatchObject({ tierChanges: 0, moved: 0 })
+  })
+
+  it("does not count the rounding of the stored strengths as movement", () => {
+    // Stored Buying signals 50 vs 49.3 from the 2-dp breakdown; a Low weight no question uses changes nothing.
+    const sample = lead({
+      score: {
+        priority: 53,
+        tier: "warm",
+        fit: 100,
+        intent: 50,
+        risk: 39.3,
+        disqualified: false,
+      },
+    })
+    const preview = buildPreview(
+      [sample],
+      levels,
+      DEFAULT_PARAMS,
+      withParams({ weights: { high: 3, medium: 2, low: 0.5 } })
+    )
+    expect(preview.rows[0]).toMatchObject({ saved: 53, preview: 53, delta: 0 })
+    expect(preview).toMatchObject({ tierChanges: 0, moved: 0 })
+  })
+
+  it("keeps the stored tier when nothing previewable changed", () => {
+    // Stored tier from a saved profile the thresholds alone would not give (e.g. scored before a tier edit).
+    const sample = lead({
+      score: { ...lead().score, priority: 66, tier: "warm" },
+    })
+    const preview = buildPreview(
+      [sample],
+      levels,
+      DEFAULT_PARAMS,
+      withParams({ min_confidence: 0.7 })
+    )
+    expect(preview.rows[0]).toMatchObject({
+      savedTier: "warm",
+      previewTier: "warm",
+    })
+    expect(preview.tierChanges).toBe(0)
   })
 
   it("changes the tier when a threshold moves across the saved priority", () => {

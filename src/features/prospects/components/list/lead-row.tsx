@@ -49,7 +49,7 @@ export function LeadRow({
           <div className="flex min-w-0 flex-col gap-0.5">
             <Link
               to={href}
-              className="rounded-[2px] text-sm leading-tight font-semibold text-black no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              className="rounded-[2px] text-sm leading-tight font-semibold text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
             >
               {company.name}
             </Link>

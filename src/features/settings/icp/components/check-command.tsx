@@ -9,7 +9,7 @@ import {
 import type { Option } from "@/features/settings/icp/hooks/use-catalogs"
 import { copy } from "@/features/settings/icp/copy"
 
-export type CheckGroup = { heading?: string; options: Option[] }
+type CheckGroup = { heading?: string; options: Option[] }
 
 /** Searchable checkable list for multi-select pickers (Popover content). */
 export function CheckCommand({
@@ -30,18 +30,22 @@ export function CheckCommand({
         <CommandEmpty>{copy.pickers.noMatch}</CommandEmpty>
         {groups.map((group) => (
           <CommandGroup key={group.heading ?? "all"} heading={group.heading}>
-            {group.options.map((option) => (
-              <CommandItem
-                key={option.value}
-                value={option.value}
-                keywords={[option.label]}
-                data-checked={isChecked(option.value)}
-                onSelect={() => onToggle(option.value)}
-                className="min-h-8 py-1"
-              >
-                {option.label}
-              </CommandItem>
-            ))}
+            {group.options.map((option) => {
+              const checked = isChecked(option.value)
+              return (
+                <CommandItem
+                  key={option.value}
+                  value={option.value}
+                  keywords={[option.label]}
+                  data-checked={checked}
+                  aria-checked={checked}
+                  onSelect={() => onToggle(option.value)}
+                  className="min-h-8 py-1"
+                >
+                  {option.label}
+                </CommandItem>
+              )
+            })}
           </CommandGroup>
         ))}
       </CommandList>

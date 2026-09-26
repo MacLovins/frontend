@@ -28,7 +28,10 @@ import {
   RulesTableSkeleton,
 } from "@/features/settings/rules/components/rules-table"
 import { copy } from "@/features/settings/rules/copy"
-import { useRuleToggle } from "@/features/settings/rules/hooks/use-rule-mutations"
+import {
+  usePendingRuleIds,
+  useRuleToggle,
+} from "@/features/settings/rules/hooks/use-rule-mutations"
 import {
   questionText,
   shortQuestion,
@@ -72,6 +75,7 @@ function RulesScreen({ serviceId }: { serviceId: string }) {
   const countries = useCountryCatalog()
   const industries = useIndustryCatalog()
   const toggle = useRuleToggle(serviceId)
+  const pendingIds = usePendingRuleIds()
 
   // The backend has no ORDER BY for rules (config/router.py list_rules).
   const rules = useMemo(
@@ -173,7 +177,7 @@ function RulesScreen({ serviceId }: { serviceId: string }) {
             selectedId={selectedId}
             describe={describe}
             leads={leads.isError ? null : leads.data}
-            togglingId={toggle.isPending ? toggle.variables.id : undefined}
+            pendingIds={pendingIds}
             onToggle={(rule, active) =>
               toggle.mutate({ id: rule.id, data: { is_active: active } })
             }

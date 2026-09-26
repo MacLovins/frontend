@@ -22,7 +22,7 @@ function VersionRow({
   return (
     <div className="flex flex-wrap gap-x-4 gap-y-1 border-t border-subtle pt-1.5 text-xs text-muted-foreground">
       <span>
-        <strong className="text-black">v{version}</strong> ·{" "}
+        <strong className="text-foreground">v{version}</strong> ·{" "}
         {format(parseISO(createdAt), "d MMM")}
       </span>
       {older.map((number) => (

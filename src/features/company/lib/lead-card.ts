@@ -25,7 +25,7 @@ export function questionIndex(detail: LeadDetail) {
   return questions
 }
 
-export const strengthRank: Record<Strength, number> = {
+const strengthRank: Record<Strength, number> = {
   weak: 1,
   moderate: 2,
   strong: 3,

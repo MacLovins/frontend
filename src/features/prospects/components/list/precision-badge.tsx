@@ -25,7 +25,7 @@ export function PrecisionBadge({ serviceId }: { serviceId: string }) {
         render={
           <Link
             to={withService("/quality", serviceId)}
-            className="flex h-10 items-center gap-2 rounded-md border border-border bg-white px-3 text-[13px] text-black no-underline hover:text-link-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            className="flex h-10 items-center gap-2 rounded-md border border-border bg-white px-3 text-[13px] text-black hover:text-link-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
           />
         }
       >

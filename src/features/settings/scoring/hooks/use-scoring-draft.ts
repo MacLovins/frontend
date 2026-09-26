@@ -75,11 +75,19 @@ export function useScoringDraft(saved: ScoringParams) {
   const setHalfLife = useCallback(
     (key: HalfLifeKey, value: string) => {
       setText((current) => ({ ...current, [key]: value }))
-      const restored = value === savedText[key]
-      const days = restored
-        ? (saved.half_life_days[key] ?? null)
-        : parseHalfLife(value)
-      if (days !== null || restored) {
+      if (value === savedText[key]) {
+        // Back to exactly what is stored, including a key the stored params leave out.
+        setDraft((current) => {
+          const halfLives = { ...current.half_life_days }
+          const stored = saved.half_life_days[key]
+          if (stored === undefined) Reflect.deleteProperty(halfLives, key)
+          else halfLives[key] = stored
+          return { ...current, half_life_days: halfLives }
+        })
+        return
+      }
+      const days = parseHalfLife(value)
+      if (days !== null) {
         setDraft((current) => ({
           ...current,
           half_life_days: { ...current.half_life_days, [key]: days },

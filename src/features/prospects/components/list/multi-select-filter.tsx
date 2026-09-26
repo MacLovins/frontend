@@ -56,7 +56,9 @@ export function MultiSelectFilter({
 
   return (
     <Popover>
-      <PopoverTrigger render={<Button variant="outline" className="gap-1 px-3" />}>
+      <PopoverTrigger
+        render={<Button variant="outline" className="gap-1 px-3" />}
+      >
         {label}
         <span aria-hidden="true">▾</span>
       </PopoverTrigger>
