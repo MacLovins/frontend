@@ -1,11 +1,18 @@
 export const copy = {
   title: "Users",
-  subtitle: "Who can sign in. Admins configure services and users; sales work the prospect list.",
+  subtitle:
+    "Who can sign in. Admins configure services and users; sales work the prospect list.",
   addUser: "Add user",
   loadError: "Could not load users.",
   empty: "No users yet.",
   emptyBody: "Add the people who should sign in to LeadRadar.",
-  columns: { name: "Name", email: "Email", role: "Role", status: "Status", lastSignIn: "Last sign-in" },
+  columns: {
+    name: "Name",
+    email: "Email",
+    role: "Role",
+    status: "Status",
+    lastSignIn: "Last sign-in",
+  },
   noName: "No name",
   you: "You",
   active: "Active",
@@ -18,9 +25,11 @@ export const copy = {
     fullName: "Full name",
     role: "Role",
     password: "Password",
-    passwordHelp: "At least 10 characters. Share it with the user; they cannot reset it themselves.",
+    passwordHelp:
+      "At least 10 characters. Share it with the user; they cannot reset it themselves.",
     newPassword: "New password",
-    newPasswordHelp: "Leave empty to keep the current password. At least 10 characters.",
+    newPasswordHelp:
+      "Leave empty to keep the current password. At least 10 characters.",
     active: "Active",
     activeHelp: "Deactivated users can no longer sign in.",
     // The session token keeps the old role until the user signs in again (backend auth/router.py:141-144).

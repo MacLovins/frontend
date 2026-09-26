@@ -29,7 +29,10 @@ const date = { type: "string", format: "date" }
 const dateTime = { type: "string", format: "date-time" }
 const arrayOf = (items: Schema) => ({ type: "array", items })
 const enumOf = (...values: string[]) => ({ type: "string", enum: values })
-const object = (properties: Record<string, Schema>, optional: string[] = []) => ({
+const object = (
+  properties: Record<string, Schema>,
+  optional: string[] = []
+) => ({
   type: "object",
   properties,
   required: Object.keys(properties).filter((key) => !optional.includes(key)),
@@ -53,9 +56,30 @@ const ENUMS: Record<string, Schema> = {
   Strength: enumOf("weak", "moderate", "strong"),
   Polarity: enumOf("positive", "negative"),
   Weight: enumOf("high", "medium", "low"),
-  SourceType: enumOf("news", "website", "jobs", "report", "registry", "incident", "derived", "manual"),
-  SignalFlag: enumOf("fuzzy_quote", "headline_only", "undated", "corroborated", "derived"),
-  RejectReason: enumOf("quote_not_found", "wrong_subject", "stale", "below_confidence", "no_evidence_for_yes"),
+  SourceType: enumOf(
+    "news",
+    "website",
+    "jobs",
+    "report",
+    "registry",
+    "incident",
+    "derived",
+    "manual"
+  ),
+  SignalFlag: enumOf(
+    "fuzzy_quote",
+    "headline_only",
+    "undated",
+    "corroborated",
+    "derived"
+  ),
+  RejectReason: enumOf(
+    "quote_not_found",
+    "wrong_subject",
+    "stale",
+    "below_confidence",
+    "no_evidence_for_yes"
+  ),
   SignalCategory: enumOf(
     "cost_efficiency",
     "digital_transformation",
@@ -70,7 +94,7 @@ const ENUMS: Record<string, Schema> = {
     "investment",
     "expansion",
     "internal_capability",
-    "distress",
+    "distress"
   ),
   // core/modules/config/models.py:54-56, schemas.py:14-15
   KeywordsStatus: enumOf("pending", "ready", "failed"),
@@ -78,7 +102,15 @@ const ENUMS: Record<string, Schema> = {
   RuleAction: enumOf("exclude", "cap", "flag"),
   // core/modules/runs/models.py:21-24; `pending` comes from worker/scheduled.py:95
   RunKind: enumOf("analyze", "refresh", "discover", "rescore"),
-  RunStatus: enumOf("queued", "running", "pending", "succeeded", "partial", "failed", "cancelled"),
+  RunStatus: enumOf(
+    "queued",
+    "running",
+    "pending",
+    "succeeded",
+    "partial",
+    "failed",
+    "cancelled"
+  ),
   RunMode: enumOf("incremental", "full"),
   // core/modules/accounts/models.py:45
   CompanyOrigin: enumOf("manual", "csv", "discovery"),
@@ -128,7 +160,7 @@ const OBJECTS: Record<string, Schema> = {
       label: str,
       weight: num,
     },
-    ["weight"],
+    ["weight"]
   ),
   FitDetails: object({ criteria: arrayOf(ref("FitCriterion")) }),
   // core/modules/leads/router.py:381-393, core/adapters/mapping.py:307-326
@@ -175,18 +207,27 @@ const OBJECTS: Record<string, Schema> = {
       mode: ref("RunMode"),
       trigger: enumOf("scheduler"),
     },
-    ["mode", "trigger"],
+    ["mode", "trigger"]
   ),
   RunProgress: object({ done: int, total: int, failed: int, paused: int }),
   // parser/contracts.py:7-21
   AtsRef: object(
     {
-      kind: enumOf("greenhouse", "lever", "workday", "personio", "ashby", "smartrecruiters", "workable", "recruitee"),
+      kind: enumOf(
+        "greenhouse",
+        "lever",
+        "workday",
+        "personio",
+        "ashby",
+        "smartrecruiters",
+        "workable",
+        "recruitee"
+      ),
       token: str,
       host: nullable(str),
       site: nullable(str),
     },
-    ["host", "site"],
+    ["host", "site"]
   ),
   // core/modules/discovery/service.py:195-201
   DiscoveryQuery: object({
@@ -202,24 +243,44 @@ const OBJECTS: Record<string, Schema> = {
     rejected: { type: "object", additionalProperties: int },
   }),
   // core/modules/config/router.py:324-331
-  ExpandQuestionOut: object({ question_id: uuid, status: enumOf("enqueued", "pending") }),
+  ExpandQuestionOut: object({
+    question_id: uuid,
+    status: enumOf("enqueued", "pending"),
+  }),
   // ai/contracts.py:82-87
   Criterion: object({
-    kind: enumOf("country_in", "industry_in", "employees_between", "revenue_at_least", "tag_in"),
+    kind: enumOf(
+      "country_in",
+      "industry_in",
+      "employees_between",
+      "revenue_at_least",
+      "tag_in"
+    ),
     values: arrayOf({ anyOf: [str, num] }),
     weight: num,
   }),
   NiceToHave: object({ criteria: arrayOf(ref("Criterion")) }),
   // ai/contracts.py:108-155
   FirmographicCondition: object({
-    field: enumOf("employees", "revenue_eur", "country_code", "industry_ids", "domain", "tags"),
+    field: enumOf(
+      "employees",
+      "revenue_eur",
+      "country_code",
+      "industry_ids",
+      "domain",
+      "tags"
+    ),
     op: enumOf("lt", "gt", "eq", "in", "not_in", "intersects"),
     value: { anyOf: [num, str, arrayOf({ anyOf: [str, num] })] },
   }),
   SignalCondition: object({ question_key: str, min_strength: num }),
   ListCondition: object({ domains: arrayOf(str) }),
   RuleCondition: {
-    anyOf: [ref("FirmographicCondition"), ref("SignalCondition"), ref("ListCondition")],
+    anyOf: [
+      ref("FirmographicCondition"),
+      ref("SignalCondition"),
+      ref("ListCondition"),
+    ],
   },
   // ai/contracts.py:158-210
   ScoringParams: object({
@@ -291,12 +352,21 @@ const OBJECTS: Record<string, Schema> = {
 }
 
 const event = (type: string, payload: string) =>
-  object({ id: uuid, type: enumOf(type), payload: ref(payload), created_at: dateTime, processed_at: nullable(dateTime) })
+  object({
+    id: uuid,
+    type: enumOf(type),
+    payload: ref(payload),
+    created_at: dateTime,
+    processed_at: nullable(dateTime),
+  })
 
 /** Property-level narrowing: schema name → property → replacement schema. */
 const PROPERTIES: Record<string, Record<string, Schema>> = {
   ScoreSummary: { tier: ref("Tier") },
-  LeadListItem: { top_reasons: arrayOf(ref("Reason")), last_signal_at: nullable(date) },
+  LeadListItem: {
+    top_reasons: arrayOf(ref("Reason")),
+    last_signal_at: nullable(date),
+  },
   LeadDetail: {
     service: { anyOf: [ref("LeadService"), ref("EmptyObject")] },
     score: { anyOf: [ref("LeadCardScore"), ref("EmptyObject")] },
@@ -312,7 +382,9 @@ const PROPERTIES: Record<string, Record<string, Schema>> = {
     event_date: nullable(date),
     my_feedback: nullable(ref("SignalVerdict")),
   },
-  FeedbackOut: { verdict: { anyOf: [ref("SignalVerdict"), ref("LeadVerdict")] } },
+  FeedbackOut: {
+    verdict: { anyOf: [ref("SignalVerdict"), ref("LeadVerdict")] },
+  },
   QualityMetricsOut: { verifier: ref("VerifierStats") },
   CompanyOut: { origin: ref("CompanyOrigin"), ats: nullable(ref("AtsRef")) },
   DocumentOut: { source_type: ref("SourceType") },
@@ -326,7 +398,10 @@ const PROPERTIES: Record<string, Record<string, Schema>> = {
   },
   OutreachJobOut: { status: ref("OutreachStatus") },
   OutreachDraftOut: { channel: ref("OutreachChannel") },
-  OutreachGenerateIn: { channel: ref("OutreachChannel"), tone: ref("OutreachTone") },
+  OutreachGenerateIn: {
+    channel: ref("OutreachChannel"),
+    tone: ref("OutreachTone"),
+  },
   SignalQuestionOut: {
     category: ref("SignalCategory"),
     polarity: ref("Polarity"),
@@ -343,12 +418,29 @@ const PROPERTIES: Record<string, Record<string, Schema>> = {
     weight: ref("Weight"),
     source_types: arrayOf(ref("SourceType")),
   },
-  SuggestedRuleOut: { kind: ref("RuleKind"), condition: ref("RuleCondition"), action: ref("RuleAction") },
-  DisqualificationRuleOut: { kind: ref("RuleKind"), condition: ref("RuleCondition"), action: ref("RuleAction") },
-  DisqualificationRuleCreate: { condition: ref("RuleCondition"), cap_value: nullable(num) },
-  DisqualificationRuleUpdate: { condition: nullable(ref("RuleCondition")), cap_value: nullable(num) },
+  SuggestedRuleOut: {
+    kind: ref("RuleKind"),
+    condition: ref("RuleCondition"),
+    action: ref("RuleAction"),
+  },
+  DisqualificationRuleOut: {
+    kind: ref("RuleKind"),
+    condition: ref("RuleCondition"),
+    action: ref("RuleAction"),
+  },
+  DisqualificationRuleCreate: {
+    condition: ref("RuleCondition"),
+    cap_value: nullable(num),
+  },
+  DisqualificationRuleUpdate: {
+    condition: nullable(ref("RuleCondition")),
+    cap_value: nullable(num),
+  },
   ICPProfileOut: { nice_to_have: nullable(ref("NiceToHave")) },
-  ICPProfileIn: { nice_to_have: nullable(ref("NiceToHave")), revenue_min_eur: nullable(num) },
+  ICPProfileIn: {
+    nice_to_have: nullable(ref("NiceToHave")),
+    revenue_min_eur: nullable(num),
+  },
   ScoringProfileOut: { params: ref("ScoringParams") },
   ScoringProfileIn: { params: ref("ScoringParams") },
   IndustryOut: { nis2: nullable(enumOf("annex_i", "annex_ii")) },
@@ -364,7 +456,9 @@ const RESPONSES: Record<string, Record<string, Schema>> = {
 // Repeatable filters of GET /leads take enum values (leads/router.py:53-72)
 const PARAMETERS: Record<string, Record<string, Record<string, Schema>>> = {
   "/api/v1/leads": { get: { tier: nullable(arrayOf(ref("Tier"))) } },
-  "/api/v1/companies/{id}/documents": { get: { source_type: nullable(ref("SourceType")) } },
+  "/api/v1/companies/{id}/documents": {
+    get: { source_type: nullable(ref("SourceType")) },
+  },
 }
 
 function collectRefs(node: unknown, into: Set<string>) {
@@ -374,7 +468,8 @@ function collectRefs(node: unknown, into: Set<string>) {
   }
   if (!node || typeof node !== "object") return
   for (const [key, value] of Object.entries(node)) {
-    if (key === "$ref" && typeof value === "string") into.add(value.split("/").pop()!)
+    if (key === "$ref" && typeof value === "string")
+      into.add(value.split("/").pop()!)
     else collectRefs(value, into)
   }
 }
@@ -408,26 +503,45 @@ export function applyContract(input: unknown) {
       ref("FeedbackCreatedEvent"),
     ],
   }
-  schemas.SignalDetectedEvent = event("signal.detected", "SignalDetectedPayload")
-  schemas.LeadTierChangedEvent = event("lead.tier_changed", "LeadTierChangedPayload")
+  schemas.SignalDetectedEvent = event(
+    "signal.detected",
+    "SignalDetectedPayload"
+  )
+  schemas.LeadTierChangedEvent = event(
+    "lead.tier_changed",
+    "LeadTierChangedPayload"
+  )
   schemas.RunFinishedEvent = event("run.finished", "RunFinishedPayload")
-  schemas.FeedbackCreatedEvent = event("feedback.created", "FeedbackCreatedPayload")
+  schemas.FeedbackCreatedEvent = event(
+    "feedback.created",
+    "FeedbackCreatedPayload"
+  )
 
   for (const [name, props] of Object.entries(PROPERTIES)) {
-    const schema = schemas[name] as { properties?: Record<string, Schema> } | undefined
-    if (!schema?.properties) throw new Error(`openapi-contract: schema ${name} is missing`)
+    const schema = schemas[name] as
+      { properties?: Record<string, Schema> } | undefined
+    if (!schema?.properties)
+      throw new Error(`openapi-contract: schema ${name} is missing`)
     for (const [prop, replacement] of Object.entries(props)) {
-      if (!(prop in schema.properties)) throw new Error(`openapi-contract: ${name}.${prop} is missing`)
+      if (!(prop in schema.properties))
+        throw new Error(`openapi-contract: ${name}.${prop} is missing`)
       const description = schema.properties[prop].description
-      schema.properties[prop] = description ? { ...replacement, description } : replacement
+      schema.properties[prop] = description
+        ? { ...replacement, description }
+        : replacement
     }
   }
 
   for (const [path, methods] of Object.entries(RESPONSES)) {
     for (const [method, schema] of Object.entries(methods)) {
       const responses = spec.paths[path]?.[method]?.responses ?? {}
-      const success = Object.keys(responses).find((code) => code.startsWith("2"))
-      if (!success) throw new Error(`openapi-contract: ${method} ${path} has no success response`)
+      const success = Object.keys(responses).find((code) =>
+        code.startsWith("2")
+      )
+      if (!success)
+        throw new Error(
+          `openapi-contract: ${method} ${path} has no success response`
+        )
       responses[success].content = { "application/json": { schema } }
     }
   }
@@ -446,20 +560,29 @@ export function applyContract(input: unknown) {
   const requestRoots = new Set<string>()
   for (const methods of Object.values(spec.paths)) {
     for (const operation of Object.values(methods)) {
-      for (const response of Object.values(operation.responses ?? {})) collectRefs(response, responseRoots)
+      for (const response of Object.values(operation.responses ?? {}))
+        collectRefs(response, responseRoots)
       collectRefs(operation.requestBody, requestRoots)
       collectRefs(operation.parameters, requestRoots)
     }
   }
   // Drop schemas that only excluded paths used (e.g. the OAuth2 form body).
-  const reachable = closure(new Set([...responseRoots, ...requestRoots]), schemas)
-  for (const name of Object.keys(schemas)) if (!reachable.has(name)) delete schemas[name]
+  const reachable = closure(
+    new Set([...responseRoots, ...requestRoots]),
+    schemas
+  )
+  for (const name of Object.keys(schemas))
+    if (!reachable.has(name)) delete schemas[name]
 
   const requestSchemas = closure(requestRoots, schemas)
   for (const name of closure(responseRoots, schemas)) {
-    const schema = schemas[name] as { properties?: Record<string, Schema>; required?: string[] }
+    const schema = schemas[name] as {
+      properties?: Record<string, Schema>
+      required?: string[]
+    }
     // Schemas defined above already declare their own optional keys.
-    if (requestSchemas.has(name) || name in OBJECTS || !schema.properties) continue
+    if (requestSchemas.has(name) || name in OBJECTS || !schema.properties)
+      continue
     schema.required = Object.keys(schema.properties)
   }
 

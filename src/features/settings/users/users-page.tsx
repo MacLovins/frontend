@@ -8,7 +8,10 @@ import { useMe } from "@/hooks/use-session"
 
 import { AddUserDialog } from "@/features/settings/users/components/add-user-dialog"
 import { EditUserSheet } from "@/features/settings/users/components/edit-user-sheet"
-import { UsersTable, UsersTableSkeleton } from "@/features/settings/users/components/users-table"
+import {
+  UsersTable,
+  UsersTableSkeleton,
+} from "@/features/settings/users/components/users-table"
 import { copy } from "@/features/settings/users/copy"
 import { sortUsers } from "@/features/settings/users/lib/user-form"
 
@@ -37,7 +40,11 @@ export function UsersPage() {
           {users.isPending ? (
             <UsersTableSkeleton />
           ) : users.isError ? (
-            <ErrorState title={copy.loadError} error={users.error} onRetry={() => void users.refetch()} />
+            <ErrorState
+              title={copy.loadError}
+              error={users.error}
+              onRetry={() => void users.refetch()}
+            />
           ) : sorted.length === 0 ? (
             <EmptyState title={copy.empty}>{copy.emptyBody}</EmptyState>
           ) : (

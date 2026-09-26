@@ -18,7 +18,11 @@ export function useMe() {
         return me.is_active ? me : null
       } catch (error) {
         // 404: the token is valid but the user row is gone.
-        if (error instanceof ApiError && (error.status === 401 || error.status === 404)) return null
+        if (
+          error instanceof ApiError &&
+          (error.status === 401 || error.status === 404)
+        )
+          return null
         throw error
       }
     },

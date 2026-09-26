@@ -13,10 +13,12 @@ declare module "@tanstack/react-query" {
   }
 }
 
-const isUnauthorized = (error: unknown) => error instanceof ApiError && error.status === 401
+const isUnauthorized = (error: unknown) =>
+  error instanceof ApiError && error.status === 401
 
 // Network failures and server errors are worth a retry; 4xx answers will not change.
-const isRetryable = (error: unknown) => error instanceof ApiError && (error.status === 0 || error.status >= 500)
+const isRetryable = (error: unknown) =>
+  error instanceof ApiError && (error.status === 0 || error.status >= 500)
 
 export function createQueryClient() {
   const queryClient: QueryClient = new QueryClient({
@@ -28,7 +30,10 @@ export function createQueryClient() {
     }),
     mutationCache: new MutationCache({
       onError: (error, _variables, _context, mutation) => {
-        if (isUnauthorized(error) && mutation.options.meta?.errorToast !== false) {
+        if (
+          isUnauthorized(error) &&
+          mutation.options.meta?.errorToast !== false
+        ) {
           queryClient.setQueryData(meQueryKey, null)
           return
         }

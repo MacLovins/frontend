@@ -22,7 +22,11 @@ export function RequireAuth() {
   if (me.isError) {
     return (
       <div className="grid min-h-svh place-items-center">
-        <ErrorState title="Cannot reach LeadRadar" error={me.error} onRetry={() => void me.refetch()} />
+        <ErrorState
+          title="Cannot reach LeadRadar"
+          error={me.error}
+          onRetry={() => void me.refetch()}
+        />
       </div>
     )
   }

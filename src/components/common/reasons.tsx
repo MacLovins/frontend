@@ -3,8 +3,16 @@ import { cn } from "cn"
 import type { Reason } from "@/api/generated/model"
 import { pickReasons, reasonSource, toneOf, type MarkTone } from "@/lib/reasons"
 
-const glyphs: Record<MarkTone, string> = { positive: "✓", negative: "⚠", neutral: "⊘" }
-const glyphLabels: Record<MarkTone, string> = { positive: "Positive", negative: "Blocker", neutral: "Note" }
+const glyphs: Record<MarkTone, string> = {
+  positive: "✓",
+  negative: "⚠",
+  neutral: "⊘",
+}
+const glyphLabels: Record<MarkTone, string> = {
+  positive: "Positive",
+  negative: "Blocker",
+  neutral: "Note",
+}
 
 const inlineColors: Record<MarkTone, string> = {
   positive: "text-positive",
@@ -38,7 +46,7 @@ export function ReasonMark({
           ? inlineColors[tone]
           : "flex size-6 items-center justify-center rounded-full text-[13px]",
         variant === "circle" && circleColors[tone],
-        className,
+        className
       )}
     >
       {glyphs[tone]}
@@ -61,12 +69,19 @@ export function ReasonList({
 }) {
   const lines = pickReasons(reasons, excludedBy ? max - 1 : max)
   return (
-    <ul className={cn("flex flex-col gap-1 text-[13px] leading-[1.35]", className)}>
+    <ul
+      className={cn(
+        "flex flex-col gap-1 text-[13px] leading-[1.35]",
+        className
+      )}
+    >
       {excludedBy ? (
         <li className="flex gap-1.5">
           <ReasonMark tone="neutral" />
           <span>
-            {excludedBy.length === 1 ? `Excluded by rule "${excludedBy[0]}"` : "Excluded by a disqualification rule"}{" "}
+            {excludedBy.length === 1
+              ? `Excluded by rule "${excludedBy[0]}"`
+              : "Excluded by a disqualification rule"}{" "}
             <span className="text-muted-foreground">· Rules</span>
           </span>
         </li>
@@ -74,11 +89,16 @@ export function ReasonList({
       {lines.map((reason, index) => {
         const source = reasonSource(reason)
         return (
-          <li key={`${reason.signal_id ?? reason.text}-${index}`} className="flex gap-1.5">
+          <li
+            key={`${reason.signal_id ?? reason.text}-${index}`}
+            className="flex gap-1.5"
+          >
             <ReasonMark tone={toneOf(reason.polarity)} />
             <span>
               {reason.text}
-              {source ? <span className="text-muted-foreground"> · {source}</span> : null}
+              {source ? (
+                <span className="text-muted-foreground"> · {source}</span>
+              ) : null}
             </span>
           </li>
         )

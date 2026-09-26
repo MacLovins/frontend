@@ -1,4 +1,9 @@
-import { differenceInCalendarDays, format, formatDistanceToNowStrict, parseISO } from "date-fns"
+import {
+  differenceInCalendarDays,
+  format,
+  formatDistanceToNowStrict,
+  parseISO,
+} from "date-fns"
 
 /** "3 min ago", "2 days ago". */
 export function relativeTime(iso: string) {
@@ -27,7 +32,10 @@ export function formatDateTime(iso: string) {
 }
 
 const integer = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 })
-const compact = new Intl.NumberFormat("en-GB", { notation: "compact", maximumFractionDigits: 1 })
+const compact = new Intl.NumberFormat("en-GB", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+})
 
 /** "590,000". */
 export function formatNumber(value: number) {

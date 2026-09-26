@@ -19,7 +19,8 @@ const RECONNECT_MS = 1_500
 const LOG_LIMIT = 300
 
 const ACTIVE_STATUSES: RunStatus[] = ["queued", "running", "pending"]
-export const isRunActive = (status: RunStatus | undefined) => !!status && ACTIVE_STATUSES.includes(status)
+export const isRunActive = (status: RunStatus | undefined) =>
+  !!status && ACTIVE_STATUSES.includes(status)
 
 export type ServiceProgress = {
   serviceId: string
@@ -52,26 +53,47 @@ type State = {
   transport: RunTransport
 }
 
-type Action = { type: "reset" } | { type: "transport"; transport: RunTransport } | { type: "event"; event: RunEvent }
+type Action =
+  | { type: "reset" }
+  | { type: "transport"; transport: RunTransport }
+  | { type: "event"; event: RunEvent }
 
-const initialState: State = { companies: {}, companyOrder: [], log: [], transport: "connecting" }
+const initialState: State = {
+  companies: {},
+  companyOrder: [],
+  log: [],
+  transport: "connecting",
+}
 
 function companyOf(state: State, companyId: string): CompanyProgress {
   return (
-    state.companies[companyId] ?? { companyId, stage: null, status: null, message: "", services: {}, outcome: null }
+    state.companies[companyId] ?? {
+      companyId,
+      stage: null,
+      status: null,
+      message: "",
+      services: {},
+      outcome: null,
+    }
   )
 }
 
 function reduce(state: State, action: Action): State {
   if (action.type === "reset") return initialState
   if (action.type === "transport") {
-    return state.transport === action.transport ? state : { ...state, transport: action.transport }
+    return state.transport === action.transport
+      ? state
+      : { ...state, transport: action.transport }
   }
 
   const { event } = action
   const previous = state.log[state.log.length - 1]
-  const log = [...state.log.slice(-(LOG_LIMIT - 1)), { key: (previous?.key ?? 0) + 1, receivedAt: Date.now(), event }]
-  if (event.event !== "company.stage" && event.event !== "company.done") return { ...state, log }
+  const log = [
+    ...state.log.slice(-(LOG_LIMIT - 1)),
+    { key: (previous?.key ?? 0) + 1, receivedAt: Date.now(), event },
+  ]
+  if (event.event !== "company.stage" && event.event !== "company.done")
+    return { ...state, log }
 
   const companyId = event.data.company_id
   const company = companyOf(state, companyId)
@@ -86,23 +108,40 @@ function reduce(state: State, action: Action): State {
             stage,
             status,
             message,
-            priority: typeof event.data.priority === "number" ? event.data.priority : company.services[serviceId]?.priority,
-            tier: (event.data.tier as Tier | undefined) ?? company.services[serviceId]?.tier,
+            priority:
+              typeof event.data.priority === "number"
+                ? event.data.priority
+                : company.services[serviceId]?.priority,
+            tier:
+              (event.data.tier as Tier | undefined) ??
+              company.services[serviceId]?.tier,
           },
         }
       : company.services
-    next = { ...company, stage, status, message: message || company.message, services }
+    next = {
+      ...company,
+      stage,
+      status,
+      message: message || company.message,
+      services,
+    }
   } else {
     // A retried company starts over; "resuming" rows come from the scheduler after an LLM quota pause.
     const finished = event.data.status !== "resuming"
-    next = { ...company, outcome: finished ? event.data : null, message: event.data.message || company.message }
+    next = {
+      ...company,
+      outcome: finished ? event.data : null,
+      message: event.data.message || company.message,
+    }
   }
 
   return {
     ...state,
     log,
     companies: { ...state.companies, [companyId]: next },
-    companyOrder: state.companyOrder.includes(companyId) ? state.companyOrder : [...state.companyOrder, companyId],
+    companyOrder: state.companyOrder.includes(companyId)
+      ? state.companyOrder
+      : [...state.companyOrder, companyId],
   }
 }
 
@@ -130,7 +169,9 @@ export function useRunEvents(runId: string | undefined) {
     query: {
       enabled: !!runId,
       refetchInterval: (query) =>
-        state.transport === "polling" && isRunActive(query.state.data?.status) ? POLL_INTERVAL_MS : false,
+        state.transport === "polling" && isRunActive(query.state.data?.status)
+          ? POLL_INTERVAL_MS
+          : false,
     },
   })
 
@@ -143,21 +184,43 @@ export function useRunEvents(runId: string | undefined) {
     dispatch({ type: "reset" })
 
     const patchRun = (patch: (run: RunOut) => RunOut) =>
-      queryClient.setQueryData<RunOut>(runKey, (current) => (current ? patch(current) : current))
+      queryClient.setQueryData<RunOut>(runKey, (current) =>
+        current ? patch(current) : current
+      )
 
     const apply = (event: RunEvent) => {
       if (event.id != null) lastEventId = event.id
       dispatch({ type: "event", event })
       if (event.event === "run.progress") {
         const progress = event.data
-        patchRun((current) => ({ ...current, progress, status: current.status === "queued" ? "running" : current.status }))
+        patchRun((current) => ({
+          ...current,
+          progress,
+          status: current.status === "queued" ? "running" : current.status,
+        }))
       } else if (event.event === "run.finished") {
         const { status, ...progress } = event.data
-        patchRun((current) => ({ ...current, status, progress: { ...current.progress, ...progress } }))
-      } else if (event.event === "company.stage" && event.data.stage !== "done") {
-        patchRun((current) => (current.status === "queued" ? { ...current, status: "running" } : current))
+        patchRun((current) => ({
+          ...current,
+          status,
+          progress: { ...current.progress, ...progress },
+        }))
+      } else if (
+        event.event === "company.stage" &&
+        event.data.stage !== "done"
+      ) {
+        patchRun((current) =>
+          current.status === "queued"
+            ? { ...current, status: "running" }
+            : current
+        )
       } else if (event.event === "company.done") {
-        void invalidateApi(queryClient, apiPaths.leads, apiPaths.companies, apiPaths.activity)
+        void invalidateApi(
+          queryClient,
+          apiPaths.leads,
+          apiPaths.companies,
+          apiPaths.activity
+        )
       }
     }
 
@@ -205,12 +268,21 @@ export function useRunEvents(runId: string | undefined) {
         // The server closes the stream when the run is terminal, or right after a replay when it has no live
         // channel. Ask the run itself whether to keep listening.
         const current = await queryClient
-          .fetchQuery({ queryKey: runKey, queryFn: ({ signal }) => getRun(runId, { signal }), staleTime: 0 })
+          .fetchQuery({
+            queryKey: runKey,
+            queryFn: ({ signal }) => getRun(runId, { signal }),
+            staleTime: 0,
+          })
           .catch(() => undefined)
         if (lifetime.signal.aborted) return
         if (current && !isRunActive(current.status)) {
           dispatch({ type: "transport", transport: "closed" })
-          void invalidateApi(queryClient, apiPaths.runs, apiPaths.leads, apiPaths.activity)
+          void invalidateApi(
+            queryClient,
+            apiPaths.runs,
+            apiPaths.leads,
+            apiPaths.activity
+          )
           return
         }
         await sleep(RECONNECT_MS, lifetime.signal)

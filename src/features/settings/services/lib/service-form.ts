@@ -7,7 +7,11 @@ import { copy } from "@/features/settings/services/copy"
 export const MAX_ROLE_LENGTH = 80
 
 export const serviceSchema = z.object({
-  name: z.string().trim().min(1, copy.validation.name).max(255, copy.validation.name),
+  name: z
+    .string()
+    .trim()
+    .min(1, copy.validation.name)
+    .max(255, copy.validation.name),
   description: z.string(),
   value_proposition: z.string(),
   decision_makers: z.array(z.string()),
@@ -35,7 +39,9 @@ export function toServiceValues(service: ServiceOut): ServiceFormValues {
 }
 
 /** Trimmed text fields for both POST and PATCH. */
-export function cleanServiceValues(values: ServiceFormValues): ServiceFormValues {
+export function cleanServiceValues(
+  values: ServiceFormValues
+): ServiceFormValues {
   return {
     ...values,
     name: values.name.trim(),
@@ -51,19 +57,26 @@ const sameList = (a: readonly string[], b: readonly string[]) =>
  * Only the changed keys: `null` on any service column is a 500 (NOT NULL, config/router.py:164-165).
  * `is_active` is saved on its own by the checkbox, so it never goes through the form PATCH.
  */
-export function diffService(service: ServiceOut, values: ServiceFormValues): ServiceUpdate {
+export function diffService(
+  service: ServiceOut,
+  values: ServiceFormValues
+): ServiceUpdate {
   const clean = cleanServiceValues(values)
   const patch: ServiceUpdate = {}
   if (clean.name !== service.name) patch.name = clean.name
-  if (clean.description !== service.description) patch.description = clean.description
-  if (clean.value_proposition !== service.value_proposition) patch.value_proposition = clean.value_proposition
-  if (!sameList(clean.decision_makers, service.decision_makers)) patch.decision_makers = clean.decision_makers
+  if (clean.description !== service.description)
+    patch.description = clean.description
+  if (clean.value_proposition !== service.value_proposition)
+    patch.value_proposition = clean.value_proposition
+  if (!sameList(clean.decision_makers, service.decision_makers))
+    patch.decision_makers = clean.decision_makers
   return patch
 }
 
 /** Adds a role unless it is empty or already listed (case-insensitive). */
 export function addRole(roles: readonly string[], input: string) {
   const role = input.trim().slice(0, MAX_ROLE_LENGTH)
-  if (!role || roles.some((item) => item.toLowerCase() === role.toLowerCase())) return [...roles]
+  if (!role || roles.some((item) => item.toLowerCase() === role.toLowerCase()))
+    return [...roles]
   return [...roles, role]
 }

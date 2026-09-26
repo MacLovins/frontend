@@ -9,11 +9,25 @@ const weightStyles: Record<Weight, string> = {
   low: "bg-border text-black",
 }
 
-const weightLetters: Record<Weight, string> = { high: "H", medium: "M", low: "L" }
-const weightNames: Record<Weight, string> = { high: "High weight", medium: "Medium weight", low: "Low weight" }
+const weightLetters: Record<Weight, string> = {
+  high: "H",
+  medium: "M",
+  low: "L",
+}
+const weightNames: Record<Weight, string> = {
+  high: "High weight",
+  medium: "Medium weight",
+  low: "Low weight",
+}
 
 /** Static H / M / L importance chip. */
-export function WeightChip({ weight, className }: { weight: Weight; className?: string }) {
+export function WeightChip({
+  weight,
+  className,
+}: {
+  weight: Weight
+  className?: string
+}) {
   return (
     <span
       title={weightNames[weight]}
@@ -21,7 +35,7 @@ export function WeightChip({ weight, className }: { weight: Weight; className?: 
       className={cn(
         "inline-flex w-9 shrink-0 items-center justify-center rounded py-0.5 text-2xs font-bold",
         weightStyles[weight],
-        className,
+        className
       )}
     >
       {weightLetters[weight]}
@@ -30,9 +44,22 @@ export function WeightChip({ weight, className }: { weight: Weight; className?: 
 }
 
 /** Small grey label value tile, used in 4-column stat grids. */
-export function StatTile({ label, value, className }: { label: ReactNode; value: ReactNode; className?: string }) {
+export function StatTile({
+  label,
+  value,
+  className,
+}: {
+  label: ReactNode
+  value: ReactNode
+  className?: string
+}) {
   return (
-    <div className={cn("flex flex-col gap-0.5 rounded-sm bg-muted p-2.5", className)}>
+    <div
+      className={cn(
+        "flex flex-col gap-0.5 rounded-sm bg-muted p-2.5",
+        className
+      )}
+    >
       <span className="text-2xs text-muted-foreground">{label}</span>
       <span className="font-mono text-xl font-semibold">{value}</span>
     </div>

@@ -10,7 +10,12 @@ import { ApiError, errorMessage } from "@/api/mutator"
 import { BrandMark } from "@/components/common/brand-mark"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { Button } from "@/components/ui/button"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useMe } from "@/hooks/use-session"
 
@@ -37,9 +42,13 @@ export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const me = useMe()
-  const from = (location.state as { from?: string } | null)?.from ?? "/prospects"
+  const from =
+    (location.state as { from?: string } | null)?.from ?? "/prospects"
 
-  const form = useForm<Values>({ resolver: zodResolver(schema), defaultValues: { email: "", password: "" } })
+  const form = useForm<Values>({
+    resolver: zodResolver(schema),
+    defaultValues: { email: "", password: "" },
+  })
   const login = useLogin({
     mutation: {
       meta: { errorToast: false },
@@ -63,7 +72,9 @@ export function LoginPage() {
       <header className="absolute top-10 left-1/2 z-10 -translate-x-1/2">
         <div className="flex items-center gap-3">
           <BrandMark size={40} />
-          <span className="text-[22px] font-bold tracking-[-0.01em]">LeadRadar</span>
+          <span className="text-[22px] font-bold tracking-[-0.01em]">
+            LeadRadar
+          </span>
         </div>
       </header>
 
@@ -74,8 +85,12 @@ export function LoginPage() {
           className="flex w-full flex-col gap-6"
         >
           <div className="flex flex-col gap-1 text-center">
-            <h1 className="m-0 text-2xl font-bold tracking-[-0.01em]">Sign in</h1>
-            <p className="m-0 text-sm text-muted-foreground">Use the account your admin created for you.</p>
+            <h1 className="m-0 text-2xl font-bold tracking-[-0.01em]">
+              Sign in
+            </h1>
+            <p className="m-0 text-sm text-muted-foreground">
+              Use the account your admin created for you.
+            </p>
           </div>
 
           <FieldGroup>
@@ -105,7 +120,10 @@ export function LoginPage() {
           </FieldGroup>
 
           {login.isError ? (
-            <p role="alert" className="m-0 rounded-md bg-negative-surface px-3 py-2.5 text-sm text-negative-strong">
+            <p
+              role="alert"
+              className="m-0 rounded-md bg-negative-surface px-3 py-2.5 text-sm text-negative-strong"
+            >
               {loginError(login.error)}
             </p>
           ) : null}
@@ -116,7 +134,8 @@ export function LoginPage() {
 
           {import.meta.env.VITE_MOCK === "true" ? (
             <p className="m-0 text-xs leading-normal text-muted-foreground">
-              Demo mode. Admin: admin@leadradar.ai / admin12345! · Sales: sales@leadradar.ai / sales12345!
+              Demo mode. Admin: admin@leadradar.ai / admin12345! · Sales:
+              sales@leadradar.ai / sales12345!
             </p>
           ) : null}
         </form>

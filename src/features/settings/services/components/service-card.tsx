@@ -6,7 +6,10 @@ import type { PresetOut, ServiceOut } from "@/api/generated/model"
 import { formatNumber } from "@/lib/format"
 
 import { copy, countLabel } from "@/features/settings/services/copy"
-import { type Loadable, useServiceStats } from "@/features/settings/services/hooks/use-service-stats"
+import {
+  type Loadable,
+  useServiceStats,
+} from "@/features/settings/services/hooks/use-service-stats"
 import { icpSummary } from "@/features/settings/services/lib/service-summary"
 import { StatusPill } from "@/features/settings/services/components/status-pill"
 
@@ -23,9 +26,20 @@ function Stat<T>({
   skeletonWidth?: string
 }) {
   if (value.status === "loading") {
-    return <span aria-hidden className={cn("inline-block h-3.5 animate-pulse rounded-sm bg-subtle align-middle", skeletonWidth)} />
+    return (
+      <span
+        aria-hidden
+        className={cn(
+          "inline-block h-3.5 animate-pulse rounded-sm bg-subtle align-middle",
+          skeletonWidth
+        )}
+      />
+    )
   }
-  if (value.status === "error") return <span className="text-muted-foreground">{copy.card.unavailable}</span>
+  if (value.status === "error")
+    return (
+      <span className="text-muted-foreground">{copy.card.unavailable}</span>
+    )
   return render(value.value)
 }
 
@@ -54,11 +68,16 @@ export function ServiceCard({
 }) {
   const stats = useServiceStats(service.id, preset)
   const base = `/settings/${service.id}`
-  const hasQuestions = stats.questions.status === "ready" && stats.questions.value.total > 0
+  const hasQuestions =
+    stats.questions.status === "ready" && stats.questions.value.total > 0
   const notScored = stats.scored.status === "ready" && stats.scored.value === 0
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.target !== event.currentTarget || (event.key !== "Enter" && event.key !== " ")) return
+    if (
+      event.target !== event.currentTarget ||
+      (event.key !== "Enter" && event.key !== " ")
+    )
+      return
     event.preventDefault()
     onSelect()
   }
@@ -77,15 +96,19 @@ export function ServiceCard({
           ? "border-2 border-black p-[17px]"
           : service.is_active
             ? "border border-border"
-            : "border border-dashed border-faint",
+            : "border border-dashed border-faint"
       )}
     >
       <div className="flex items-center gap-2">
-        <span className="min-w-0 truncate text-[17px] font-bold">{service.name}</span>
+        <span className="min-w-0 truncate text-[17px] font-bold">
+          {service.name}
+        </span>
         <StatusPill active={service.is_active} className="ml-auto" />
       </div>
       {service.description ? (
-        <p className="m-0 line-clamp-2 text-[13px] leading-[1.45] text-text-secondary">{service.description}</p>
+        <p className="m-0 line-clamp-2 text-[13px] leading-[1.45] text-text-secondary">
+          {service.description}
+        </p>
       ) : null}
 
       {service.is_active || hasQuestions ? (
@@ -94,20 +117,34 @@ export function ServiceCard({
             value={stats.questions}
             render={({ total, blockers }) => (
               <CardLink to={`${base}/questions`}>
-                {countLabel(total, "question")} · {countLabel(blockers, "blocker")}
+                {countLabel(total, "question")} ·{" "}
+                {countLabel(blockers, "blocker")}
               </CardLink>
             )}
           />
-          <Stat value={stats.rules} render={(rules) => <CardLink to={`${base}/rules`}>{countLabel(rules, "rule")}</CardLink>} />
+          <Stat
+            value={stats.rules}
+            render={(rules) => (
+              <CardLink to={`${base}/rules`}>
+                {countLabel(rules, "rule")}
+              </CardLink>
+            )}
+          />
           <Stat
             value={stats.icp}
-            render={(icp) => <CardLink to={`${base}/icp`}>{icp ? icpSummary(icp) : copy.card.icpMissing}</CardLink>}
+            render={(icp) => (
+              <CardLink to={`${base}/icp`}>
+                {icp ? icpSummary(icp) : copy.card.icpMissing}
+              </CardLink>
+            )}
           />
           <Stat
             value={stats.scoringVersion}
             render={(version) => (
               <CardLink to={`${base}/scoring`}>
-                {version === null ? copy.card.defaultScoring : copy.card.scoringProfile(version)}
+                {version === null
+                  ? copy.card.defaultScoring
+                  : copy.card.scoringProfile(version)}
               </CardLink>
             )}
           />
@@ -128,16 +165,30 @@ export function ServiceCard({
         ) : (
           <>
             <span>
-              <Stat value={stats.scored} skeletonWidth="w-6" render={(total) => <strong className="font-mono">{formatNumber(total)}</strong>} />{" "}
+              <Stat
+                value={stats.scored}
+                skeletonWidth="w-6"
+                render={(total) => (
+                  <strong className="font-mono">{formatNumber(total)}</strong>
+                )}
+              />{" "}
               {copy.card.scored}
             </span>
             <span>
-              <Stat value={stats.hot} skeletonWidth="w-6" render={(total) => <strong className="font-mono">{formatNumber(total)}</strong>} />{" "}
+              <Stat
+                value={stats.hot}
+                skeletonWidth="w-6"
+                render={(total) => (
+                  <strong className="font-mono">{formatNumber(total)}</strong>
+                )}
+              />{" "}
               {copy.card.hot}
             </span>
             {preset ? (
               <span className="text-muted-foreground">
-                {stats.edited ? `${copy.card.fromPreset} · ${copy.card.edited}` : copy.card.fromPreset}
+                {stats.edited
+                  ? `${copy.card.fromPreset} · ${copy.card.edited}`
+                  : copy.card.fromPreset}
               </span>
             ) : null}
           </>

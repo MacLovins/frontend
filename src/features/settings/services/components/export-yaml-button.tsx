@@ -10,7 +10,11 @@ import { useLabels } from "@/hooks/use-labels"
 
 import { copy } from "@/features/settings/services/copy"
 import { isNotFound } from "@/features/settings/services/lib/config-queries"
-import { downloadText, serviceToPreset, toYaml } from "@/features/settings/services/lib/service-yaml"
+import {
+  downloadText,
+  serviceToPreset,
+  toYaml,
+} from "@/features/settings/services/lib/service-yaml"
 
 /** Downloads `{slug}.yaml` in the preset format, built from the cached queries of the service card. */
 export function ExportYamlButton({ service }: { service: ServiceOut }) {
@@ -20,7 +24,8 @@ export function ExportYamlButton({ service }: { service: ServiceOut }) {
   const icp = useGetIcp(service.id)
   const scoring = useGetScoringProfile(service.id)
 
-  const settled = (result: { data: unknown; error: unknown }) => result.data !== undefined || isNotFound(result.error)
+  const settled = (result: { data: unknown; error: unknown }) =>
+    result.data !== undefined || isNotFound(result.error)
   const ready = questions.data && rules.data && settled(icp) && settled(scoring)
 
   const exportYaml = () => {
@@ -37,7 +42,12 @@ export function ExportYamlButton({ service }: { service: ServiceOut }) {
   }
 
   return (
-    <Button type="button" variant="outline" disabled={!ready} onClick={exportYaml}>
+    <Button
+      type="button"
+      variant="outline"
+      disabled={!ready}
+      onClick={exportYaml}
+    >
       {copy.details.exportYaml}
     </Button>
   )

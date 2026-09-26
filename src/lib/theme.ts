@@ -1,5 +1,10 @@
-/* eslint-disable react-refresh/only-export-components -- theme state is shared by the provider and the hook. */
-import { createContext, createElement, useContext, useState, type ReactNode } from "react"
+import {
+  createContext,
+  createElement,
+  useContext,
+  useState,
+  type ReactNode,
+} from "react"
 
 import { readStorage, storageKeys, writeStorage } from "@/lib/storage"
 
@@ -41,5 +46,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     writeStorage(storageKeys.theme, next)
   }
 
-  return createElement(ThemeContext.Provider, { value: { theme, toggleTheme } }, children)
+  return createElement(
+    ThemeContext.Provider,
+    { value: { theme, toggleTheme } },
+    children
+  )
 }

@@ -38,7 +38,7 @@ export function TierBadge({
         "inline-flex w-fit items-center rounded font-bold whitespace-nowrap",
         badgeColors[tier],
         badgeSizes[size],
-        className,
+        className
       )}
     >
       {tierLabels[tier]}
@@ -47,14 +47,20 @@ export function TierBadge({
 }
 
 /** Tier colour key: a 10 px square in chips, a 12 px dot in legends. */
-export function TierSwatch({ tier, shape = "square" }: { tier: Tier; shape?: "square" | "dot" }) {
+export function TierSwatch({
+  tier,
+  shape = "square",
+}: {
+  tier: Tier
+  shape?: "square" | "dot"
+}) {
   return (
     <span
       aria-hidden="true"
       className={cn(
         "inline-block shrink-0",
         shape === "square" ? "size-2.5 rounded-[2px]" : "size-3 rounded-full",
-        swatchColors[tier],
+        swatchColors[tier]
       )}
     />
   )

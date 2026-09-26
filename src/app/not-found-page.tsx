@@ -8,7 +8,9 @@ export function NotFoundPage() {
     <EmptyState
       className="my-auto"
       title="Page not found"
-      actions={<Button render={<Link to="/prospects" />}>Go to Prospects</Button>}
+      actions={
+        <Button render={<Link to="/prospects" />}>Go to Prospects</Button>
+      }
     >
       The link may be old, or the page was moved.
     </EmptyState>

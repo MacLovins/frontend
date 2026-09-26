@@ -4,7 +4,10 @@ import { type ReactNode, useRef } from "react"
 import { Controller, useForm, type UseFormSetError } from "react-hook-form"
 import { toast } from "sonner"
 
-import { useCreateService, useUpdateService } from "@/api/generated/config/config"
+import {
+  useCreateService,
+  useUpdateService,
+} from "@/api/generated/config/config"
 import type { ServiceOut } from "@/api/generated/model"
 import { ApiError, errorMessage, fieldErrors } from "@/api/mutator"
 import { Button } from "@/components/ui/button"
@@ -17,7 +20,10 @@ import { DecisionMakersInput } from "@/features/settings/services/components/dec
 import { ExportYamlButton } from "@/features/settings/services/components/export-yaml-button"
 import { UnsavedChangesGuard } from "@/features/settings/services/components/unsaved-changes-guard"
 import { copy } from "@/features/settings/services/copy"
-import { storeService, useToggleServiceActive } from "@/features/settings/services/hooks/use-service-writes"
+import {
+  storeService,
+  useToggleServiceActive,
+} from "@/features/settings/services/hooks/use-service-writes"
 import {
   cleanServiceValues,
   diffService,
@@ -28,16 +34,28 @@ import {
 } from "@/features/settings/services/lib/service-form"
 import { uniqueSlug } from "@/features/settings/services/lib/service-summary"
 
-const FIELDS = ["name", "description", "value_proposition", "decision_makers"] as const
+const FIELDS = [
+  "name",
+  "description",
+  "value_proposition",
+  "decision_makers",
+] as const
 
-function reportSaveError(error: unknown, setError: UseFormSetError<ServiceFormValues>) {
+function reportSaveError(
+  error: unknown,
+  setError: UseFormSetError<ServiceFormValues>
+) {
   const errors = fieldErrors(error)
   const field = FIELDS.find((name) => errors[name])
   if (field) {
     setError(field, { message: errors[field] })
     return
   }
-  toast.error(error instanceof ApiError && error.status < 500 ? errorMessage(error) : copy.toast.saveFailed)
+  toast.error(
+    error instanceof ApiError && error.status < 500
+      ? errorMessage(error)
+      : copy.toast.saveFailed
+  )
 }
 
 function FormRow({
@@ -69,7 +87,8 @@ function FormRow({
   )
 }
 
-const textareaClass = "min-h-0 resize-y rounded-sm px-2.5 py-2.5 field-sizing-fixed"
+const textareaClass =
+  "min-h-0 resize-y rounded-sm px-2.5 py-2.5 field-sizing-fixed"
 
 /** The details form: edits the selected service, or creates one when `service` is undefined. */
 export function ServiceDetails({
@@ -130,7 +149,9 @@ export function ServiceDetails({
   const submit = form.handleSubmit((values) => {
     if (!service) {
       const clean = cleanServiceValues(values)
-      create.mutate({ data: { ...clean, slug: uniqueSlug(clean.name, services) } })
+      create.mutate({
+        data: { ...clean, slug: uniqueSlug(clean.name, services) },
+      })
       return
     }
     const patch = diffService(service, values)
@@ -142,13 +163,17 @@ export function ServiceDetails({
     <form
       noValidate
       onSubmit={submit}
-      aria-label={service ? copy.details.title(service.name) : copy.details.createTitle}
+      aria-label={
+        service ? copy.details.title(service.name) : copy.details.createTitle
+      }
       className="flex min-w-0 flex-col gap-4 rounded-lg border border-border bg-card p-6"
     >
       <UnsavedChangesGuard dirty={isDirty} bypass={bypassGuard} />
       <div className="flex items-center justify-between gap-4">
         <h2 className="m-0 min-w-0 truncate text-lg font-bold">
-          {service ? copy.details.title(service.name) : copy.details.createTitle}
+          {service
+            ? copy.details.title(service.name)
+            : copy.details.createTitle}
         </h2>
         <label className="flex shrink-0 items-center gap-2 text-sm">
           {service ? (
@@ -156,14 +181,20 @@ export function ServiceDetails({
               className="size-[18px]"
               checked={service.is_active}
               disabled={activeToggle.isPending}
-              onCheckedChange={(checked) => activeToggle.toggle(service.id, checked)}
+              onCheckedChange={(checked) =>
+                activeToggle.toggle(service.id, checked)
+              }
             />
           ) : (
             <Controller
               control={form.control}
               name="is_active"
               render={({ field }) => (
-                <Checkbox className="size-[18px]" checked={field.value} onCheckedChange={field.onChange} />
+                <Checkbox
+                  className="size-[18px]"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
               )}
             />
           )}
@@ -210,14 +241,23 @@ export function ServiceDetails({
           {...form.register("value_proposition")}
         />
       </FormRow>
-      <div role="group" aria-labelledby="service-roles-label" className="flex flex-col gap-2">
+      <div
+        role="group"
+        aria-labelledby="service-roles-label"
+        className="flex flex-col gap-2"
+      >
         <div id="service-roles-label" className="text-[13px] font-semibold">
           {copy.details.decisionMakers}
         </div>
         <Controller
           control={form.control}
           name="decision_makers"
-          render={({ field }) => <DecisionMakersInput value={field.value} onChange={field.onChange} />}
+          render={({ field }) => (
+            <DecisionMakersInput
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
         />
         <FieldError errors={[errors.decision_makers]} />
       </div>
@@ -230,7 +270,11 @@ export function ServiceDetails({
             {copy.details.cancel}
           </Button>
         )}
-        <Button type="submit" variant="black" disabled={(!isDirty && !!service) || pending}>
+        <Button
+          type="submit"
+          variant="black"
+          disabled={(!isDirty && !!service) || pending}
+        >
           {submitLabel}
         </Button>
       </div>

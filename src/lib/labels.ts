@@ -19,9 +19,11 @@ export const metricShortLabels = {
 
 export const metricHelp = {
   fit: "How well the company matches the ideal customer profile for this service",
-  intent: "Strength of recent evidence that the company needs this service; older evidence counts less",
+  intent:
+    "Strength of recent evidence that the company needs this service; older evidence counts less",
   risk: "Evidence that makes a sale harder: in-house teams, incumbent partners, financial distress",
-  priority: "ICP fit × Buying signals, lowered by Blockers. 0–100, higher means contact sooner",
+  priority:
+    "ICP fit × Buying signals, lowered by Blockers. 0–100, higher means contact sooner",
 } as const
 
 export const tierLabels: Record<Tier, string> = {

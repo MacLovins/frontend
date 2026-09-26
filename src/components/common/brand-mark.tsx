@@ -1,14 +1,20 @@
 import { cn } from "cn"
 
 /** The LeadRadar radar mark: black strokes on an orange tile. */
-export function BrandMark({ className, size = 32 }: { className?: string; size?: 32 | 40 }) {
+export function BrandMark({
+  className,
+  size = 32,
+}: {
+  className?: string
+  size?: 32 | 40
+}) {
   return (
     <span
       aria-hidden="true"
       className={cn(
         "grid shrink-0 place-items-center bg-primary text-black",
         size === 32 ? "size-8 rounded-[7px]" : "size-10 rounded-md",
-        className,
+        className
       )}
     >
       <svg

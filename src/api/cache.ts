@@ -3,11 +3,17 @@ import type { QueryClient } from "@tanstack/react-query"
 import { getGetMeQueryKey } from "@/api/generated/auth/auth"
 
 /** Generated query keys start with the request path, e.g. ["/api/v1/leads", params]. */
-export function invalidateApi(queryClient: QueryClient, ...pathPrefixes: string[]) {
+export function invalidateApi(
+  queryClient: QueryClient,
+  ...pathPrefixes: string[]
+) {
   return queryClient.invalidateQueries({
     predicate: (query) => {
       const [path] = query.queryKey
-      return typeof path === "string" && pathPrefixes.some((prefix) => path.startsWith(prefix))
+      return (
+        typeof path === "string" &&
+        pathPrefixes.some((prefix) => path.startsWith(prefix))
+      )
     },
   })
 }

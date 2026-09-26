@@ -11,13 +11,15 @@ export type LabelGroup = keyof LabelsOut
  * Falls back to a humanized value while loading or for values the dictionary does not know.
  */
 export function useLabels() {
-  const { data } = useGetLabels({ query: { staleTime: Infinity, gcTime: Infinity } })
+  const { data } = useGetLabels({
+    query: { staleTime: Infinity, gcTime: Infinity },
+  })
   return useCallback(
     (group: LabelGroup, value: string | null | undefined) => {
       if (!value) return ""
       const dictionary = data?.[group] as Record<string, string> | undefined
       return dictionary?.[value] ?? humanize(value)
     },
-    [data],
+    [data]
   )
 }

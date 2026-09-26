@@ -4,8 +4,33 @@ import { formatNumber } from "@/lib/format"
 import { copy } from "@/features/settings/services/copy"
 
 const EU_27 = [
-  "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE",
-  "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE",
+  "AT",
+  "BE",
+  "BG",
+  "HR",
+  "CY",
+  "CZ",
+  "DK",
+  "EE",
+  "FI",
+  "FR",
+  "DE",
+  "GR",
+  "HU",
+  "IE",
+  "IT",
+  "LV",
+  "LT",
+  "LU",
+  "MT",
+  "NL",
+  "PL",
+  "PT",
+  "RO",
+  "SK",
+  "SI",
+  "ES",
+  "SE",
 ]
 const MAX_LISTED_MARKETS = 4
 
@@ -15,7 +40,9 @@ function marketsSummary(countries: readonly string[]) {
   if (countries.length === 0) return copy.card.anyMarket
   const codes = new Set(countries.map((code) => code.toUpperCase()))
   if (EU_27.every((code) => codes.has(code))) {
-    const rest = [...codes].filter((code) => !EU_27.includes(code)).map(marketCode)
+    const rest = [...codes]
+      .filter((code) => !EU_27.includes(code))
+      .map(marketCode)
     return rest.length ? `EU + ${rest.join("/")}` : "EU"
   }
   if (codes.size > MAX_LISTED_MARKETS) return `${codes.size} markets`
@@ -23,7 +50,8 @@ function marketsSummary(countries: readonly string[]) {
 }
 
 function sizeSummary(min: number | null, max: number | null) {
-  if (min !== null && max !== null) return `${formatNumber(min)}–${formatNumber(max)}`
+  if (min !== null && max !== null)
+    return `${formatNumber(min)}–${formatNumber(max)}`
   if (min !== null) return `${formatNumber(min)}+`
   if (max !== null) return `≤ ${formatNumber(max)}`
   return null
@@ -38,7 +66,10 @@ export function icpSummary(icp: ICPProfileOut) {
 
 /** The backend does not order services; creation order keeps cards still when one is (de)activated. */
 export function sortServices(services: readonly ServiceOut[]) {
-  return [...services].sort((a, b) => a.created_at.localeCompare(b.created_at) || a.name.localeCompare(b.name))
+  return [...services].sort(
+    (a, b) =>
+      a.created_at.localeCompare(b.created_at) || a.name.localeCompare(b.name)
+  )
 }
 
 /**

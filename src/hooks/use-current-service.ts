@@ -1,5 +1,10 @@
 import { useCallback, useMemo } from "react"
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router"
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router"
 
 import { useListServices } from "@/api/generated/config/config"
 import type { ServiceOut } from "@/api/generated/model"
@@ -17,15 +22,23 @@ export function useCurrentService() {
   const services = useListServices({ query: { staleTime: 5 * 60_000 } })
 
   const active = useMemo(
-    () => (services.data ?? []).filter((service) => service.is_active).sort((a, b) => a.name.localeCompare(b.name)),
-    [services.data],
+    () =>
+      (services.data ?? [])
+        .filter((service) => service.is_active)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [services.data]
   )
 
   const requested = routeServiceId ?? params.get("service")
   const stored = readStorage(storageKeys.service)
   const serviceId =
-    requested ?? (stored && active.some((service) => service.id === stored) ? stored : active[0]?.id)
-  const service: ServiceOut | undefined = services.data?.find((item) => item.id === serviceId)
+    requested ??
+    (stored && active.some((service) => service.id === stored)
+      ? stored
+      : active[0]?.id)
+  const service: ServiceOut | undefined = services.data?.find(
+    (item) => item.id === serviceId
+  )
 
   return {
     serviceId,
@@ -55,7 +68,7 @@ export function useSelectService() {
       next.delete("page")
       void navigate({ pathname, search: next.toString() })
     },
-    [navigate, params, pathname],
+    [navigate, params, pathname]
   )
 }
 

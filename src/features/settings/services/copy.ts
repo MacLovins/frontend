@@ -1,7 +1,8 @@
 export const copy = {
   title: "Services",
   // The mock names the org here; /auth/me has no org name, so the copy stays neutral.
-  subtitle: "What you sell. Each service has its own questions, ICP, rules and scoring.",
+  subtitle:
+    "What you sell. Each service has its own questions, ICP, rules and scoring.",
   newService: "New service",
   empty: "No services yet. Start from a preset or describe what you sell.",
   loadError: "Could not load services.",
@@ -26,7 +27,8 @@ export const copy = {
     active: "Active",
     name: "Name",
     description: "What the service is",
-    descriptionHelp: "The AI reads this to judge relevance. Write it the way you'd explain it to a new hire.",
+    descriptionHelp:
+      "The AI reads this to judge relevance. Write it the way you'd explain it to a new hire.",
     valueProposition: "Value proposition",
     valuePropositionHelp: "Used in outreach drafts and suggested angles.",
     decisionMakers: "Decision makers to validate",
@@ -66,7 +68,8 @@ export const copy = {
   validation: {
     name: "Enter a name (up to 255 characters)",
     describeName: "Enter a service name",
-    describeText: "Write at least 20 characters so the AI has something to work with",
+    describeText:
+      "Write at least 20 characters so the AI has something to work with",
   },
   toast: {
     saved: "Service saved",
@@ -79,6 +82,10 @@ export const copy = {
   },
 }
 
-export function countLabel(count: number, singular: string, plural = `${singular}s`) {
+export function countLabel(
+  count: number,
+  singular: string,
+  plural = `${singular}s`
+) {
   return `${count} ${count === 1 ? singular : plural}`
 }

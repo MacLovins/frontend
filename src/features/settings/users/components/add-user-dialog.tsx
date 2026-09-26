@@ -7,7 +7,14 @@ import { apiPaths, invalidateApi } from "@/api/cache"
 import { useCreateUser } from "@/api/generated/auth/auth"
 import { errorMessage, fieldErrors } from "@/api/mutator"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
@@ -21,9 +28,18 @@ import {
   newUserValues,
 } from "@/features/settings/users/lib/user-form"
 
-export function AddUserDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function AddUserDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
   const queryClient = useQueryClient()
-  const form = useForm<CreateUserValues>({ resolver: zodResolver(createUserSchema), defaultValues: newUserValues })
+  const form = useForm<CreateUserValues>({
+    resolver: zodResolver(createUserSchema),
+    defaultValues: newUserValues,
+  })
   const { errors, isSubmitting } = form.formState
 
   const create = useCreateUser({
@@ -38,11 +54,17 @@ export function AddUserDialog({ open, onOpenChange }: { open: boolean; onOpenCha
       onError: (error) => {
         // Emails are unique across all orgs (backend auth/service.py:45-48).
         if (isConflict(error)) {
-          form.setError("email", { message: copy.validation.duplicate }, { shouldFocus: true })
+          form.setError(
+            "email",
+            { message: copy.validation.duplicate },
+            { shouldFocus: true }
+          )
           return
         }
         const fields = fieldErrors(error)
-        const field = (["email", "password", "full_name", "role"] as const).find((name) => fields[name])
+        const field = (
+          ["email", "password", "full_name", "role"] as const
+        ).find((name) => fields[name])
         if (field) form.setError(field, { message: fields[field] })
         else form.setError("root", { message: errorMessage(error) })
       },
@@ -50,7 +72,9 @@ export function AddUserDialog({ open, onOpenChange }: { open: boolean; onOpenCha
   })
 
   const submit = form.handleSubmit(({ email, full_name, role, password }) =>
-    create.mutate({ data: { email, full_name: full_name || null, role, password } }),
+    create.mutate({
+      data: { email, full_name: full_name || null, role, password },
+    })
   )
 
   const changeOpen = (next: boolean) => {
@@ -68,7 +92,11 @@ export function AddUserDialog({ open, onOpenChange }: { open: boolean; onOpenCha
             <DialogDescription>{copy.addDescription}</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 px-6 py-5">
-            <FormRow id="user-email" label={copy.form.email} error={errors.email}>
+            <FormRow
+              id="user-email"
+              label={copy.form.email}
+              error={errors.email}
+            >
               <Input
                 id="user-email"
                 type="email"
@@ -79,7 +107,11 @@ export function AddUserDialog({ open, onOpenChange }: { open: boolean; onOpenCha
                 {...form.register("email")}
               />
             </FormRow>
-            <FormRow id="user-name" label={copy.form.fullName} error={errors.full_name}>
+            <FormRow
+              id="user-name"
+              label={copy.form.fullName}
+              error={errors.full_name}
+            >
               <Input
                 id="user-name"
                 autoComplete="off"
@@ -92,10 +124,21 @@ export function AddUserDialog({ open, onOpenChange }: { open: boolean; onOpenCha
               <Controller
                 control={form.control}
                 name="role"
-                render={({ field }) => <RoleSelect id="user-role" value={field.value} onChange={field.onChange} />}
+                render={({ field }) => (
+                  <RoleSelect
+                    id="user-role"
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
               />
             </FormRow>
-            <FormRow id="user-password" label={copy.form.password} help={copy.form.passwordHelp} error={errors.password}>
+            <FormRow
+              id="user-password"
+              label={copy.form.password}
+              help={copy.form.passwordHelp}
+              error={errors.password}
+            >
               <Input
                 id="user-password"
                 type="password"
@@ -109,7 +152,11 @@ export function AddUserDialog({ open, onOpenChange }: { open: boolean; onOpenCha
             <FieldError errors={[errors.root]} />
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => changeOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => changeOpen(false)}
+            >
               {copy.form.cancel}
             </Button>
             <Button type="submit" disabled={isSubmitting || create.isPending}>

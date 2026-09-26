@@ -2,7 +2,14 @@ import type { UserOut } from "@/api/generated/model"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { formatDateTime, relativeTime } from "@/lib/format"
 import { roleLabels } from "@/lib/labels"
 
@@ -61,17 +68,32 @@ export function UsersTable({
       <Header />
       <TableBody>
         {users.map((user) => (
-          <TableRow key={user.id} className={user.is_active ? undefined : "text-muted-foreground"}>
+          <TableRow
+            key={user.id}
+            className={user.is_active ? undefined : "text-muted-foreground"}
+          >
             <TableCell className="align-middle">
               <div className="flex min-w-0 items-center gap-2">
-                <span className={user.full_name ? "truncate font-semibold" : "truncate text-muted-foreground"}>
+                <span
+                  className={
+                    user.full_name
+                      ? "truncate font-semibold"
+                      : "truncate text-muted-foreground"
+                  }
+                >
                   {user.full_name?.trim() || copy.noName}
                 </span>
-                {user.id === currentUserId ? <Badge variant="outline">{copy.you}</Badge> : null}
+                {user.id === currentUserId ? (
+                  <Badge variant="outline">{copy.you}</Badge>
+                ) : null}
               </div>
             </TableCell>
-            <TableCell className="truncate align-middle">{user.email}</TableCell>
-            <TableCell className="align-middle">{roleLabels[user.role]}</TableCell>
+            <TableCell className="truncate align-middle">
+              {user.email}
+            </TableCell>
+            <TableCell className="align-middle">
+              {roleLabels[user.role]}
+            </TableCell>
             <TableCell className="align-middle">
               {user.is_active ? (
                 <Badge size="md" variant="success">
@@ -85,7 +107,10 @@ export function UsersTable({
             </TableCell>
             <TableCell className="align-middle text-[13px]">
               {user.last_login_at ? (
-                <time dateTime={user.last_login_at} title={formatDateTime(user.last_login_at)}>
+                <time
+                  dateTime={user.last_login_at}
+                  title={formatDateTime(user.last_login_at)}
+                >
                   {relativeTime(user.last_login_at)}
                 </time>
               ) : (
@@ -93,7 +118,12 @@ export function UsersTable({
               )}
             </TableCell>
             <TableCell className="text-right align-middle">
-              <Button variant="outline" size="xs" aria-label={copy.editLabel(displayName(user))} onClick={() => onEdit(user)}>
+              <Button
+                variant="outline"
+                size="xs"
+                aria-label={copy.editLabel(displayName(user))}
+                onClick={() => onEdit(user)}
+              >
                 {copy.edit}
               </Button>
             </TableCell>

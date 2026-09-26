@@ -1,9 +1,19 @@
 import type { ReactNode } from "react"
 
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 /** The small "i" next to a number: every number explains what it means and how it is counted. */
-export function InfoTip({ label, children }: { label: string; children: ReactNode }) {
+export function InfoTip({
+  label,
+  children,
+}: {
+  label: string
+  children: ReactNode
+}) {
   return (
     <Tooltip>
       <TooltipTrigger

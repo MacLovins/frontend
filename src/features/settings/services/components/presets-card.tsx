@@ -8,7 +8,11 @@ import { ErrorState } from "@/components/common/states"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { useLabels } from "@/hooks/use-labels"
 
 import { copy } from "@/features/settings/services/copy"
@@ -34,17 +38,37 @@ function PresetRow({
         <div className="truncate text-sm font-semibold">{preset.name}</div>
         <Tooltip>
           <TooltipTrigger
-            render={<button type="button" className="cursor-default text-left text-xs text-muted-foreground" />}
+            render={
+              <button
+                type="button"
+                className="cursor-default text-left text-xs text-muted-foreground"
+              />
+            }
           >
-            {copy.presets.subline(preset.questions_count, preset.categories.length)}
+            {copy.presets.subline(
+              preset.questions_count,
+              preset.categories.length
+            )}
           </TooltipTrigger>
-          <TooltipContent>{preset.categories.map((category) => label("categories", category)).join(", ")}</TooltipContent>
+          <TooltipContent>
+            {preset.categories
+              .map((category) => label("categories", category))
+              .join(", ")}
+          </TooltipContent>
         </Tooltip>
       </div>
       {applied ? (
-        <span className="text-xs font-semibold text-positive-strong">{copy.presets.applied}</span>
+        <span className="text-xs font-semibold text-positive-strong">
+          {copy.presets.applied}
+        </span>
       ) : (
-        <Button variant="outline" size="sm" className="h-8" disabled={disabled} onClick={onApply}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8"
+          disabled={disabled}
+          onClick={onApply}
+        >
           {applying ? <Spinner /> : null}
           {copy.presets.apply}
         </Button>
@@ -66,10 +90,15 @@ export function PresetsCard({
   const apply = useApplyPreset({
     mutation: {
       // "Created" is not signalled, so remember whether the slug was taken before the call.
-      onMutate: ({ key }) => ({ existed: services.some((item) => item.slug === key) }),
+      onMutate: ({ key }) => ({
+        existed: services.some((item) => item.slug === key),
+      }),
       onSuccess: (service, { key }, context) => {
         const preset = presets.data?.find((item) => item.key === key)
-        if (preset && !context.existed) toast.success(copy.toast.presetApplied(preset.name, preset.questions_count))
+        if (preset && !context.existed)
+          toast.success(
+            copy.toast.presetApplied(preset.name, preset.questions_count)
+          )
         // The list must hold the service before the page selects it.
         const stored = storeService(queryClient, service)
         onApplied(service.id)
