@@ -5,9 +5,20 @@
  * OpenAPI spec version: 0.1.0
  */
 
+/**
+ * The query is built from the service ICP; the optional fields below override it for this search.
+ */
 export interface DiscoverySearchIn {
   service_id: string;
+  /**
+     * @minimum 1
+     * @maximum 100
+     */
   limit?: number;
+  countries?: string[] | null;
+  industries?: string[] | null;
+  employees_min?: number | null;
+  employees_max?: number | null;
   country?: string | null;
   industry?: string | null;
   keywords?: string[];

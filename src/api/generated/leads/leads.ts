@@ -5,30 +5,36 @@
  * OpenAPI spec version: 0.1.0
  */
 import {
+  useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
-  ExportLeadsCsvApiV1LeadsExportCsvGetParams,
-  GetLeadDetailApiV1LeadsCompanyIdGetParams,
-  HTTPValidationError,
+  ErrorResponse,
+  GetLeadDetailParams,
   LeadDetail,
-  ListLeadsApiV1LeadsGetParams,
+  ListLeadsParams,
+  OutreachGenerateIn,
+  OutreachJobOut,
   PaginatedResponseLeadListItem
 } from '../model';
 
 import { apiFetch } from '../../mutator';
+import type { ErrorType } from '../../mutator';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
@@ -50,29 +56,18 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type listLeadsApiV1LeadsGetResponse200 = {
-  data: PaginatedResponseLeadListItem
-  status: 200
-}
-
-export type listLeadsApiV1LeadsGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type listLeadsApiV1LeadsGetResponseSuccess = (listLeadsApiV1LeadsGetResponse200) & {
-  headers: Headers;
-};
-export type listLeadsApiV1LeadsGetResponseError = (listLeadsApiV1LeadsGetResponse422) & {
-  headers: Headers;
-};
-
-export type listLeadsApiV1LeadsGetResponse = (listLeadsApiV1LeadsGetResponseSuccess | listLeadsApiV1LeadsGetResponseError)
-
-export const getListLeadsApiV1LeadsGetUrl = (params?: ListLeadsApiV1LeadsGetParams,) => {
+export const getListLeadsUrl = (params?: ListLeadsParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["tier","country","industry"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) => {
+        normalizedParams.append(key, v === null ? 'null' : String(v));
+      });
+      return;
+    }
 
     if (value !== undefined) {
       normalizedParams.append(key, value === null ? 'null' : String(value))
@@ -87,9 +82,9 @@ export const getListLeadsApiV1LeadsGetUrl = (params?: ListLeadsApiV1LeadsGetPara
 /**
  * @summary List Leads
  */
-export const listLeadsApiV1LeadsGet = async (params?: ListLeadsApiV1LeadsGetParams, options?: Parameters<typeof apiFetch>[1]): Promise<listLeadsApiV1LeadsGetResponse> => {
+export const listLeads = async (params?: ListLeadsParams, options?: Parameters<typeof apiFetch>[1]): Promise<PaginatedResponseLeadListItem> => {
 
-  return apiFetch<listLeadsApiV1LeadsGetResponse>(getListLeadsApiV1LeadsGetUrl(params),
+  return apiFetch<PaginatedResponseLeadListItem>(getListLeadsUrl(params),
   {
     ...options,
     method: 'GET'
@@ -102,69 +97,69 @@ export const listLeadsApiV1LeadsGet = async (params?: ListLeadsApiV1LeadsGetPara
 
 
 
-export const getListLeadsApiV1LeadsGetQueryKey = (params?: ListLeadsApiV1LeadsGetParams,) => {
+export const getListLeadsQueryKey = (params?: ListLeadsParams,) => {
     return [
     `/api/v1/leads`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getListLeadsApiV1LeadsGetQueryOptions = <TData = Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>, TError = HTTPValidationError>(params?: ListLeadsApiV1LeadsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getListLeadsQueryOptions = <TData = Awaited<ReturnType<typeof listLeads>>, TError = ErrorType<ErrorResponse>>(params?: ListLeadsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listLeads>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListLeadsApiV1LeadsGetQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getListLeadsQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>> = ({ signal }) => listLeadsApiV1LeadsGet(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listLeads>>> = ({ signal }) => listLeads(params, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listLeads>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ListLeadsApiV1LeadsGetQueryResult = NonNullable<Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>>
-export type ListLeadsApiV1LeadsGetQueryError = HTTPValidationError
+export type ListLeadsQueryResult = NonNullable<Awaited<ReturnType<typeof listLeads>>>
+export type ListLeadsQueryError = ErrorType<ErrorResponse>
 
 
-export function useListLeadsApiV1LeadsGet<TData = Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>, TError = HTTPValidationError>(
- params: undefined |  ListLeadsApiV1LeadsGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>, TError, TData>> & Pick<
+export function useListLeads<TData = Awaited<ReturnType<typeof listLeads>>, TError = ErrorType<ErrorResponse>>(
+ params: undefined |  ListLeadsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listLeads>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>,
+          Awaited<ReturnType<typeof listLeads>>,
           TError,
-          Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>
+          Awaited<ReturnType<typeof listLeads>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListLeadsApiV1LeadsGet<TData = Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>, TError = HTTPValidationError>(
- params?: ListLeadsApiV1LeadsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>, TError, TData>> & Pick<
+export function useListLeads<TData = Awaited<ReturnType<typeof listLeads>>, TError = ErrorType<ErrorResponse>>(
+ params?: ListLeadsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listLeads>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>,
+          Awaited<ReturnType<typeof listLeads>>,
           TError,
-          Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>
+          Awaited<ReturnType<typeof listLeads>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListLeadsApiV1LeadsGet<TData = Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>, TError = HTTPValidationError>(
- params?: ListLeadsApiV1LeadsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useListLeads<TData = Awaited<ReturnType<typeof listLeads>>, TError = ErrorType<ErrorResponse>>(
+ params?: ListLeadsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listLeads>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List Leads
  */
 
-export function useListLeadsApiV1LeadsGet<TData = Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>, TError = HTTPValidationError>(
- params?: ListLeadsApiV1LeadsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listLeadsApiV1LeadsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useListLeads<TData = Awaited<ReturnType<typeof listLeads>>, TError = ErrorType<ErrorResponse>>(
+ params?: ListLeadsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listLeads>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getListLeadsApiV1LeadsGetQueryOptions(params,options)
+  const queryOptions = getListLeadsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -176,153 +171,8 @@ export function useListLeadsApiV1LeadsGet<TData = Awaited<ReturnType<typeof list
 
 
 
-export type exportLeadsCsvApiV1LeadsExportCsvGetResponse200 = {
-  data: unknown
-  status: 200
-}
-
-export type exportLeadsCsvApiV1LeadsExportCsvGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type exportLeadsCsvApiV1LeadsExportCsvGetResponseSuccess = (exportLeadsCsvApiV1LeadsExportCsvGetResponse200) & {
-  headers: Headers;
-};
-export type exportLeadsCsvApiV1LeadsExportCsvGetResponseError = (exportLeadsCsvApiV1LeadsExportCsvGetResponse422) & {
-  headers: Headers;
-};
-
-export type exportLeadsCsvApiV1LeadsExportCsvGetResponse = (exportLeadsCsvApiV1LeadsExportCsvGetResponseSuccess | exportLeadsCsvApiV1LeadsExportCsvGetResponseError)
-
-export const getExportLeadsCsvApiV1LeadsExportCsvGetUrl = (params?: ExportLeadsCsvApiV1LeadsExportCsvGetParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/v1/leads/export.csv?${stringifiedParams}` : `/api/v1/leads/export.csv`
-}
-
-/**
- * @summary Export Leads Csv
- */
-export const exportLeadsCsvApiV1LeadsExportCsvGet = async (params?: ExportLeadsCsvApiV1LeadsExportCsvGetParams, options?: Parameters<typeof apiFetch>[1]): Promise<exportLeadsCsvApiV1LeadsExportCsvGetResponse> => {
-
-  return apiFetch<exportLeadsCsvApiV1LeadsExportCsvGetResponse>(getExportLeadsCsvApiV1LeadsExportCsvGetUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getExportLeadsCsvApiV1LeadsExportCsvGetQueryKey = (params?: ExportLeadsCsvApiV1LeadsExportCsvGetParams,) => {
-    return [
-    `/api/v1/leads/export.csv`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getExportLeadsCsvApiV1LeadsExportCsvGetQueryOptions = <TData = Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>, TError = HTTPValidationError>(params?: ExportLeadsCsvApiV1LeadsExportCsvGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getExportLeadsCsvApiV1LeadsExportCsvGetQueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>> = ({ signal }) => exportLeadsCsvApiV1LeadsExportCsvGet(params, { signal, ...requestOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ExportLeadsCsvApiV1LeadsExportCsvGetQueryResult = NonNullable<Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>>
-export type ExportLeadsCsvApiV1LeadsExportCsvGetQueryError = HTTPValidationError
-
-
-export function useExportLeadsCsvApiV1LeadsExportCsvGet<TData = Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>, TError = HTTPValidationError>(
- params: undefined |  ExportLeadsCsvApiV1LeadsExportCsvGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>,
-          TError,
-          Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof apiFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useExportLeadsCsvApiV1LeadsExportCsvGet<TData = Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>, TError = HTTPValidationError>(
- params?: ExportLeadsCsvApiV1LeadsExportCsvGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>,
-          TError,
-          Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof apiFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useExportLeadsCsvApiV1LeadsExportCsvGet<TData = Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>, TError = HTTPValidationError>(
- params?: ExportLeadsCsvApiV1LeadsExportCsvGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Export Leads Csv
- */
-
-export function useExportLeadsCsvApiV1LeadsExportCsvGet<TData = Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>, TError = HTTPValidationError>(
- params?: ExportLeadsCsvApiV1LeadsExportCsvGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportLeadsCsvApiV1LeadsExportCsvGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getExportLeadsCsvApiV1LeadsExportCsvGetQueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-export type getLeadDetailApiV1LeadsCompanyIdGetResponse200 = {
-  data: LeadDetail
-  status: 200
-}
-
-export type getLeadDetailApiV1LeadsCompanyIdGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type getLeadDetailApiV1LeadsCompanyIdGetResponseSuccess = (getLeadDetailApiV1LeadsCompanyIdGetResponse200) & {
-  headers: Headers;
-};
-export type getLeadDetailApiV1LeadsCompanyIdGetResponseError = (getLeadDetailApiV1LeadsCompanyIdGetResponse422) & {
-  headers: Headers;
-};
-
-export type getLeadDetailApiV1LeadsCompanyIdGetResponse = (getLeadDetailApiV1LeadsCompanyIdGetResponseSuccess | getLeadDetailApiV1LeadsCompanyIdGetResponseError)
-
-export const getGetLeadDetailApiV1LeadsCompanyIdGetUrl = (companyId: string,
-    params?: GetLeadDetailApiV1LeadsCompanyIdGetParams,) => {
+export const getGetLeadDetailUrl = (companyId: string,
+    params?: GetLeadDetailParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -340,10 +190,10 @@ export const getGetLeadDetailApiV1LeadsCompanyIdGetUrl = (companyId: string,
 /**
  * @summary Get Lead Detail
  */
-export const getLeadDetailApiV1LeadsCompanyIdGet = async (companyId: string,
-    params?: GetLeadDetailApiV1LeadsCompanyIdGetParams, options?: Parameters<typeof apiFetch>[1]): Promise<getLeadDetailApiV1LeadsCompanyIdGetResponse> => {
+export const getLeadDetail = async (companyId: string,
+    params?: GetLeadDetailParams, options?: Parameters<typeof apiFetch>[1]): Promise<LeadDetail> => {
 
-  return apiFetch<getLeadDetailApiV1LeadsCompanyIdGetResponse>(getGetLeadDetailApiV1LeadsCompanyIdGetUrl(companyId,params),
+  return apiFetch<LeadDetail>(getGetLeadDetailUrl(companyId,params),
   {
     ...options,
     method: 'GET'
@@ -356,75 +206,271 @@ export const getLeadDetailApiV1LeadsCompanyIdGet = async (companyId: string,
 
 
 
-export const getGetLeadDetailApiV1LeadsCompanyIdGetQueryKey = (companyId: string,
-    params?: GetLeadDetailApiV1LeadsCompanyIdGetParams,) => {
+export const getGetLeadDetailQueryKey = (companyId: string,
+    params?: GetLeadDetailParams,) => {
     return [
     `/api/v1/leads/${companyId}`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getGetLeadDetailApiV1LeadsCompanyIdGetQueryOptions = <TData = Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>, TError = HTTPValidationError>(companyId: string,
-    params?: GetLeadDetailApiV1LeadsCompanyIdGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getGetLeadDetailQueryOptions = <TData = Awaited<ReturnType<typeof getLeadDetail>>, TError = ErrorType<ErrorResponse>>(companyId: string,
+    params?: GetLeadDetailParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadDetail>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetLeadDetailApiV1LeadsCompanyIdGetQueryKey(companyId,params);
+  const queryKey =  queryOptions?.queryKey ?? getGetLeadDetailQueryKey(companyId,params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>> = ({ signal }) => getLeadDetailApiV1LeadsCompanyIdGet(companyId,params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeadDetail>>> = ({ signal }) => getLeadDetail(companyId,params, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: companyId !== null && companyId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: companyId !== null && companyId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLeadDetail>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetLeadDetailApiV1LeadsCompanyIdGetQueryResult = NonNullable<Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>>
-export type GetLeadDetailApiV1LeadsCompanyIdGetQueryError = HTTPValidationError
+export type GetLeadDetailQueryResult = NonNullable<Awaited<ReturnType<typeof getLeadDetail>>>
+export type GetLeadDetailQueryError = ErrorType<ErrorResponse>
 
 
-export function useGetLeadDetailApiV1LeadsCompanyIdGet<TData = Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>, TError = HTTPValidationError>(
+export function useGetLeadDetail<TData = Awaited<ReturnType<typeof getLeadDetail>>, TError = ErrorType<ErrorResponse>>(
  companyId: string,
-    params: undefined |  GetLeadDetailApiV1LeadsCompanyIdGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>, TError, TData>> & Pick<
+    params: undefined |  GetLeadDetailParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadDetail>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>,
+          Awaited<ReturnType<typeof getLeadDetail>>,
           TError,
-          Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>
+          Awaited<ReturnType<typeof getLeadDetail>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetLeadDetailApiV1LeadsCompanyIdGet<TData = Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>, TError = HTTPValidationError>(
+export function useGetLeadDetail<TData = Awaited<ReturnType<typeof getLeadDetail>>, TError = ErrorType<ErrorResponse>>(
  companyId: string,
-    params?: GetLeadDetailApiV1LeadsCompanyIdGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>, TError, TData>> & Pick<
+    params?: GetLeadDetailParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadDetail>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>,
+          Awaited<ReturnType<typeof getLeadDetail>>,
           TError,
-          Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>
+          Awaited<ReturnType<typeof getLeadDetail>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetLeadDetailApiV1LeadsCompanyIdGet<TData = Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>, TError = HTTPValidationError>(
+export function useGetLeadDetail<TData = Awaited<ReturnType<typeof getLeadDetail>>, TError = ErrorType<ErrorResponse>>(
  companyId: string,
-    params?: GetLeadDetailApiV1LeadsCompanyIdGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+    params?: GetLeadDetailParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadDetail>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Lead Detail
  */
 
-export function useGetLeadDetailApiV1LeadsCompanyIdGet<TData = Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>, TError = HTTPValidationError>(
+export function useGetLeadDetail<TData = Awaited<ReturnType<typeof getLeadDetail>>, TError = ErrorType<ErrorResponse>>(
  companyId: string,
-    params?: GetLeadDetailApiV1LeadsCompanyIdGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadDetailApiV1LeadsCompanyIdGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+    params?: GetLeadDetailParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadDetail>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetLeadDetailApiV1LeadsCompanyIdGetQueryOptions(companyId,params,options)
+  const queryOptions = getGetLeadDetailQueryOptions(companyId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getGenerateLeadOutreachUrl = (companyId: string,) => {
+
+
+
+
+  return `/api/v1/leads/${companyId}/outreach`
+}
+
+/**
+ * @summary Generate Lead Outreach
+ */
+export const generateLeadOutreach = async (companyId: string,
+    outreachGenerateIn: OutreachGenerateIn, options?: Parameters<typeof apiFetch>[1]): Promise<OutreachJobOut> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<OutreachJobOut>(getGenerateLeadOutreachUrl(companyId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(outreachGenerateIn)
+  }
+);}
+
+
+
+
+
+export const getGenerateLeadOutreachMutationKey = () => ['generateLeadOutreach'] as const;
+
+export const getGenerateLeadOutreachMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateLeadOutreach>>, TError,GenerateLeadOutreachMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateLeadOutreach>>, TError,GenerateLeadOutreachMutationVariables, TContext> => {
+
+const mutationKey = getGenerateLeadOutreachMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateLeadOutreach>>, GenerateLeadOutreachMutationVariables> = (props) => {
+          const {companyId,data} = props ?? {};
+
+          return  generateLeadOutreach(companyId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateLeadOutreachMutationResult = NonNullable<Awaited<ReturnType<typeof generateLeadOutreach>>>
+    export type GenerateLeadOutreachMutationBody = OutreachGenerateIn
+    export type GenerateLeadOutreachMutationError = ErrorType<ErrorResponse>
+    export type GenerateLeadOutreachMutationVariables = {companyId: string;data: OutreachGenerateIn}
+
+    /**
+ * @summary Generate Lead Outreach
+ */
+export const useGenerateLeadOutreach = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateLeadOutreach>>, TError,GenerateLeadOutreachMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof generateLeadOutreach>>,
+        TError,
+        GenerateLeadOutreachMutationVariables,
+        TContext
+      > => {
+      return useMutation(getGenerateLeadOutreachMutationOptions(options), queryClient);
+    }
+    export const getGetLeadOutreachUrl = (companyId: string,
+    jobId: string,) => {
+
+
+
+
+  return `/api/v1/leads/${companyId}/outreach/${jobId}`
+}
+
+/**
+ * @summary Get Lead Outreach
+ */
+export const getLeadOutreach = async (companyId: string,
+    jobId: string, options?: Parameters<typeof apiFetch>[1]): Promise<OutreachJobOut> => {
+
+  return apiFetch<OutreachJobOut>(getGetLeadOutreachUrl(companyId,jobId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetLeadOutreachQueryKey = (companyId: string,
+    jobId: string,) => {
+    return [
+    `/api/v1/leads/${companyId}/outreach/${jobId}`
+    ] as const;
+    }
+
+
+export const getGetLeadOutreachQueryOptions = <TData = Awaited<ReturnType<typeof getLeadOutreach>>, TError = ErrorType<ErrorResponse>>(companyId: string,
+    jobId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadOutreach>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetLeadOutreachQueryKey(companyId,jobId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeadOutreach>>> = ({ signal }) => getLeadOutreach(companyId,jobId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: companyId !== null && companyId !== undefined && jobId !== null && jobId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLeadOutreach>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetLeadOutreachQueryResult = NonNullable<Awaited<ReturnType<typeof getLeadOutreach>>>
+export type GetLeadOutreachQueryError = ErrorType<ErrorResponse>
+
+
+export function useGetLeadOutreach<TData = Awaited<ReturnType<typeof getLeadOutreach>>, TError = ErrorType<ErrorResponse>>(
+ companyId: string,
+    jobId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadOutreach>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getLeadOutreach>>,
+          TError,
+          Awaited<ReturnType<typeof getLeadOutreach>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetLeadOutreach<TData = Awaited<ReturnType<typeof getLeadOutreach>>, TError = ErrorType<ErrorResponse>>(
+ companyId: string,
+    jobId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadOutreach>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getLeadOutreach>>,
+          TError,
+          Awaited<ReturnType<typeof getLeadOutreach>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof apiFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetLeadOutreach<TData = Awaited<ReturnType<typeof getLeadOutreach>>, TError = ErrorType<ErrorResponse>>(
+ companyId: string,
+    jobId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadOutreach>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get Lead Outreach
+ */
+
+export function useGetLeadOutreach<TData = Awaited<ReturnType<typeof getLeadOutreach>>, TError = ErrorType<ErrorResponse>>(
+ companyId: string,
+    jobId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLeadOutreach>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetLeadOutreachQueryOptions(companyId,jobId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

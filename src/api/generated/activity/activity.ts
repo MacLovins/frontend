@@ -21,11 +21,12 @@ import type {
 
 import type {
   DomainEventOut,
-  HTTPValidationError,
-  ListActivityApiV1ActivityGetParams
+  ErrorResponse,
+  ListActivityParams
 } from '../model';
 
 import { apiFetch } from '../../mutator';
+import type { ErrorType } from '../../mutator';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
@@ -47,26 +48,7 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type listActivityApiV1ActivityGetResponse200 = {
-  data: DomainEventOut[]
-  status: 200
-}
-
-export type listActivityApiV1ActivityGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type listActivityApiV1ActivityGetResponseSuccess = (listActivityApiV1ActivityGetResponse200) & {
-  headers: Headers;
-};
-export type listActivityApiV1ActivityGetResponseError = (listActivityApiV1ActivityGetResponse422) & {
-  headers: Headers;
-};
-
-export type listActivityApiV1ActivityGetResponse = (listActivityApiV1ActivityGetResponseSuccess | listActivityApiV1ActivityGetResponseError)
-
-export const getListActivityApiV1ActivityGetUrl = (params?: ListActivityApiV1ActivityGetParams,) => {
+export const getListActivityUrl = (params?: ListActivityParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -84,9 +66,9 @@ export const getListActivityApiV1ActivityGetUrl = (params?: ListActivityApiV1Act
 /**
  * @summary List Activity
  */
-export const listActivityApiV1ActivityGet = async (params?: ListActivityApiV1ActivityGetParams, options?: Parameters<typeof apiFetch>[1]): Promise<listActivityApiV1ActivityGetResponse> => {
+export const listActivity = async (params?: ListActivityParams, options?: Parameters<typeof apiFetch>[1]): Promise<DomainEventOut[]> => {
 
-  return apiFetch<listActivityApiV1ActivityGetResponse>(getListActivityApiV1ActivityGetUrl(params),
+  return apiFetch<DomainEventOut[]>(getListActivityUrl(params),
   {
     ...options,
     method: 'GET'
@@ -99,69 +81,69 @@ export const listActivityApiV1ActivityGet = async (params?: ListActivityApiV1Act
 
 
 
-export const getListActivityApiV1ActivityGetQueryKey = (params?: ListActivityApiV1ActivityGetParams,) => {
+export const getListActivityQueryKey = (params?: ListActivityParams,) => {
     return [
     `/api/v1/activity`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getListActivityApiV1ActivityGetQueryOptions = <TData = Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>, TError = HTTPValidationError>(params?: ListActivityApiV1ActivityGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getListActivityQueryOptions = <TData = Awaited<ReturnType<typeof listActivity>>, TError = ErrorType<ErrorResponse>>(params?: ListActivityParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listActivity>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListActivityApiV1ActivityGetQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getListActivityQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>> = ({ signal }) => listActivityApiV1ActivityGet(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listActivity>>> = ({ signal }) => listActivity(params, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listActivity>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ListActivityApiV1ActivityGetQueryResult = NonNullable<Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>>
-export type ListActivityApiV1ActivityGetQueryError = HTTPValidationError
+export type ListActivityQueryResult = NonNullable<Awaited<ReturnType<typeof listActivity>>>
+export type ListActivityQueryError = ErrorType<ErrorResponse>
 
 
-export function useListActivityApiV1ActivityGet<TData = Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>, TError = HTTPValidationError>(
- params: undefined |  ListActivityApiV1ActivityGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>, TError, TData>> & Pick<
+export function useListActivity<TData = Awaited<ReturnType<typeof listActivity>>, TError = ErrorType<ErrorResponse>>(
+ params: undefined |  ListActivityParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listActivity>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>,
+          Awaited<ReturnType<typeof listActivity>>,
           TError,
-          Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>
+          Awaited<ReturnType<typeof listActivity>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListActivityApiV1ActivityGet<TData = Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>, TError = HTTPValidationError>(
- params?: ListActivityApiV1ActivityGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>, TError, TData>> & Pick<
+export function useListActivity<TData = Awaited<ReturnType<typeof listActivity>>, TError = ErrorType<ErrorResponse>>(
+ params?: ListActivityParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listActivity>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>,
+          Awaited<ReturnType<typeof listActivity>>,
           TError,
-          Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>
+          Awaited<ReturnType<typeof listActivity>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListActivityApiV1ActivityGet<TData = Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>, TError = HTTPValidationError>(
- params?: ListActivityApiV1ActivityGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useListActivity<TData = Awaited<ReturnType<typeof listActivity>>, TError = ErrorType<ErrorResponse>>(
+ params?: ListActivityParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listActivity>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List Activity
  */
 
-export function useListActivityApiV1ActivityGet<TData = Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>, TError = HTTPValidationError>(
- params?: ListActivityApiV1ActivityGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listActivityApiV1ActivityGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useListActivity<TData = Awaited<ReturnType<typeof listActivity>>, TError = ErrorType<ErrorResponse>>(
+ params?: ListActivityParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listActivity>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getListActivityApiV1ActivityGetQueryOptions(params,options)
+  const queryOptions = getListActivityQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

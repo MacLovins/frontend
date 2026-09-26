@@ -19,36 +19,18 @@ import type {
   DiscoveryAcceptIn,
   DiscoverySearchIn,
   DiscoverySearchOut,
-  HTTPValidationError
+  ErrorResponse
 } from '../model';
 
 import { apiFetch } from '../../mutator';
+import type { ErrorType } from '../../mutator';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 
-export type searchDiscoveryApiV1DiscoverySearchPostResponse200 = {
-  data: DiscoverySearchOut
-  status: 200
-}
-
-export type searchDiscoveryApiV1DiscoverySearchPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type searchDiscoveryApiV1DiscoverySearchPostResponseSuccess = (searchDiscoveryApiV1DiscoverySearchPostResponse200) & {
-  headers: Headers;
-};
-export type searchDiscoveryApiV1DiscoverySearchPostResponseError = (searchDiscoveryApiV1DiscoverySearchPostResponse422) & {
-  headers: Headers;
-};
-
-export type searchDiscoveryApiV1DiscoverySearchPostResponse = (searchDiscoveryApiV1DiscoverySearchPostResponseSuccess | searchDiscoveryApiV1DiscoverySearchPostResponseError)
-
-export const getSearchDiscoveryApiV1DiscoverySearchPostUrl = () => {
+export const getSearchDiscoveryUrl = () => {
 
 
 
@@ -57,9 +39,10 @@ export const getSearchDiscoveryApiV1DiscoverySearchPostUrl = () => {
 }
 
 /**
+ * Find companies matching the service ICP (Wikidata via parser), ranked by Fit (ai.fit_score).
  * @summary Search Discovery
  */
-export const searchDiscoveryApiV1DiscoverySearchPost = async (discoverySearchIn: DiscoverySearchIn, options?: Parameters<typeof apiFetch>[1]): Promise<searchDiscoveryApiV1DiscoverySearchPostResponse> => {
+export const searchDiscovery = async (discoverySearchIn: DiscoverySearchIn, options?: Parameters<typeof apiFetch>[1]): Promise<DiscoverySearchOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -75,7 +58,7 @@ export const searchDiscoveryApiV1DiscoverySearchPost = async (discoverySearchIn:
     }
     return headers;
   };
-return apiFetch<searchDiscoveryApiV1DiscoverySearchPostResponse>(getSearchDiscoveryApiV1DiscoverySearchPostUrl(),
+return apiFetch<DiscoverySearchOut>(getSearchDiscoveryUrl(),
   {
     ...options,
     method: 'POST',
@@ -88,13 +71,13 @@ return apiFetch<searchDiscoveryApiV1DiscoverySearchPostResponse>(getSearchDiscov
 
 
 
-export const getSearchDiscoveryApiV1DiscoverySearchPostMutationKey = () => ['searchDiscoveryApiV1DiscoverySearchPost'] as const;
+export const getSearchDiscoveryMutationKey = () => ['searchDiscovery'] as const;
 
-export const getSearchDiscoveryApiV1DiscoverySearchPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof searchDiscoveryApiV1DiscoverySearchPost>>, TError,SearchDiscoveryApiV1DiscoverySearchPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof searchDiscoveryApiV1DiscoverySearchPost>>, TError,SearchDiscoveryApiV1DiscoverySearchPostMutationVariables, TContext> => {
+export const getSearchDiscoveryMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof searchDiscovery>>, TError,SearchDiscoveryMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof searchDiscovery>>, TError,SearchDiscoveryMutationVariables, TContext> => {
 
-const mutationKey = getSearchDiscoveryApiV1DiscoverySearchPostMutationKey();
+const mutationKey = getSearchDiscoveryMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -104,10 +87,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof searchDiscoveryApiV1DiscoverySearchPost>>, SearchDiscoveryApiV1DiscoverySearchPostMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof searchDiscovery>>, SearchDiscoveryMutationVariables> = (props) => {
           const {data} = props ?? {};
 
-          return  searchDiscoveryApiV1DiscoverySearchPost(data,requestOptions)
+          return  searchDiscovery(data,requestOptions)
         }
 
 
@@ -117,44 +100,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type SearchDiscoveryApiV1DiscoverySearchPostMutationResult = NonNullable<Awaited<ReturnType<typeof searchDiscoveryApiV1DiscoverySearchPost>>>
-    export type SearchDiscoveryApiV1DiscoverySearchPostMutationBody = DiscoverySearchIn
-    export type SearchDiscoveryApiV1DiscoverySearchPostMutationError = HTTPValidationError
-    export type SearchDiscoveryApiV1DiscoverySearchPostMutationVariables = {data: DiscoverySearchIn}
+    export type SearchDiscoveryMutationResult = NonNullable<Awaited<ReturnType<typeof searchDiscovery>>>
+    export type SearchDiscoveryMutationBody = DiscoverySearchIn
+    export type SearchDiscoveryMutationError = ErrorType<ErrorResponse>
+    export type SearchDiscoveryMutationVariables = {data: DiscoverySearchIn}
 
     /**
  * @summary Search Discovery
  */
-export const useSearchDiscoveryApiV1DiscoverySearchPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof searchDiscoveryApiV1DiscoverySearchPost>>, TError,SearchDiscoveryApiV1DiscoverySearchPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useSearchDiscovery = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof searchDiscovery>>, TError,SearchDiscoveryMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof searchDiscoveryApiV1DiscoverySearchPost>>,
+        Awaited<ReturnType<typeof searchDiscovery>>,
         TError,
-        SearchDiscoveryApiV1DiscoverySearchPostMutationVariables,
+        SearchDiscoveryMutationVariables,
         TContext
       > => {
-      return useMutation(getSearchDiscoveryApiV1DiscoverySearchPostMutationOptions(options), queryClient);
+      return useMutation(getSearchDiscoveryMutationOptions(options), queryClient);
     }
-    export type acceptDiscoveryApiV1DiscoveryAcceptPostResponse201 = {
-  data: CompanyOut
-  status: 201
-}
-
-export type acceptDiscoveryApiV1DiscoveryAcceptPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type acceptDiscoveryApiV1DiscoveryAcceptPostResponseSuccess = (acceptDiscoveryApiV1DiscoveryAcceptPostResponse201) & {
-  headers: Headers;
-};
-export type acceptDiscoveryApiV1DiscoveryAcceptPostResponseError = (acceptDiscoveryApiV1DiscoveryAcceptPostResponse422) & {
-  headers: Headers;
-};
-
-export type acceptDiscoveryApiV1DiscoveryAcceptPostResponse = (acceptDiscoveryApiV1DiscoveryAcceptPostResponseSuccess | acceptDiscoveryApiV1DiscoveryAcceptPostResponseError)
-
-export const getAcceptDiscoveryApiV1DiscoveryAcceptPostUrl = () => {
+    export const getAcceptDiscoveryUrl = () => {
 
 
 
@@ -165,7 +129,7 @@ export const getAcceptDiscoveryApiV1DiscoveryAcceptPostUrl = () => {
 /**
  * @summary Accept Discovery
  */
-export const acceptDiscoveryApiV1DiscoveryAcceptPost = async (discoveryAcceptIn: DiscoveryAcceptIn, options?: Parameters<typeof apiFetch>[1]): Promise<acceptDiscoveryApiV1DiscoveryAcceptPostResponse> => {
+export const acceptDiscovery = async (discoveryAcceptIn: DiscoveryAcceptIn, options?: Parameters<typeof apiFetch>[1]): Promise<CompanyOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -181,7 +145,7 @@ export const acceptDiscoveryApiV1DiscoveryAcceptPost = async (discoveryAcceptIn:
     }
     return headers;
   };
-return apiFetch<acceptDiscoveryApiV1DiscoveryAcceptPostResponse>(getAcceptDiscoveryApiV1DiscoveryAcceptPostUrl(),
+return apiFetch<CompanyOut>(getAcceptDiscoveryUrl(),
   {
     ...options,
     method: 'POST',
@@ -194,13 +158,13 @@ return apiFetch<acceptDiscoveryApiV1DiscoveryAcceptPostResponse>(getAcceptDiscov
 
 
 
-export const getAcceptDiscoveryApiV1DiscoveryAcceptPostMutationKey = () => ['acceptDiscoveryApiV1DiscoveryAcceptPost'] as const;
+export const getAcceptDiscoveryMutationKey = () => ['acceptDiscovery'] as const;
 
-export const getAcceptDiscoveryApiV1DiscoveryAcceptPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof acceptDiscoveryApiV1DiscoveryAcceptPost>>, TError,AcceptDiscoveryApiV1DiscoveryAcceptPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof acceptDiscoveryApiV1DiscoveryAcceptPost>>, TError,AcceptDiscoveryApiV1DiscoveryAcceptPostMutationVariables, TContext> => {
+export const getAcceptDiscoveryMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof acceptDiscovery>>, TError,AcceptDiscoveryMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof acceptDiscovery>>, TError,AcceptDiscoveryMutationVariables, TContext> => {
 
-const mutationKey = getAcceptDiscoveryApiV1DiscoveryAcceptPostMutationKey();
+const mutationKey = getAcceptDiscoveryMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -210,10 +174,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof acceptDiscoveryApiV1DiscoveryAcceptPost>>, AcceptDiscoveryApiV1DiscoveryAcceptPostMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof acceptDiscovery>>, AcceptDiscoveryMutationVariables> = (props) => {
           const {data} = props ?? {};
 
-          return  acceptDiscoveryApiV1DiscoveryAcceptPost(data,requestOptions)
+          return  acceptDiscovery(data,requestOptions)
         }
 
 
@@ -223,21 +187,21 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type AcceptDiscoveryApiV1DiscoveryAcceptPostMutationResult = NonNullable<Awaited<ReturnType<typeof acceptDiscoveryApiV1DiscoveryAcceptPost>>>
-    export type AcceptDiscoveryApiV1DiscoveryAcceptPostMutationBody = DiscoveryAcceptIn
-    export type AcceptDiscoveryApiV1DiscoveryAcceptPostMutationError = HTTPValidationError
-    export type AcceptDiscoveryApiV1DiscoveryAcceptPostMutationVariables = {data: DiscoveryAcceptIn}
+    export type AcceptDiscoveryMutationResult = NonNullable<Awaited<ReturnType<typeof acceptDiscovery>>>
+    export type AcceptDiscoveryMutationBody = DiscoveryAcceptIn
+    export type AcceptDiscoveryMutationError = ErrorType<ErrorResponse>
+    export type AcceptDiscoveryMutationVariables = {data: DiscoveryAcceptIn}
 
     /**
  * @summary Accept Discovery
  */
-export const useAcceptDiscoveryApiV1DiscoveryAcceptPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof acceptDiscoveryApiV1DiscoveryAcceptPost>>, TError,AcceptDiscoveryApiV1DiscoveryAcceptPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useAcceptDiscovery = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof acceptDiscovery>>, TError,AcceptDiscoveryMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof acceptDiscoveryApiV1DiscoveryAcceptPost>>,
+        Awaited<ReturnType<typeof acceptDiscovery>>,
         TError,
-        AcceptDiscoveryApiV1DiscoveryAcceptPostMutationVariables,
+        AcceptDiscoveryMutationVariables,
         TContext
       > => {
-      return useMutation(getAcceptDiscoveryApiV1DiscoveryAcceptPostMutationOptions(options), queryClient);
+      return useMutation(getAcceptDiscoveryMutationOptions(options), queryClient);
     }

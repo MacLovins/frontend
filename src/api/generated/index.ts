@@ -4,7 +4,6 @@ export * from './auth/auth';
 export * from './config/config';
 export * from './discovery/discovery';
 export * from './feedback/feedback';
-export * from './health/health';
 export * from './leads/leads';
 export * from './meta/meta';
 export * from './runs/runs';

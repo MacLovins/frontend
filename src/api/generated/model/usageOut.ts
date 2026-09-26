@@ -4,10 +4,19 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { ModelUsageOut } from './modelUsageOut';
+import type { UsageOutDocumentsBySource } from './usageOutDocumentsBySource';
 
+/**
+ * LLM usage for the current quota day (Gemini resets daily quotas at midnight Pacific time).
+ */
 export interface UsageOut {
-  llm_calls_24h?: number;
-  input_tokens_24h?: number;
-  output_tokens_24h?: number;
-  documents_scanned_24h?: number;
+  day_start: string | null;
+  resets_at: string | null;
+  llm_calls_24h: number;
+  input_tokens_24h: number;
+  output_tokens_24h: number;
+  documents_scanned_24h: number;
+  models: ModelUsageOut[];
+  documents_by_source: UsageOutDocumentsBySource;
 }

@@ -11,6 +11,10 @@ export interface DiscoveryAcceptIn {
   country_code?: string | null;
   industry_ids?: string[];
   employees?: number | null;
+  revenue_eur?: number | null;
+  wikidata_qid?: string | null;
+  lei?: string | null;
+  crunchbase_id?: string | null;
   notes?: string | null;
   tags?: string[];
   service_id?: string | null;

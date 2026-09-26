@@ -1,51 +1,99 @@
-import { Navigate, createBrowserRouter } from "react-router"
+import { createBrowserRouter, Navigate } from "react-router"
 
 import { AppShell } from "@/app/app-shell"
-import { AccountsPage, DiscoveryPage } from "@/features/accounts/accounts-pages"
-import { CompanyPage } from "@/features/company/company-page"
-import { ProspectsPage } from "@/features/prospects/prospects-page"
-import { RunDetailPage, RunsPage } from "@/features/runs/runs-pages"
-import { ForbiddenPage, LoginPage } from "@/features/session/login-page"
-import { RequireAdmin, RequireAuth } from "@/features/session/session"
-import {
-  IcpPage,
-  QuestionsPage,
-  RulesPage,
-  ScoringPage,
-  ServicesPage,
-} from "@/features/settings/settings-pages"
-import { UsersPage } from "@/features/settings/users-page"
+import { NotFoundPage } from "@/app/not-found-page"
+import { ToProspects } from "@/app/redirects"
+import { RequireAdmin, RequireAuth } from "@/features/auth/guards"
 
 export const router = createBrowserRouter([
-  { path: "/login", element: <LoginPage /> },
+  { path: "/login", lazy: { Component: async () => (await import("@/features/auth/login-page")).LoginPage } },
+  { path: "/about", lazy: { Component: async () => (await import("@/features/about/brief-page")).BriefPage } },
+  {
+    path: "/about/market",
+    lazy: { Component: async () => (await import("@/features/about/market-page")).MarketPage },
+  },
   {
     element: <RequireAuth />,
     children: [
       {
         element: <AppShell />,
         children: [
-          { index: true, element: <Navigate to="/prospects" replace /> },
-          { path: "prospects", element: <ProspectsPage /> },
-          { path: "companies/:id", element: <CompanyPage /> },
-          { path: "runs", element: <RunsPage /> },
-          { path: "runs/:id", element: <RunDetailPage /> },
-          { path: "accounts", element: <AccountsPage /> },
-          { path: "accounts/discover", element: <DiscoveryPage /> },
-          { path: "403", element: <ForbiddenPage /> },
+          { index: true, element: <ToProspects /> },
+          { path: "today", lazy: { Component: async () => (await import("@/features/today/today-page")).TodayPage } },
           {
+            path: "prospects",
+            lazy: { Component: async () => (await import("@/features/prospects/prospects-page")).ProspectsPage },
+          },
+          {
+            path: "companies/:companyId",
+            lazy: { Component: async () => (await import("@/features/company/company-page")).CompanyPage },
+          },
+          {
+            path: "companies/:companyId/sources",
+            lazy: { Component: async () => (await import("@/features/company/sources-page")).SourcesPage },
+          },
+          {
+            path: "companies/:companyId/outreach",
+            lazy: { Component: async () => (await import("@/features/outreach/outreach-page")).OutreachPage },
+          },
+          { path: "runs", lazy: { Component: async () => (await import("@/features/runs/runs-page")).RunsPage } },
+          { path: "runs/:runId", lazy: { Component: async () => (await import("@/features/runs/run-page")).RunPage } },
+          {
+            path: "accounts",
+            lazy: { Component: async () => (await import("@/features/accounts/accounts-page")).AccountsPage },
+          },
+          {
+            path: "accounts/discover",
+            lazy: { Component: async () => (await import("@/features/discovery/discovery-page")).DiscoveryPage },
+          },
+          {
+            path: "quality",
+            lazy: { Component: async () => (await import("@/features/quality/quality-page")).QualityPage },
+          },
+          {
+            path: "403",
+            lazy: { Component: async () => (await import("@/features/auth/forbidden-page")).ForbiddenPage },
+          },
+          {
+            path: "settings",
             element: <RequireAdmin />,
             children: [
-              { path: "settings/services", element: <ServicesPage /> },
-              { path: "settings/users", element: <UsersPage /> },
-              { path: "settings/:serviceId/questions", element: <QuestionsPage /> },
-              { path: "settings/:serviceId/icp", element: <IcpPage /> },
-              { path: "settings/:serviceId/rules", element: <RulesPage /> },
-              { path: "settings/:serviceId/scoring", element: <ScoringPage /> },
+              { index: true, element: <Navigate to="/settings/services" replace /> },
+              {
+                path: "services",
+                lazy: {
+                  Component: async () => (await import("@/features/settings/services/services-page")).ServicesPage,
+                },
+              },
+              {
+                path: "users",
+                lazy: { Component: async () => (await import("@/features/settings/users/users-page")).UsersPage },
+              },
+              {
+                path: ":serviceId/questions",
+                lazy: {
+                  Component: async () => (await import("@/features/settings/questions/questions-page")).QuestionsPage,
+                },
+              },
+              {
+                path: ":serviceId/icp",
+                lazy: { Component: async () => (await import("@/features/settings/icp/icp-page")).IcpPage },
+              },
+              {
+                path: ":serviceId/rules",
+                lazy: { Component: async () => (await import("@/features/settings/rules/rules-page")).RulesPage },
+              },
+              {
+                path: ":serviceId/scoring",
+                lazy: {
+                  Component: async () => (await import("@/features/settings/scoring/scoring-page")).ScoringPage,
+                },
+              },
             ],
           },
+          { path: "*", element: <NotFoundPage /> },
         ],
       },
     ],
   },
-  { path: "*", element: <Navigate to="/" replace /> },
 ])

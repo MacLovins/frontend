@@ -4,12 +4,12 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
-import type { QuestionSignalsQuestion } from './questionSignalsQuestion';
+import type { QuestionRef } from './questionRef';
 import type { SignalItem } from './signalItem';
 
 export interface QuestionSignals {
-  question: QuestionSignalsQuestion;
+  question: QuestionRef;
   strength: number;
   points: number;
-  signals?: SignalItem[];
+  signals: SignalItem[];
 }

@@ -4,18 +4,20 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
-import type { RunOutParams } from './runOutParams';
-import type { RunOutProgress } from './runOutProgress';
+import type { RunKind } from './runKind';
+import type { RunParams } from './runParams';
+import type { RunProgress } from './runProgress';
+import type { RunStatus } from './runStatus';
 
 export interface RunOut {
   id: string;
   org_id: string;
-  kind: string;
-  status: string;
-  params: RunOutParams;
-  progress: RunOutProgress;
-  error?: string | null;
-  started_at?: string | null;
-  finished_at?: string | null;
+  kind: RunKind;
+  status: RunStatus;
+  params: RunParams;
+  progress: RunProgress;
+  error: string | null;
+  started_at: string | null;
+  finished_at: string | null;
   created_at: string;
 }

@@ -4,13 +4,13 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
-import type { ScoringProfileOutParams } from './scoringProfileOutParams';
+import type { ScoringParams } from './scoringParams';
 
 export interface ScoringProfileOut {
   id: string;
   service_id: string;
   version: number;
-  params: ScoringProfileOutParams;
+  params: ScoringParams;
   is_current: boolean;
   created_at: string;
   updated_at: string;

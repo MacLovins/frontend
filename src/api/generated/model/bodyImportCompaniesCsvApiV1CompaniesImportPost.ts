@@ -6,5 +6,7 @@
  */
 
 export interface BodyImportCompaniesCsvApiV1CompaniesImportPost {
-  file: Blob | File;
+  file: Blob;
+  /** mapping=custom: JSON object target field → CSV column, e.g. {"name": "Company"} */
+  column_map?: string | null;
 }

@@ -4,9 +4,12 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { SignalCategory } from './signalCategory';
 
 export interface PresetOut {
   key: string;
   name: string;
   description: string;
+  questions_count: number;
+  categories: SignalCategory[];
 }

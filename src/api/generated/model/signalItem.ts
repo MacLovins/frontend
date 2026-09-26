@@ -4,17 +4,21 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { SignalFlag } from './signalFlag';
+import type { SignalVerdict } from './signalVerdict';
+import type { SourceType } from './sourceType';
+import type { Strength } from './strength';
 
 export interface SignalItem {
   id: string;
   quote: string;
   summary: string;
-  strength: string;
-  /** @pattern ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$ */
-  confidence: string;
-  url?: string | null;
+  strength: Strength;
+  confidence: number;
+  url: string | null;
   source_name: string;
-  source_type: string;
-  event_date?: string | null;
-  flags?: string[];
+  source_type: SourceType;
+  event_date: string | null;
+  flags: SignalFlag[];
+  my_feedback: SignalVerdict | null;
 }

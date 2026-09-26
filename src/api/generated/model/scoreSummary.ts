@@ -4,16 +4,16 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { Tier } from './tier';
 
+/**
+ * Scores are JSON numbers (the ORM keeps them as Numeric/Decimal).
+ */
 export interface ScoreSummary {
-  /** @pattern ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$ */
-  priority: string;
-  tier: string;
-  /** @pattern ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$ */
-  fit: string;
-  /** @pattern ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$ */
-  intent: string;
-  /** @pattern ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$ */
-  risk: string;
-  disqualified?: boolean;
+  priority: number;
+  tier: Tier;
+  fit: number;
+  intent: number;
+  risk: number;
+  disqualified: boolean;
 }

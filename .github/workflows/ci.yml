@@ -2,6 +2,7 @@ name: ci
 
 on:
   push:
+    branches: [main]
   pull_request:
 
 jobs:
@@ -9,19 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          registry-url: https://npm.pkg.github.com
-          scope: "@maclovins"
       - run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm run lint
+      - run: npm run format:check
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      # The committed client must match openapi.json + scripts/openapi-contract.ts
+      - run: npm run gen:api && git diff --exit-code -- src/api/generated

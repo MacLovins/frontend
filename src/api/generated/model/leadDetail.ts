@@ -5,18 +5,23 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { CompanyOut } from './companyOut';
-import type { LeadDetailHistoryItem } from './leadDetailHistoryItem';
-import type { LeadDetailScore } from './leadDetailScore';
-import type { LeadDetailService } from './leadDetailService';
+import type { EmptyObject } from './emptyObject';
+import type { LeadCardScore } from './leadCardScore';
 import type { LeadDetailSourcesSummary } from './leadDetailSourcesSummary';
+import type { LeadService } from './leadService';
+import type { LeadVerdict } from './leadVerdict';
+import type { QuestionRef } from './questionRef';
 import type { QuestionSignals } from './questionSignals';
+import type { ScoreHistoryPoint } from './scoreHistoryPoint';
 
 export interface LeadDetail {
   company: CompanyOut;
-  service: LeadDetailService;
-  score: LeadDetailScore;
-  signals_by_question?: QuestionSignals[];
-  decision_makers?: string[];
-  history?: LeadDetailHistoryItem[];
-  sources_summary?: LeadDetailSourcesSummary;
+  service: LeadService | EmptyObject;
+  score: LeadCardScore | EmptyObject;
+  signals_by_question: QuestionSignals[];
+  questions_without_evidence: QuestionRef[];
+  my_feedback: LeadVerdict | null;
+  decision_makers: string[];
+  history: ScoreHistoryPoint[];
+  sources_summary: LeadDetailSourcesSummary;
 }

@@ -29,14 +29,16 @@ import type {
   CompanyImportReport,
   CompanyOut,
   CompanyUpdate,
-  DocumentOut,
-  GetCompanyDocumentsApiV1CompaniesIdDocumentsGetParams,
-  HTTPValidationError,
-  ListCompaniesApiV1CompaniesGetParams,
-  PaginatedResponseCompanyOut
+  ErrorResponse,
+  GetCompanyDocumentsParams,
+  ImportCompaniesCsvParams,
+  ListCompaniesParams,
+  PaginatedResponseCompanyOut,
+  PaginatedResponseDocumentOut
 } from '../model';
 
 import { apiFetch } from '../../mutator';
+import type { ErrorType } from '../../mutator';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
@@ -58,26 +60,7 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type listCompaniesApiV1CompaniesGetResponse200 = {
-  data: PaginatedResponseCompanyOut
-  status: 200
-}
-
-export type listCompaniesApiV1CompaniesGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type listCompaniesApiV1CompaniesGetResponseSuccess = (listCompaniesApiV1CompaniesGetResponse200) & {
-  headers: Headers;
-};
-export type listCompaniesApiV1CompaniesGetResponseError = (listCompaniesApiV1CompaniesGetResponse422) & {
-  headers: Headers;
-};
-
-export type listCompaniesApiV1CompaniesGetResponse = (listCompaniesApiV1CompaniesGetResponseSuccess | listCompaniesApiV1CompaniesGetResponseError)
-
-export const getListCompaniesApiV1CompaniesGetUrl = (params?: ListCompaniesApiV1CompaniesGetParams,) => {
+export const getListCompaniesUrl = (params?: ListCompaniesParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -95,9 +78,9 @@ export const getListCompaniesApiV1CompaniesGetUrl = (params?: ListCompaniesApiV1
 /**
  * @summary List Companies
  */
-export const listCompaniesApiV1CompaniesGet = async (params?: ListCompaniesApiV1CompaniesGetParams, options?: Parameters<typeof apiFetch>[1]): Promise<listCompaniesApiV1CompaniesGetResponse> => {
+export const listCompanies = async (params?: ListCompaniesParams, options?: Parameters<typeof apiFetch>[1]): Promise<PaginatedResponseCompanyOut> => {
 
-  return apiFetch<listCompaniesApiV1CompaniesGetResponse>(getListCompaniesApiV1CompaniesGetUrl(params),
+  return apiFetch<PaginatedResponseCompanyOut>(getListCompaniesUrl(params),
   {
     ...options,
     method: 'GET'
@@ -110,69 +93,69 @@ export const listCompaniesApiV1CompaniesGet = async (params?: ListCompaniesApiV1
 
 
 
-export const getListCompaniesApiV1CompaniesGetQueryKey = (params?: ListCompaniesApiV1CompaniesGetParams,) => {
+export const getListCompaniesQueryKey = (params?: ListCompaniesParams,) => {
     return [
     `/api/v1/companies`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getListCompaniesApiV1CompaniesGetQueryOptions = <TData = Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>, TError = HTTPValidationError>(params?: ListCompaniesApiV1CompaniesGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getListCompaniesQueryOptions = <TData = Awaited<ReturnType<typeof listCompanies>>, TError = ErrorType<ErrorResponse>>(params?: ListCompaniesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompanies>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListCompaniesApiV1CompaniesGetQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getListCompaniesQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>> = ({ signal }) => listCompaniesApiV1CompaniesGet(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCompanies>>> = ({ signal }) => listCompanies(params, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCompanies>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ListCompaniesApiV1CompaniesGetQueryResult = NonNullable<Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>>
-export type ListCompaniesApiV1CompaniesGetQueryError = HTTPValidationError
+export type ListCompaniesQueryResult = NonNullable<Awaited<ReturnType<typeof listCompanies>>>
+export type ListCompaniesQueryError = ErrorType<ErrorResponse>
 
 
-export function useListCompaniesApiV1CompaniesGet<TData = Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>, TError = HTTPValidationError>(
- params: undefined |  ListCompaniesApiV1CompaniesGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>, TError, TData>> & Pick<
+export function useListCompanies<TData = Awaited<ReturnType<typeof listCompanies>>, TError = ErrorType<ErrorResponse>>(
+ params: undefined |  ListCompaniesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompanies>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>,
+          Awaited<ReturnType<typeof listCompanies>>,
           TError,
-          Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>
+          Awaited<ReturnType<typeof listCompanies>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListCompaniesApiV1CompaniesGet<TData = Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>, TError = HTTPValidationError>(
- params?: ListCompaniesApiV1CompaniesGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>, TError, TData>> & Pick<
+export function useListCompanies<TData = Awaited<ReturnType<typeof listCompanies>>, TError = ErrorType<ErrorResponse>>(
+ params?: ListCompaniesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompanies>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>,
+          Awaited<ReturnType<typeof listCompanies>>,
           TError,
-          Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>
+          Awaited<ReturnType<typeof listCompanies>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListCompaniesApiV1CompaniesGet<TData = Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>, TError = HTTPValidationError>(
- params?: ListCompaniesApiV1CompaniesGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useListCompanies<TData = Awaited<ReturnType<typeof listCompanies>>, TError = ErrorType<ErrorResponse>>(
+ params?: ListCompaniesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompanies>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List Companies
  */
 
-export function useListCompaniesApiV1CompaniesGet<TData = Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>, TError = HTTPValidationError>(
- params?: ListCompaniesApiV1CompaniesGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompaniesApiV1CompaniesGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useListCompanies<TData = Awaited<ReturnType<typeof listCompanies>>, TError = ErrorType<ErrorResponse>>(
+ params?: ListCompaniesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompanies>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getListCompaniesApiV1CompaniesGetQueryOptions(params,options)
+  const queryOptions = getListCompaniesQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -184,26 +167,7 @@ export function useListCompaniesApiV1CompaniesGet<TData = Awaited<ReturnType<typ
 
 
 
-export type createCompanyApiV1CompaniesPostResponse201 = {
-  data: CompanyOut
-  status: 201
-}
-
-export type createCompanyApiV1CompaniesPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type createCompanyApiV1CompaniesPostResponseSuccess = (createCompanyApiV1CompaniesPostResponse201) & {
-  headers: Headers;
-};
-export type createCompanyApiV1CompaniesPostResponseError = (createCompanyApiV1CompaniesPostResponse422) & {
-  headers: Headers;
-};
-
-export type createCompanyApiV1CompaniesPostResponse = (createCompanyApiV1CompaniesPostResponseSuccess | createCompanyApiV1CompaniesPostResponseError)
-
-export const getCreateCompanyApiV1CompaniesPostUrl = () => {
+export const getCreateCompanyUrl = () => {
 
 
 
@@ -214,7 +178,7 @@ export const getCreateCompanyApiV1CompaniesPostUrl = () => {
 /**
  * @summary Create Company
  */
-export const createCompanyApiV1CompaniesPost = async (companyCreate: CompanyCreate, options?: Parameters<typeof apiFetch>[1]): Promise<createCompanyApiV1CompaniesPostResponse> => {
+export const createCompany = async (companyCreate: CompanyCreate, options?: Parameters<typeof apiFetch>[1]): Promise<CompanyOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -230,7 +194,7 @@ export const createCompanyApiV1CompaniesPost = async (companyCreate: CompanyCrea
     }
     return headers;
   };
-return apiFetch<createCompanyApiV1CompaniesPostResponse>(getCreateCompanyApiV1CompaniesPostUrl(),
+return apiFetch<CompanyOut>(getCreateCompanyUrl(),
   {
     ...options,
     method: 'POST',
@@ -243,13 +207,13 @@ return apiFetch<createCompanyApiV1CompaniesPostResponse>(getCreateCompanyApiV1Co
 
 
 
-export const getCreateCompanyApiV1CompaniesPostMutationKey = () => ['createCompanyApiV1CompaniesPost'] as const;
+export const getCreateCompanyMutationKey = () => ['createCompany'] as const;
 
-export const getCreateCompanyApiV1CompaniesPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanyApiV1CompaniesPost>>, TError,CreateCompanyApiV1CompaniesPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createCompanyApiV1CompaniesPost>>, TError,CreateCompanyApiV1CompaniesPostMutationVariables, TContext> => {
+export const getCreateCompanyMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompany>>, TError,CreateCompanyMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCompany>>, TError,CreateCompanyMutationVariables, TContext> => {
 
-const mutationKey = getCreateCompanyApiV1CompaniesPostMutationKey();
+const mutationKey = getCreateCompanyMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -259,10 +223,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCompanyApiV1CompaniesPost>>, CreateCompanyApiV1CompaniesPostMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCompany>>, CreateCompanyMutationVariables> = (props) => {
           const {data} = props ?? {};
 
-          return  createCompanyApiV1CompaniesPost(data,requestOptions)
+          return  createCompany(data,requestOptions)
         }
 
 
@@ -272,44 +236,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type CreateCompanyApiV1CompaniesPostMutationResult = NonNullable<Awaited<ReturnType<typeof createCompanyApiV1CompaniesPost>>>
-    export type CreateCompanyApiV1CompaniesPostMutationBody = CompanyCreate
-    export type CreateCompanyApiV1CompaniesPostMutationError = HTTPValidationError
-    export type CreateCompanyApiV1CompaniesPostMutationVariables = {data: CompanyCreate}
+    export type CreateCompanyMutationResult = NonNullable<Awaited<ReturnType<typeof createCompany>>>
+    export type CreateCompanyMutationBody = CompanyCreate
+    export type CreateCompanyMutationError = ErrorType<ErrorResponse>
+    export type CreateCompanyMutationVariables = {data: CompanyCreate}
 
     /**
  * @summary Create Company
  */
-export const useCreateCompanyApiV1CompaniesPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanyApiV1CompaniesPost>>, TError,CreateCompanyApiV1CompaniesPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useCreateCompany = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompany>>, TError,CreateCompanyMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createCompanyApiV1CompaniesPost>>,
+        Awaited<ReturnType<typeof createCompany>>,
         TError,
-        CreateCompanyApiV1CompaniesPostMutationVariables,
+        CreateCompanyMutationVariables,
         TContext
       > => {
-      return useMutation(getCreateCompanyApiV1CompaniesPostMutationOptions(options), queryClient);
+      return useMutation(getCreateCompanyMutationOptions(options), queryClient);
     }
-    export type getCompanyApiV1CompaniesIdGetResponse200 = {
-  data: CompanyOut
-  status: 200
-}
-
-export type getCompanyApiV1CompaniesIdGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type getCompanyApiV1CompaniesIdGetResponseSuccess = (getCompanyApiV1CompaniesIdGetResponse200) & {
-  headers: Headers;
-};
-export type getCompanyApiV1CompaniesIdGetResponseError = (getCompanyApiV1CompaniesIdGetResponse422) & {
-  headers: Headers;
-};
-
-export type getCompanyApiV1CompaniesIdGetResponse = (getCompanyApiV1CompaniesIdGetResponseSuccess | getCompanyApiV1CompaniesIdGetResponseError)
-
-export const getGetCompanyApiV1CompaniesIdGetUrl = (id: string,) => {
+    export const getGetCompanyUrl = (id: string,) => {
 
 
 
@@ -320,9 +265,9 @@ export const getGetCompanyApiV1CompaniesIdGetUrl = (id: string,) => {
 /**
  * @summary Get Company
  */
-export const getCompanyApiV1CompaniesIdGet = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<getCompanyApiV1CompaniesIdGetResponse> => {
+export const getCompany = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<CompanyOut> => {
 
-  return apiFetch<getCompanyApiV1CompaniesIdGetResponse>(getGetCompanyApiV1CompaniesIdGetUrl(id),
+  return apiFetch<CompanyOut>(getGetCompanyUrl(id),
   {
     ...options,
     method: 'GET'
@@ -335,69 +280,69 @@ export const getCompanyApiV1CompaniesIdGet = async (id: string, options?: Parame
 
 
 
-export const getGetCompanyApiV1CompaniesIdGetQueryKey = (id: string,) => {
+export const getGetCompanyQueryKey = (id: string,) => {
     return [
     `/api/v1/companies/${id}`
     ] as const;
     }
 
 
-export const getGetCompanyApiV1CompaniesIdGetQueryOptions = <TData = Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>, TError = HTTPValidationError>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getGetCompanyQueryOptions = <TData = Awaited<ReturnType<typeof getCompany>>, TError = ErrorType<ErrorResponse>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompany>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetCompanyApiV1CompaniesIdGetQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetCompanyQueryKey(id);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>> = ({ signal }) => getCompanyApiV1CompaniesIdGet(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCompany>>> = ({ signal }) => getCompany(id, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCompany>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetCompanyApiV1CompaniesIdGetQueryResult = NonNullable<Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>>
-export type GetCompanyApiV1CompaniesIdGetQueryError = HTTPValidationError
+export type GetCompanyQueryResult = NonNullable<Awaited<ReturnType<typeof getCompany>>>
+export type GetCompanyQueryError = ErrorType<ErrorResponse>
 
 
-export function useGetCompanyApiV1CompaniesIdGet<TData = Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>, TError = HTTPValidationError>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>, TError, TData>> & Pick<
+export function useGetCompany<TData = Awaited<ReturnType<typeof getCompany>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompany>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>,
+          Awaited<ReturnType<typeof getCompany>>,
           TError,
-          Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>
+          Awaited<ReturnType<typeof getCompany>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCompanyApiV1CompaniesIdGet<TData = Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>, TError, TData>> & Pick<
+export function useGetCompany<TData = Awaited<ReturnType<typeof getCompany>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompany>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>,
+          Awaited<ReturnType<typeof getCompany>>,
           TError,
-          Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>
+          Awaited<ReturnType<typeof getCompany>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCompanyApiV1CompaniesIdGet<TData = Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetCompany<TData = Awaited<ReturnType<typeof getCompany>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompany>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Company
  */
 
-export function useGetCompanyApiV1CompaniesIdGet<TData = Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>, TError = HTTPValidationError>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyApiV1CompaniesIdGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export function useGetCompany<TData = Awaited<ReturnType<typeof getCompany>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompany>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetCompanyApiV1CompaniesIdGetQueryOptions(id,options)
+  const queryOptions = getGetCompanyQueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -409,26 +354,7 @@ export function useGetCompanyApiV1CompaniesIdGet<TData = Awaited<ReturnType<type
 
 
 
-export type updateCompanyApiV1CompaniesIdPatchResponse200 = {
-  data: CompanyOut
-  status: 200
-}
-
-export type updateCompanyApiV1CompaniesIdPatchResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type updateCompanyApiV1CompaniesIdPatchResponseSuccess = (updateCompanyApiV1CompaniesIdPatchResponse200) & {
-  headers: Headers;
-};
-export type updateCompanyApiV1CompaniesIdPatchResponseError = (updateCompanyApiV1CompaniesIdPatchResponse422) & {
-  headers: Headers;
-};
-
-export type updateCompanyApiV1CompaniesIdPatchResponse = (updateCompanyApiV1CompaniesIdPatchResponseSuccess | updateCompanyApiV1CompaniesIdPatchResponseError)
-
-export const getUpdateCompanyApiV1CompaniesIdPatchUrl = (id: string,) => {
+export const getUpdateCompanyUrl = (id: string,) => {
 
 
 
@@ -439,8 +365,8 @@ export const getUpdateCompanyApiV1CompaniesIdPatchUrl = (id: string,) => {
 /**
  * @summary Update Company
  */
-export const updateCompanyApiV1CompaniesIdPatch = async (id: string,
-    companyUpdate: CompanyUpdate, options?: Parameters<typeof apiFetch>[1]): Promise<updateCompanyApiV1CompaniesIdPatchResponse> => {
+export const updateCompany = async (id: string,
+    companyUpdate: CompanyUpdate, options?: Parameters<typeof apiFetch>[1]): Promise<CompanyOut> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -456,7 +382,7 @@ export const updateCompanyApiV1CompaniesIdPatch = async (id: string,
     }
     return headers;
   };
-return apiFetch<updateCompanyApiV1CompaniesIdPatchResponse>(getUpdateCompanyApiV1CompaniesIdPatchUrl(id),
+return apiFetch<CompanyOut>(getUpdateCompanyUrl(id),
   {
     ...options,
     method: 'PATCH',
@@ -469,13 +395,13 @@ return apiFetch<updateCompanyApiV1CompaniesIdPatchResponse>(getUpdateCompanyApiV
 
 
 
-export const getUpdateCompanyApiV1CompaniesIdPatchMutationKey = () => ['updateCompanyApiV1CompaniesIdPatch'] as const;
+export const getUpdateCompanyMutationKey = () => ['updateCompany'] as const;
 
-export const getUpdateCompanyApiV1CompaniesIdPatchMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCompanyApiV1CompaniesIdPatch>>, TError,UpdateCompanyApiV1CompaniesIdPatchMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateCompanyApiV1CompaniesIdPatch>>, TError,UpdateCompanyApiV1CompaniesIdPatchMutationVariables, TContext> => {
+export const getUpdateCompanyMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCompany>>, TError,UpdateCompanyMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateCompany>>, TError,UpdateCompanyMutationVariables, TContext> => {
 
-const mutationKey = getUpdateCompanyApiV1CompaniesIdPatchMutationKey();
+const mutationKey = getUpdateCompanyMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -485,10 +411,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCompanyApiV1CompaniesIdPatch>>, UpdateCompanyApiV1CompaniesIdPatchMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCompany>>, UpdateCompanyMutationVariables> = (props) => {
           const {id,data} = props ?? {};
 
-          return  updateCompanyApiV1CompaniesIdPatch(id,data,requestOptions)
+          return  updateCompany(id,data,requestOptions)
         }
 
 
@@ -498,44 +424,25 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type UpdateCompanyApiV1CompaniesIdPatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateCompanyApiV1CompaniesIdPatch>>>
-    export type UpdateCompanyApiV1CompaniesIdPatchMutationBody = CompanyUpdate
-    export type UpdateCompanyApiV1CompaniesIdPatchMutationError = HTTPValidationError
-    export type UpdateCompanyApiV1CompaniesIdPatchMutationVariables = {id: string;data: CompanyUpdate}
+    export type UpdateCompanyMutationResult = NonNullable<Awaited<ReturnType<typeof updateCompany>>>
+    export type UpdateCompanyMutationBody = CompanyUpdate
+    export type UpdateCompanyMutationError = ErrorType<ErrorResponse>
+    export type UpdateCompanyMutationVariables = {id: string;data: CompanyUpdate}
 
     /**
  * @summary Update Company
  */
-export const useUpdateCompanyApiV1CompaniesIdPatch = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCompanyApiV1CompaniesIdPatch>>, TError,UpdateCompanyApiV1CompaniesIdPatchMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useUpdateCompany = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCompany>>, TError,UpdateCompanyMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateCompanyApiV1CompaniesIdPatch>>,
+        Awaited<ReturnType<typeof updateCompany>>,
         TError,
-        UpdateCompanyApiV1CompaniesIdPatchMutationVariables,
+        UpdateCompanyMutationVariables,
         TContext
       > => {
-      return useMutation(getUpdateCompanyApiV1CompaniesIdPatchMutationOptions(options), queryClient);
+      return useMutation(getUpdateCompanyMutationOptions(options), queryClient);
     }
-    export type deleteCompanyApiV1CompaniesIdDeleteResponse204 = {
-  data: void
-  status: 204
-}
-
-export type deleteCompanyApiV1CompaniesIdDeleteResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type deleteCompanyApiV1CompaniesIdDeleteResponseSuccess = (deleteCompanyApiV1CompaniesIdDeleteResponse204) & {
-  headers: Headers;
-};
-export type deleteCompanyApiV1CompaniesIdDeleteResponseError = (deleteCompanyApiV1CompaniesIdDeleteResponse422) & {
-  headers: Headers;
-};
-
-export type deleteCompanyApiV1CompaniesIdDeleteResponse = (deleteCompanyApiV1CompaniesIdDeleteResponseSuccess | deleteCompanyApiV1CompaniesIdDeleteResponseError)
-
-export const getDeleteCompanyApiV1CompaniesIdDeleteUrl = (id: string,) => {
+    export const getDeleteCompanyUrl = (id: string,) => {
 
 
 
@@ -546,9 +453,9 @@ export const getDeleteCompanyApiV1CompaniesIdDeleteUrl = (id: string,) => {
 /**
  * @summary Delete Company
  */
-export const deleteCompanyApiV1CompaniesIdDelete = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<deleteCompanyApiV1CompaniesIdDeleteResponse> => {
+export const deleteCompany = async (id: string, options?: Parameters<typeof apiFetch>[1]): Promise<void> => {
 
-  return apiFetch<deleteCompanyApiV1CompaniesIdDeleteResponse>(getDeleteCompanyApiV1CompaniesIdDeleteUrl(id),
+  return apiFetch<void>(getDeleteCompanyUrl(id),
   {
     ...options,
     method: 'DELETE'
@@ -561,13 +468,13 @@ export const deleteCompanyApiV1CompaniesIdDelete = async (id: string, options?: 
 
 
 
-export const getDeleteCompanyApiV1CompaniesIdDeleteMutationKey = () => ['deleteCompanyApiV1CompaniesIdDelete'] as const;
+export const getDeleteCompanyMutationKey = () => ['deleteCompany'] as const;
 
-export const getDeleteCompanyApiV1CompaniesIdDeleteMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCompanyApiV1CompaniesIdDelete>>, TError,DeleteCompanyApiV1CompaniesIdDeleteMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteCompanyApiV1CompaniesIdDelete>>, TError,DeleteCompanyApiV1CompaniesIdDeleteMutationVariables, TContext> => {
+export const getDeleteCompanyMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCompany>>, TError,DeleteCompanyMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteCompany>>, TError,DeleteCompanyMutationVariables, TContext> => {
 
-const mutationKey = getDeleteCompanyApiV1CompaniesIdDeleteMutationKey();
+const mutationKey = getDeleteCompanyMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -577,10 +484,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteCompanyApiV1CompaniesIdDelete>>, DeleteCompanyApiV1CompaniesIdDeleteMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteCompany>>, DeleteCompanyMutationVariables> = (props) => {
           const {id} = props ?? {};
 
-          return  deleteCompanyApiV1CompaniesIdDelete(id,requestOptions)
+          return  deleteCompany(id,requestOptions)
         }
 
 
@@ -590,59 +497,52 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteCompanyApiV1CompaniesIdDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof deleteCompanyApiV1CompaniesIdDelete>>>
+    export type DeleteCompanyMutationResult = NonNullable<Awaited<ReturnType<typeof deleteCompany>>>
 
-    export type DeleteCompanyApiV1CompaniesIdDeleteMutationError = HTTPValidationError
-    export type DeleteCompanyApiV1CompaniesIdDeleteMutationVariables = {id: string}
+    export type DeleteCompanyMutationError = ErrorType<ErrorResponse>
+    export type DeleteCompanyMutationVariables = {id: string}
 
     /**
  * @summary Delete Company
  */
-export const useDeleteCompanyApiV1CompaniesIdDelete = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCompanyApiV1CompaniesIdDelete>>, TError,DeleteCompanyApiV1CompaniesIdDeleteMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useDeleteCompany = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCompany>>, TError,DeleteCompanyMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteCompanyApiV1CompaniesIdDelete>>,
+        Awaited<ReturnType<typeof deleteCompany>>,
         TError,
-        DeleteCompanyApiV1CompaniesIdDeleteMutationVariables,
+        DeleteCompanyMutationVariables,
         TContext
       > => {
-      return useMutation(getDeleteCompanyApiV1CompaniesIdDeleteMutationOptions(options), queryClient);
+      return useMutation(getDeleteCompanyMutationOptions(options), queryClient);
     }
-    export type importCompaniesCsvApiV1CompaniesImportPostResponse200 = {
-  data: CompanyImportReport
-  status: 200
-}
+    export const getImportCompaniesCsvUrl = (params?: ImportCompaniesCsvParams,) => {
+  const normalizedParams = new URLSearchParams();
 
-export type importCompaniesCsvApiV1CompaniesImportPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
+  Object.entries(params || {}).forEach(([key, value]) => {
 
-export type importCompaniesCsvApiV1CompaniesImportPostResponseSuccess = (importCompaniesCsvApiV1CompaniesImportPostResponse200) & {
-  headers: Headers;
-};
-export type importCompaniesCsvApiV1CompaniesImportPostResponseError = (importCompaniesCsvApiV1CompaniesImportPostResponse422) & {
-  headers: Headers;
-};
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
-export type importCompaniesCsvApiV1CompaniesImportPostResponse = (importCompaniesCsvApiV1CompaniesImportPostResponseSuccess | importCompaniesCsvApiV1CompaniesImportPostResponseError)
+  const stringifiedParams = normalizedParams.toString();
 
-export const getImportCompaniesCsvApiV1CompaniesImportPostUrl = () => {
-
-
-
-
-  return `/api/v1/companies/import`
+  return stringifiedParams.length > 0 ? `/api/v1/companies/import?${stringifiedParams}` : `/api/v1/companies/import`
 }
 
 /**
+ * Import companies from CSV (≤ 5 MB, ≤ 5 000 rows). Mappings: default template, crunchbase, custom.
  * @summary Import Companies Csv
  */
-export const importCompaniesCsvApiV1CompaniesImportPost = async (bodyImportCompaniesCsvApiV1CompaniesImportPost: BodyImportCompaniesCsvApiV1CompaniesImportPost, options?: Parameters<typeof apiFetch>[1]): Promise<importCompaniesCsvApiV1CompaniesImportPostResponse> => {
+export const importCompaniesCsv = async (bodyImportCompaniesCsvApiV1CompaniesImportPost: BodyImportCompaniesCsvApiV1CompaniesImportPost,
+    params?: ImportCompaniesCsvParams, options?: Parameters<typeof apiFetch>[1]): Promise<CompanyImportReport> => {
     const formData = new FormData();
 formData.append(`file`, bodyImportCompaniesCsvApiV1CompaniesImportPost.file);
+if(bodyImportCompaniesCsvApiV1CompaniesImportPost.column_map !== undefined && bodyImportCompaniesCsvApiV1CompaniesImportPost.column_map !== null) {
+ formData.append(`column_map`, bodyImportCompaniesCsvApiV1CompaniesImportPost.column_map);
+ }
 
-  return apiFetch<importCompaniesCsvApiV1CompaniesImportPostResponse>(getImportCompaniesCsvApiV1CompaniesImportPostUrl(),
+  return apiFetch<CompanyImportReport>(getImportCompaniesCsvUrl(params),
   {
     ...options,
     method: 'POST'
@@ -655,13 +555,13 @@ formData.append(`file`, bodyImportCompaniesCsvApiV1CompaniesImportPost.file);
 
 
 
-export const getImportCompaniesCsvApiV1CompaniesImportPostMutationKey = () => ['importCompaniesCsvApiV1CompaniesImportPost'] as const;
+export const getImportCompaniesCsvMutationKey = () => ['importCompaniesCsv'] as const;
 
-export const getImportCompaniesCsvApiV1CompaniesImportPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof importCompaniesCsvApiV1CompaniesImportPost>>, TError,ImportCompaniesCsvApiV1CompaniesImportPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof importCompaniesCsvApiV1CompaniesImportPost>>, TError,ImportCompaniesCsvApiV1CompaniesImportPostMutationVariables, TContext> => {
+export const getImportCompaniesCsvMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof importCompaniesCsv>>, TError,ImportCompaniesCsvMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof importCompaniesCsv>>, TError,ImportCompaniesCsvMutationVariables, TContext> => {
 
-const mutationKey = getImportCompaniesCsvApiV1CompaniesImportPostMutationKey();
+const mutationKey = getImportCompaniesCsvMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -671,10 +571,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof importCompaniesCsvApiV1CompaniesImportPost>>, ImportCompaniesCsvApiV1CompaniesImportPostMutationVariables> = (props) => {
-          const {data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof importCompaniesCsv>>, ImportCompaniesCsvMutationVariables> = (props) => {
+          const {data,params} = props ?? {};
 
-          return  importCompaniesCsvApiV1CompaniesImportPost(data,requestOptions)
+          return  importCompaniesCsv(data,params,requestOptions)
         }
 
 
@@ -684,45 +584,26 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type ImportCompaniesCsvApiV1CompaniesImportPostMutationResult = NonNullable<Awaited<ReturnType<typeof importCompaniesCsvApiV1CompaniesImportPost>>>
-    export type ImportCompaniesCsvApiV1CompaniesImportPostMutationBody = BodyImportCompaniesCsvApiV1CompaniesImportPost
-    export type ImportCompaniesCsvApiV1CompaniesImportPostMutationError = HTTPValidationError
-    export type ImportCompaniesCsvApiV1CompaniesImportPostMutationVariables = {data: BodyImportCompaniesCsvApiV1CompaniesImportPost}
+    export type ImportCompaniesCsvMutationResult = NonNullable<Awaited<ReturnType<typeof importCompaniesCsv>>>
+    export type ImportCompaniesCsvMutationBody = BodyImportCompaniesCsvApiV1CompaniesImportPost
+    export type ImportCompaniesCsvMutationError = ErrorType<ErrorResponse>
+    export type ImportCompaniesCsvMutationVariables = {data: BodyImportCompaniesCsvApiV1CompaniesImportPost;params?: ImportCompaniesCsvParams}
 
     /**
  * @summary Import Companies Csv
  */
-export const useImportCompaniesCsvApiV1CompaniesImportPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof importCompaniesCsvApiV1CompaniesImportPost>>, TError,ImportCompaniesCsvApiV1CompaniesImportPostMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
+export const useImportCompaniesCsv = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof importCompaniesCsv>>, TError,ImportCompaniesCsvMutationVariables, TContext>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof importCompaniesCsvApiV1CompaniesImportPost>>,
+        Awaited<ReturnType<typeof importCompaniesCsv>>,
         TError,
-        ImportCompaniesCsvApiV1CompaniesImportPostMutationVariables,
+        ImportCompaniesCsvMutationVariables,
         TContext
       > => {
-      return useMutation(getImportCompaniesCsvApiV1CompaniesImportPostMutationOptions(options), queryClient);
+      return useMutation(getImportCompaniesCsvMutationOptions(options), queryClient);
     }
-    export type getCompanyDocumentsApiV1CompaniesIdDocumentsGetResponse200 = {
-  data: DocumentOut[]
-  status: 200
-}
-
-export type getCompanyDocumentsApiV1CompaniesIdDocumentsGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type getCompanyDocumentsApiV1CompaniesIdDocumentsGetResponseSuccess = (getCompanyDocumentsApiV1CompaniesIdDocumentsGetResponse200) & {
-  headers: Headers;
-};
-export type getCompanyDocumentsApiV1CompaniesIdDocumentsGetResponseError = (getCompanyDocumentsApiV1CompaniesIdDocumentsGetResponse422) & {
-  headers: Headers;
-};
-
-export type getCompanyDocumentsApiV1CompaniesIdDocumentsGetResponse = (getCompanyDocumentsApiV1CompaniesIdDocumentsGetResponseSuccess | getCompanyDocumentsApiV1CompaniesIdDocumentsGetResponseError)
-
-export const getGetCompanyDocumentsApiV1CompaniesIdDocumentsGetUrl = (id: string,
-    params?: GetCompanyDocumentsApiV1CompaniesIdDocumentsGetParams,) => {
+    export const getGetCompanyDocumentsUrl = (id: string,
+    params?: GetCompanyDocumentsParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -740,10 +621,10 @@ export const getGetCompanyDocumentsApiV1CompaniesIdDocumentsGetUrl = (id: string
 /**
  * @summary Get Company Documents
  */
-export const getCompanyDocumentsApiV1CompaniesIdDocumentsGet = async (id: string,
-    params?: GetCompanyDocumentsApiV1CompaniesIdDocumentsGetParams, options?: Parameters<typeof apiFetch>[1]): Promise<getCompanyDocumentsApiV1CompaniesIdDocumentsGetResponse> => {
+export const getCompanyDocuments = async (id: string,
+    params?: GetCompanyDocumentsParams, options?: Parameters<typeof apiFetch>[1]): Promise<PaginatedResponseDocumentOut> => {
 
-  return apiFetch<getCompanyDocumentsApiV1CompaniesIdDocumentsGetResponse>(getGetCompanyDocumentsApiV1CompaniesIdDocumentsGetUrl(id,params),
+  return apiFetch<PaginatedResponseDocumentOut>(getGetCompanyDocumentsUrl(id,params),
   {
     ...options,
     method: 'GET'
@@ -756,75 +637,75 @@ export const getCompanyDocumentsApiV1CompaniesIdDocumentsGet = async (id: string
 
 
 
-export const getGetCompanyDocumentsApiV1CompaniesIdDocumentsGetQueryKey = (id: string,
-    params?: GetCompanyDocumentsApiV1CompaniesIdDocumentsGetParams,) => {
+export const getGetCompanyDocumentsQueryKey = (id: string,
+    params?: GetCompanyDocumentsParams,) => {
     return [
     `/api/v1/companies/${id}/documents`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getGetCompanyDocumentsApiV1CompaniesIdDocumentsGetQueryOptions = <TData = Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>, TError = HTTPValidationError>(id: string,
-    params?: GetCompanyDocumentsApiV1CompaniesIdDocumentsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+export const getGetCompanyDocumentsQueryOptions = <TData = Awaited<ReturnType<typeof getCompanyDocuments>>, TError = ErrorType<ErrorResponse>>(id: string,
+    params?: GetCompanyDocumentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyDocuments>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetCompanyDocumentsApiV1CompaniesIdDocumentsGetQueryKey(id,params);
+  const queryKey =  queryOptions?.queryKey ?? getGetCompanyDocumentsQueryKey(id,params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>> = ({ signal }) => getCompanyDocumentsApiV1CompaniesIdDocumentsGet(id,params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCompanyDocuments>>> = ({ signal }) => getCompanyDocuments(id,params, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCompanyDocuments>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetCompanyDocumentsApiV1CompaniesIdDocumentsGetQueryResult = NonNullable<Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>>
-export type GetCompanyDocumentsApiV1CompaniesIdDocumentsGetQueryError = HTTPValidationError
+export type GetCompanyDocumentsQueryResult = NonNullable<Awaited<ReturnType<typeof getCompanyDocuments>>>
+export type GetCompanyDocumentsQueryError = ErrorType<ErrorResponse>
 
 
-export function useGetCompanyDocumentsApiV1CompaniesIdDocumentsGet<TData = Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>, TError = HTTPValidationError>(
+export function useGetCompanyDocuments<TData = Awaited<ReturnType<typeof getCompanyDocuments>>, TError = ErrorType<ErrorResponse>>(
  id: string,
-    params: undefined |  GetCompanyDocumentsApiV1CompaniesIdDocumentsGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>, TError, TData>> & Pick<
+    params: undefined |  GetCompanyDocumentsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyDocuments>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>,
+          Awaited<ReturnType<typeof getCompanyDocuments>>,
           TError,
-          Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>
+          Awaited<ReturnType<typeof getCompanyDocuments>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCompanyDocumentsApiV1CompaniesIdDocumentsGet<TData = Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>, TError = HTTPValidationError>(
+export function useGetCompanyDocuments<TData = Awaited<ReturnType<typeof getCompanyDocuments>>, TError = ErrorType<ErrorResponse>>(
  id: string,
-    params?: GetCompanyDocumentsApiV1CompaniesIdDocumentsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>, TError, TData>> & Pick<
+    params?: GetCompanyDocumentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyDocuments>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>,
+          Awaited<ReturnType<typeof getCompanyDocuments>>,
           TError,
-          Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>
+          Awaited<ReturnType<typeof getCompanyDocuments>>
         > , 'initialData'
       >, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCompanyDocumentsApiV1CompaniesIdDocumentsGet<TData = Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>, TError = HTTPValidationError>(
+export function useGetCompanyDocuments<TData = Awaited<ReturnType<typeof getCompanyDocuments>>, TError = ErrorType<ErrorResponse>>(
  id: string,
-    params?: GetCompanyDocumentsApiV1CompaniesIdDocumentsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+    params?: GetCompanyDocumentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyDocuments>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Company Documents
  */
 
-export function useGetCompanyDocumentsApiV1CompaniesIdDocumentsGet<TData = Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>, TError = HTTPValidationError>(
+export function useGetCompanyDocuments<TData = Awaited<ReturnType<typeof getCompanyDocuments>>, TError = ErrorType<ErrorResponse>>(
  id: string,
-    params?: GetCompanyDocumentsApiV1CompaniesIdDocumentsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyDocumentsApiV1CompaniesIdDocumentsGet>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
+    params?: GetCompanyDocumentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyDocuments>>, TError, TData>>, request?: SecondParameter<typeof apiFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetCompanyDocumentsApiV1CompaniesIdDocumentsGetQueryOptions(id,params,options)
+  const queryOptions = getGetCompanyDocumentsQueryOptions(id,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

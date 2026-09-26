@@ -4,15 +4,17 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
-import type { QualityMetricsOutByCategoryItem } from './qualityMetricsOutByCategoryItem';
-import type { QualityMetricsOutBySourceItem } from './qualityMetricsOutBySourceItem';
-import type { QualityMetricsOutVerifier } from './qualityMetricsOutVerifier';
+import type { CategoryQuality } from './categoryQuality';
+import type { LeadFeedbackStats } from './leadFeedbackStats';
+import type { SourceQuality } from './sourceQuality';
+import type { VerifierStats } from './verifierStats';
 
 export interface QualityMetricsOut {
-  labeled?: number;
-  precision?: number;
-  by_category?: QualityMetricsOutByCategoryItem[];
-  by_source?: QualityMetricsOutBySourceItem[];
-  verifier?: QualityMetricsOutVerifier;
-  hallucination_rate?: number;
+  labeled: number;
+  precision: number;
+  by_category: CategoryQuality[];
+  by_source: SourceQuality[];
+  leads: LeadFeedbackStats;
+  verifier: VerifierStats;
+  hallucination_rate: number;
 }

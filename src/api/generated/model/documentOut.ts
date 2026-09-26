@@ -4,11 +4,12 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { SourceType } from './sourceType';
 
 export interface DocumentOut {
   id: string;
   company_id: string;
-  source_type: string;
+  source_type: SourceType;
   source_name: string;
   url: string;
   canonical_url: string;

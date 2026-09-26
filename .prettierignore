@@ -1,8 +1,7 @@
 node_modules/
 coverage/
-.pnpm-store/
-pnpm-lock.yaml
+dist/
 package-lock.json
-pnpm-lock.yaml
-yarn.lock
+openapi.json
 src/api/generated/
+public/mockServiceWorker.js

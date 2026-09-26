@@ -1,146 +1,213 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/inter";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
 
-@custom-variant dark (&:is(.dark *));
-
-/* Orange Boosted 4.4 brand palette — https://boosted.orange.com/docs/4.4/about/brand/ */
+/* LeadRadar palette: black, white and Orange (#ff7900) with neutral greys. Light only (dark mode is P2). */
 :root {
-    --background: #fff;
-    --foreground: #000;
-    --card: #fff;
-    --card-foreground: #000;
-    --popover: #fff;
-    --popover-foreground: #000;
-    /* White text on #ff7900 fails contrast (2.6:1); black passes (8:1) */
-    --primary: #ff7900;
-    --primary-foreground: #000;
-    --secondary: #eee;
-    --secondary-foreground: #000;
-    --muted: #f6f6f6;
-    --muted-foreground: #666;
-    --accent: #eee;
-    --accent-foreground: #000;
-    --destructive: #cd3c14;
-    --success: #32c832;
-    --warning: #fc0;
-    --info: #527edb;
-    --border: #ddd;
-    --input: #ccc;
-    --ring: #000;
-    --chart-1: #ff7900;
-    --chart-2: #4bb4e6;
-    --chart-3: #50be87;
-    --chart-4: #a885d8;
-    --chart-5: #ffb4e6;
-    --radius: 0.625rem;
-    --sidebar: #fafafa;
-    --sidebar-foreground: #000;
-    --sidebar-primary: #ff7900;
-    --sidebar-primary-foreground: #000;
-    --sidebar-accent: #eee;
-    --sidebar-accent-foreground: #000;
-    --sidebar-border: #ddd;
-    --sidebar-ring: #000;
-}
+  --radius: 0.625rem;
 
-.dark {
-    --background: #000;
-    --foreground: #fff;
-    --card: #141414;
-    --card-foreground: #fff;
-    --popover: #141414;
-    --popover-foreground: #fff;
-    --primary: #ff7900;
-    --primary-foreground: #000;
-    --secondary: #333;
-    --secondary-foreground: #fff;
-    --muted: #262626;
-    --muted-foreground: #999;
-    --accent: #333;
-    --accent-foreground: #fff;
-    /* #cd3c14 is only 4.2:1 on black; lighter red keeps text readable */
-    --destructive: #ff4d4d;
-    --success: #6c6;
-    --warning: #fc0;
-    --info: #69f;
-    --border: #333;
-    --input: #595959;
-    --ring: #fff;
-    --chart-1: #ff7900;
-    --chart-2: #4bb4e6;
-    --chart-3: #50be87;
-    --chart-4: #a885d8;
-    --chart-5: #ffb4e6;
-    --sidebar: #141414;
-    --sidebar-foreground: #fff;
-    --sidebar-primary: #ff7900;
-    --sidebar-primary-foreground: #000;
-    --sidebar-accent: #333;
-    --sidebar-accent-foreground: #fff;
-    --sidebar-border: #333;
-    --sidebar-ring: #fff;
+  --background: #ffffff;
+  --foreground: #000000;
+  --canvas: #fafafa;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  /* White text on #ff7900 fails contrast (2.6:1); black passes (8:1) */
+  --primary: #ff7900;
+  --primary-foreground: #000000;
+  --secondary: #eeeeee;
+  --secondary-foreground: #000000;
+  --muted: #f6f6f6;
+  --muted-foreground: #595959;
+  --accent: #eeeeee;
+  --accent-foreground: #000000;
+  --destructive: #cd3c14;
+  --border: #dddddd;
+  --input: #cccccc;
+  --ring: #000000;
+
+  --subtle: #eeeeee;
+  --text-secondary: #333333;
+  /* Decoration only: 2.85:1 on white */
+  --faint: #999999;
+  --link-hover: #b34700;
+  --primary-hover: #e66d00;
+  --primary-surface: #fff4eb;
+  --primary-surface-subtle: #fff9f4;
+
+  --tier-hot: #ff7900;
+  --tier-warm: #ffd200;
+  --tier-cold: #4bb4e6;
+  --tier-cold-surface: #d6eef9;
+  --tier-dq: #999999;
+  --tier-dq-surface: #eeeeee;
+  --tier-dq-foreground: #595959;
+
+  --metric-fit: #4bb4e6;
+  --metric-intent: #ff7900;
+  --metric-risk: #cd3c14;
+
+  --positive: #1e7b4f;
+  --positive-strong: #14532d;
+  --positive-surface: #e6f4ec;
+  --negative-strong: #a1300f;
+  --negative-surface: #fdecea;
+  --negative-foreground: #5c1a08;
+  --warning: #ffd200;
+  --warning-surface: #fff8d6;
+  --warning-border: #e6c200;
+  --warning-strong: #8a6d00;
+  --warning-foreground: #5c4a00;
+  --success: #50be87;
+  --live: #50be87;
+  --console: #111111;
+
+  --chart-1: #ff7900;
+  --chart-2: #4bb4e6;
+  --chart-3: #50be87;
+  --chart-4: #ffd200;
+  --chart-5: #cd3c14;
+
+  --logo-1: #1b4f72;
+  --logo-2: #b8860b;
+  --logo-3: #0a2a5c;
+  --logo-4: #6c3483;
+  --logo-5: #922b21;
+  --logo-6: #145a32;
+  --logo-7: #117864;
+  --logo-8: #5d6d7e;
+  --logo-9: #2e4053;
+  --logo-10: #7b7d7d;
+  --logo-11: #b9770e;
+
+  --sidebar: #000000;
+  --sidebar-foreground: #cccccc;
+  --sidebar-primary: #ff7900;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #262626;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-hover: #1a1a1a;
+  --sidebar-border: #333333;
+  --sidebar-ring: #ffffff;
+  --sidebar-input: #1f1f1f;
+  --sidebar-muted: #8c8c8c;
+  --sidebar-subtle: #b3b3b3;
 }
 
 @theme inline {
-    --font-sans: 'Inter Variable', sans-serif;
-    --font-heading: 'Geist Variable', sans-serif;
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-success: var(--success);
-    --color-warning: var(--warning);
-    --color-info: var(--info);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
-    --color-card: var(--card);
-    --color-foreground: var(--foreground);
-    --color-background: var(--background);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+  --font-sans: "Geist Variable", system-ui, sans-serif;
+  --font-heading: "Geist Variable", system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-canvas: var(--canvas);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-surface: var(--primary-surface);
+  --color-primary-surface-subtle: var(--primary-surface-subtle);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-subtle: var(--subtle);
+  --color-text-secondary: var(--text-secondary);
+  --color-faint: var(--faint);
+  --color-link-hover: var(--link-hover);
+
+  --color-tier-hot: var(--tier-hot);
+  --color-tier-warm: var(--tier-warm);
+  --color-tier-cold: var(--tier-cold);
+  --color-tier-cold-surface: var(--tier-cold-surface);
+  --color-tier-dq: var(--tier-dq);
+  --color-tier-dq-surface: var(--tier-dq-surface);
+  --color-tier-dq-foreground: var(--tier-dq-foreground);
+
+  --color-metric-fit: var(--metric-fit);
+  --color-metric-intent: var(--metric-intent);
+  --color-metric-risk: var(--metric-risk);
+
+  --color-positive: var(--positive);
+  --color-positive-strong: var(--positive-strong);
+  --color-positive-surface: var(--positive-surface);
+  --color-negative-strong: var(--negative-strong);
+  --color-negative-surface: var(--negative-surface);
+  --color-negative-foreground: var(--negative-foreground);
+  --color-warning: var(--warning);
+  --color-warning-surface: var(--warning-surface);
+  --color-warning-border: var(--warning-border);
+  --color-warning-strong: var(--warning-strong);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-success: var(--success);
+  --color-live: var(--live);
+  --color-console: var(--console);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-input: var(--sidebar-input);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-subtle: var(--sidebar-subtle);
+
+  --shadow-segment: 0 1px 2px rgb(0 0 0 / 0.12);
+  --shadow-dialog: 0 16px 48px rgb(0 0 0 / 0.25);
+  --shadow-sheet: -8px 0 24px rgb(0 0 0 / 0.18);
+
+  /* 6 / 8 / 10 / 12 px; plain `rounded` stays 4 px for badges and chips */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.2);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
-  body {
-    @apply bg-background text-foreground;
-    }
-  button:not(:disabled), [role="button"]:not(:disabled) {
-    cursor: pointer;
-    }
+  }
   html {
     @apply font-sans;
-    }
+  }
+  body {
+    @apply bg-canvas text-foreground antialiased;
+  }
+  a:hover {
+    color: var(--link-hover);
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }

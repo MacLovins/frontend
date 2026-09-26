@@ -4,14 +4,26 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { FitCriterion } from './fitCriterion';
 
 export interface DiscoveredCompany {
   name: string;
   domain: string;
-  country_code?: string | null;
-  industry_ids?: string[];
-  employees?: number | null;
-  fit_score?: number;
-  already_tracked?: boolean;
-  reason?: string | null;
+  country_code: string | null;
+  industry_ids: string[];
+  employees: number | null;
+  revenue_eur: number | null;
+  wikidata_qid: string | null;
+  lei: string | null;
+  crunchbase_id: string | null;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  fit_score: number;
+  must_have_passed: boolean;
+  fit_details: FitCriterion[];
+  data_gaps: string[];
+  already_tracked: boolean;
+  reason: string | null;
 }

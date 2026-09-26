@@ -4,6 +4,10 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { SignalCategory } from './signalCategory';
+import type { SignalQuestionCreatePolarity } from './signalQuestionCreatePolarity';
+import type { SignalQuestionCreateSourceTypesItem } from './signalQuestionCreateSourceTypesItem';
+import type { SignalQuestionCreateWeight } from './signalQuestionCreateWeight';
 
 export interface SignalQuestionCreate {
   /**
@@ -13,10 +17,12 @@ export interface SignalQuestionCreate {
   key: string;
   /** @minLength 1 */
   text: string;
-  category?: string;
-  polarity?: string;
-  weight?: string;
-  source_types?: string[];
+  category?: SignalCategory;
+  polarity?: SignalQuestionCreatePolarity;
+  weight?: SignalQuestionCreateWeight;
+  /** @minItems 1 */
+  source_types?: SignalQuestionCreateSourceTypesItem[];
+  /** @exclusiveMinimum 0 */
   recency_days?: number;
   job_titles?: string[];
   negative_terms?: string[];

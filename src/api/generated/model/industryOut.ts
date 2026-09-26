@@ -4,8 +4,12 @@
  * LeadRadar API
  * OpenAPI spec version: 0.1.0
  */
+import type { IndustryOutNis2 } from './industryOutNis2';
 
 export interface IndustryOut {
   id: string;
   label: string;
+  nace: string[];
+  nis2: IndustryOutNis2;
+  dora: boolean;
 }
